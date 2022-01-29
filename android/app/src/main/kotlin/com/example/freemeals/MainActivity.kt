@@ -1,4 +1,4 @@
-package com.freemeals.freemeals
+package com.example.freemeals
 
 import io.flutter.embedding.android.FlutterActivity
 
