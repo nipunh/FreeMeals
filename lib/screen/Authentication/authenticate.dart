@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:freemeals/screen/Authentication/sign_in.dart';
 
 class Authenticate extends StatefulWidget {
-  const ({ Key? key }) : super(key: key);
-
   @override
-  _State createState() => _State();
+  _AuthenticateState createState() => _AuthenticateState();
 }
 
-class _State extends State<> {
+class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text('Authentication Sceen'),
+      child: SignIn()
     );
   }
 }
