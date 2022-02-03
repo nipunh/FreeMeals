@@ -11,11 +11,11 @@ class UserDoc implements UserData {
   String userType;
 
   UserDoc({
-    @required this.id,
-    @required this.phone,
-    @required this.emailAddress,
-    @required this.displayName,
-    @required this.userType
+    required this.id,
+    required this.phone,
+    required this.emailAddress,
+    required this.displayName,
+    required this.userType
   });
 
   static UserDoc fromDoctoUserInfo(
@@ -26,10 +26,10 @@ class UserDoc implements UserData {
 
     return UserDoc(
       id: snapshot.id,
-      phone: data['phone'] ?? '',
-      emailAddress: data['emailAddress'] ?? '',
-      displayName: data['displayName'] ?? '',
-      userType: data['userType'] ?? '',
+      phone: data?['phone'] ?? '',
+      emailAddress: data?['emailAddress'] ?? '',
+      displayName: data?['displayName'] ?? '',
+      userType: data?['userType'] ?? '',
     );
   }
 }
