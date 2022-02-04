@@ -1,6 +1,7 @@
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freemeals/enums/view_state.dart';
 // import 'package:platos_client_app/enums/connectivity_status.dart';
 // import 'package:platos_client_app/enums/view_state.dart';
 // import 'package:platos_client_app/models/order_model.dart';

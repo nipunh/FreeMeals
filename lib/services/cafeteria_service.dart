@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freemeals/models/cafe_model.dart';
+import 'package:freemeals/services/notification_service.dart';
 // import 'package:platos_client_app/models/cafeteria_model.dart';
 // import 'package:platos_client_app/models/order_model.dart';
 // import 'package:platos_client_app/models/slot_times_model.dart';
@@ -11,7 +12,7 @@ import 'package:freemeals/models/cafe_model.dart';
 // import 'package:platos_client_app/services/database_helper.dart';
 // import 'package:platos_client_app/services/notification_service.dart';
 // import 'package:platos_client_app/services/user_service.dart';
-// import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 
 class CafeteriasService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -37,29 +38,30 @@ class CafeteriasService {
 
   Future<void> selectCafe(String userId, Cafeteria cafe, Cafeteria oldCafe,
       BuildContext context) async {
-    try {
-      if ((oldCafe == null) || (cafe.id != oldCafe.id)) {
-        await DatabaseHelper().clearLocalCart();
-        Provider.of<CartProvider>(context, listen: false).clearProviderCart();
-        await CartService().clearCart(userId);
-        await UserService().addCafeToUser(userId, cafe.id, cafe.companyId);
-        if (oldCafe != null) {
-          await NotificationService().selectCafeUnSubcribe(
-              oldCafe.id, oldCafe.companyId, oldCafe.city);
-        }
+        print('Selcted Cafe :'+ cafe.id);
+    // try {
+    //   if ((oldCafe == null) || (cafe.id != oldCafe.id)) {
+    //     await DatabaseHelper().clearLocalCart();
+    //     Provider.of<CartProvider>(context, listen: false).clearProviderCart();
+    //     await CartService().clearCart(userId);
+    //     await UserService().addCafeToUser(userId, cafe.id, cafe.companyId);
+    //     if (oldCafe != null) {
+    //       await NotificationService().selectCafeUnSubcribe(
+    //           oldCafe.id, oldCafe.companyId, oldCafe.city);
+    //     }
 
-        await NotificationService()
-            .selectCafeSubcribe(cafe.id, cafe.companyId, cafe.city);
-        Provider.of<SelectedCafeteria>(context, listen: false)
-            .setCafeteria(cafe.id, cafe.name, cafe.city, cafe.companyId);
-      }
-      return Navigator.of(context)
-          .pushReplacementNamed(VendorListScreen.routeName);
-    } catch (err) {
-      print('error Cafe selection screen - pvt fucntion select cafe = ' +
-          err.toString());
-      throw (err);
-    }
+    //     await NotificationService()
+    //         .selectCafeSubcribe(cafe.id, cafe.companyId, cafe.city);
+    //     Provider.of<SelectedCafeteria>(context, listen: false)
+    //         .setCafeteria(cafe.id, cafe.name, cafe.city, cafe.companyId);
+    //   }
+    //   return Navigator.of(context)
+    //       .pushReplacementNamed(VendorListScreen.routeName);
+    // } catch (err) {
+    //   print('error Cafe selection screen - pvt fucntion select cafe = ' +
+    //       err.toString());
+    //   throw (err);
+    // }
   }
 
   Future<Cafeteria> getCafeteriaByCode() async {
@@ -78,7 +80,7 @@ class CafeteriasService {
       throw (err);
     }
   }
-
+}
 //   Future<List<SlotTime>> getCafeSlotTimes(String cafeId) async {
 //     try {
 //       DocumentSnapshot<Map<String, dynamic>> doc = await _cafeteria

@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freemeals/config/environment_config.dart';
+import 'package:freemeals/handle_main.dart';
+import 'package:freemeals/providers/cafeteria_provider.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
+import 'package:freemeals/screen/Cafeteria/freemeals_splash_screen.dart';
+import 'package:freemeals/screen/ErrorScreen/syncronized_error_screen.dart';
 import 'package:freemeals/util/theme.dart';
-import 'package:platos_client_app/handle_main.dart';
-import 'package:platos_client_app/providers/cafeteria_provider.dart';
-import 'package:platos_client_app/screens/account_info_screen.dart';
-import 'package:platos_client_app/screens/auth_screen.dart';
-import 'package:platos_client_app/screens/cafeteria_selection_screen.dart';
-import 'package:platos_client_app/screens/cart_screen.dart';
-import 'package:platos_client_app/screens/error_connection_screen.dart';
-import 'package:platos_client_app/screens/error_screen.dart';
-import 'package:platos_client_app/screens/faqs_screen.dart';
-import 'package:platos_client_app/screens/favorite_screen.dart';
-import 'package:platos_client_app/screens/name_screen.dart';
-import 'package:platos_client_app/screens/order_offline_screen.dart';
-import 'package:platos_client_app/screens/order_screen.dart';
-import 'package:platos_client_app/screens/platos_splash_screen.dart';
-import 'package:platos_client_app/screens/search_screen.dart';
-import 'package:platos_client_app/screens/syncronized_error_screen.dart';
-import 'package:platos_client_app/screens/vendor_item_screen.dart';
-import 'package:platos_client_app/screens/vendor_list_screen.dart';
+// import 'package:platos_client_app/handle_main.dart';
+// import 'package:platos_client_app/providers/cafeteria_provider.dart';
+// import 'package:platos_client_app/screens/account_info_screen.dart';
+// import 'package:platos_client_app/screens/auth_screen.dart';
+// import 'package:platos_client_app/screens/cafeteria_selection_screen.dart';
+// import 'package:platos_client_app/screens/cart_screen.dart';
+// import 'package:platos_client_app/screens/error_connection_screen.dart';
+// import 'package:platos_client_app/screens/error_screen.dart';
+// import 'package:platos_client_app/screens/faqs_screen.dart';
+// import 'package:platos_client_app/screens/favorite_screen.dart';
+// import 'package:platos_client_app/screens/name_screen.dart';
+// import 'package:platos_client_app/screens/order_offline_screen.dart';
+// import 'package:platos_client_app/screens/order_screen.dart';
+// import 'package:platos_client_app/screens/platos_splash_screen.dart';
+// import 'package:platos_client_app/screens/search_screen.dart';
+// import 'package:platos_client_app/screens/syncronized_error_screen.dart';
+// import 'package:platos_client_app/screens/vendor_item_screen.dart';
+// import 'package:platos_client_app/screens/vendor_list_screen.dart';
 // import 'package:platos_client_app/util/theme.dart';
 
 class MatApp extends StatelessWidget {
@@ -48,7 +52,7 @@ class MatApp extends StatelessWidget {
       home: (error)
           ? SyncronizedErrorScreen()
           : (!initialized)
-              ? PlatosSplashScreen()
+              ? FreeMealsSplashScreen()
               : HandleMain(selectCafe: selectCafe),
       routes: {
         // VendorListScreen.routeName: (ctx) => VendorListScreen(),
@@ -56,7 +60,7 @@ class MatApp extends StatelessWidget {
         // CartScreen.routeName: (ctx) => CartScreen(),
         // OrdersScreen.routeName: (ctx) => OrdersScreen(),
         // FavoriteScreen.routeName: (ctx) => FavoriteScreen(),
-        CafeteriaSelection.routeName: (ctx) => CafeteriaSelection(),
+        CafeteriaSelectionScreen.routeName: (ctx) => CafeteriaSelectionScreen(),
         // AuthScreen.routeName: (ctx) => AuthScreen(),
         // SearchScreen.routeName: (ctx) => SearchScreen(),
         // AccountInfoScreen.routeName: (ctx) => AccountInfoScreen(),
