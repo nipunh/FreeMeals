@@ -25,46 +25,46 @@ class AuthService {
   Future<ScreenName> signIn(
       AuthCredential credential, String phonenumber) async {
     try {
-      // User user = FirebaseAuth.instance.currentUser;
+      User user = FirebaseAuth.instance.currentUser;
 
-      // if (user == null || user.phoneNumber != phonenumber) {
-      //   UserCredential result = await _auth.signInWithCredential(credential);
+      if (user == null || user.phoneNumber != phonenumber) {
+        UserCredential result = await _auth.signInWithCredential(credential);
 
-      //   user = result.user;
-      // }
+        user = result.user;
+      }
 
-      // if (user != null) {
-      //   await NotificationService().loginSubscribe(user.uid);
-      //   if (Platform.isAndroid) {
-      //     await NotificationService().createOrderChannel();
-      //   }
-      //   DocumentSnapshot<Map<String, dynamic>> userDoc =
-      //       await _user.doc(user.uid).get();
-      //   if (!userDoc.exists) {
-      //     await _user.doc(user.uid).set({
-      //       'phone': user.phoneNumber,
-      //       'platosCredits': 0.0.toDouble(),
-      //       'companyCredits': 0.0.toDouble(),
-      //       'approvedCompanyId': '',
-      //       'subsidy': false,
-      //       'companyId': '',
-      //       'cafeteriaId': '',
-      //       'displayName': '',
-      //       'emailAddress': '',
-      //       'subsidyType': -1.toInt(),
-      //       'monthlyCompanyCredits': 0.0.toDouble(),
-      //       'empId': null
-      //     });
+      if (user != null) {
+        await NotificationService().loginSubscribe(user.uid);
+        if (Platform.isAndroid) {
+          // await NotificationService().createOrderChannel();
+        }
+        DocumentSnapshot<Map<String, dynamic>> userDoc =
+            await _user.doc(user.uid).get();
+        if (!userDoc.exists) {
+          await _user.doc(user.uid).set({
+            'phone': user.phoneNumber,
+            'platosCredits': 0.0.toDouble(),
+            'companyCredits': 0.0.toDouble(),
+            'approvedCompanyId': '',
+            'subsidy': false,
+            'companyId': '',
+            'cafeteriaId': '',
+            'displayName': '',
+            'emailAddress': '',
+            'subsidyType': -1.toInt(),
+            'monthlyCompanyCredits': 0.0.toDouble(),
+            'empId': null
+          });
 
-      //     return ScreenName.Name;
-      //   }
-      //   String name = userDoc.data()['displayName'];
-      //   String email = userDoc.data()['emailAddress'];
-      //   if (name == null || name.isEmpty || email == null || email.isEmpty)
-      //     return ScreenName.Name;
-      //   return ScreenName.CafeSelection;
-      // } else
-      //   return null;
+          return ScreenName.Name;
+        }
+        String name = userDoc.data()['displayName'];
+        String email = userDoc.data()['emailAddress'];
+        if (name == null || name.isEmpty || email == null || email.isEmpty)
+          return ScreenName.Name;
+        return ScreenName.CafeSelection;
+      } else
+        return null;
     } catch (err) {
       print('error Auth service - sign in = ' + err.toString());
       throw (err);
@@ -75,13 +75,9 @@ class AuthService {
       String smsCode, String verId, String phoneNumber) async {
     try {
       log('data: $phoneNumber');
-
-      await _user.doc("4DnXwCwFJTvU2W7nMUWl").set({
-            'phone': phoneNumber,
-      });
-      // AuthCredential authCreds =
-      //     PhoneAuthProvider.credential(verificationId: verId, smsCode: smsCode);
-      // return await signIn(authCreds, phoneNumber);
+      AuthCredential authCreds =
+          PhoneAuthProvider.credential(verificationId: verId, smsCode: smsCode);
+      return await signIn(authCreds, phoneNumber);
     } catch (err) {
       print('error Auth service - sign in with OTP = ' + err.toString());
       throw (err);

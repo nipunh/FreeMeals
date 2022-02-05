@@ -37,24 +37,29 @@ class HandleMain extends StatelessWidget {
           else {
             if (snapshot.hasData) {
               bool versionCheck = snapshot.data;
+               
               if (versionCheck) {
-                if (user == null)
-                  return AuthScreen();
+                if (user == null){
+                    return AuthScreen();}
                 else if (user.displayName == null ||
                     user.displayName.isEmpty ||
                     user.email == null ||
-                    user.email.isEmpty)
+                    user.email.isEmpty){
+                  print("name screen");
                   return NameScreen();
+                  }
                 else if (selectCafe.cafeId == null ||
                     selectCafe.cafeName == null ||
                     selectCafe.city == null
                     // selectCafe.companyId == null
-                    )
+                    ){
+                  print("cafetria Selection");
                   return CafeteriaSelectionScreen();
+                  }
                 else {
+                   print("future builder");
                   return FutureBuilder(
-                      future: CafeteriasService()
-                          .getCafeteriaByID(selectCafe.cafeId),
+                      future: CafeteriasService().getCafeteriaByID(selectCafe.cafeId),
                       builder: (ctx, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting)
                           return FreeMealsSplashScreen();

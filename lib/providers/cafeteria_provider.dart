@@ -89,11 +89,8 @@ class SelectedCafeteria extends ChangeNotifier {
 }
 
 class CafeteriaProvider extends ChangeNotifier {
-  final CollectionReference _cafeteria =
-      FirebaseFirestore.instance.collection('cafeterias');
 
-  final CollectionReference _companies =
-      FirebaseFirestore.instance.collection('companies');
+  final CollectionReference _cafeteria = FirebaseFirestore.instance.collection('cafeterias');
 
   List<Cafeteria> _cafes = [];
 
@@ -105,6 +102,7 @@ class CafeteriaProvider extends ChangeNotifier {
 
   Future<void> getSelectedCafe(String selectedCafeteriaId) async {
     try {
+    
       _selectedCafeteria = null;
       _cafes = [];
       if (selectedCafeteriaId == null || selectedCafeteriaId.isEmpty) {
@@ -123,7 +121,7 @@ class CafeteriaProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getCafes(String city, String companyId) async {
+  Future<void> getCafes(String city) async {
     try {
       QuerySnapshot<Map<String, dynamic>> cafeDocs = await _cafeteria
           .where('disabled', isEqualTo: false)
@@ -131,9 +129,11 @@ class CafeteriaProvider extends ChangeNotifier {
           .get();
 
       List<Cafeteria> cafeterias = cafeDocs.docs.map((doc) {
+        
         return Cafeteria.fromDocToCafeteria(doc);
       }).toList();
 
+    
       _cafes = [];
       _cafes = cafeterias;
       notifyListeners();

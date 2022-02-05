@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:freemeals/models/cafe_model.dart';
+import 'package:freemeals/models/user_model.dart';
 
 class CafeteraCard extends StatelessWidget {
 
   final Cafeteria cafe;
-  CafeteraCard(this.cafe);
+  final UserDoc user;
+
+  CafeteraCard(this.cafe, this.user);
+
+
 
   @override
   Widget build(BuildContext context) {
+    print(user);
     return Container(
       alignment: Alignment.bottomLeft,
-      height: 200,
-      width : 200,
+      height: (200 * cafe.bannerSize["height"]).toDouble(),
+      width : (200 * cafe.bannerSize['width']).toDouble(),
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -22,7 +28,7 @@ class CafeteraCard extends StatelessWidget {
       ),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 48),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

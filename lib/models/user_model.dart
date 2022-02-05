@@ -9,13 +9,15 @@ class UserDoc implements UserData {
   String emailAddress;
   String displayName;
   String userType;
+  Map<String, dynamic> cafeLoyaltyStamps;
 
   UserDoc({
     @required this.id,
     @required this.phone,
     @required this.emailAddress,
     @required this.displayName,
-    @required this.userType
+    @required this.userType,
+    @required this.cafeLoyaltyStamps
   }) {
     // TODO: implement 
     throw UnimplementedError();
@@ -33,6 +35,7 @@ class UserDoc implements UserData {
       emailAddress: data['emailAddress'] ?? '',
       displayName: data['displayName'] ?? '',
       userType: data['userType'] ?? '',
+      cafeLoyaltyStamps: data['cafeLoyaltyStamps'] ?? {}
     );
   }
 }

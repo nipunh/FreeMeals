@@ -7,19 +7,20 @@ class VersionService {
 
   Future<bool> versionStable() async {
     try {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      // PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-      int minVersion = 0;
+      // int minVersion = 0;
 
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await _staticValues.doc('minimumVersion').get();
+      // DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+      //     await _staticValues.doc('minimumVersion').get();
 
-      if (documentSnapshot != null && documentSnapshot.exists)
-        minVersion = documentSnapshot.data()['consumerVersion'] ?? 0;
+      // if (documentSnapshot != null && documentSnapshot.exists)
+      //   minVersion = documentSnapshot.data()['consumerVersion'] ?? 0;
 
-      int version = int.parse(packageInfo.buildNumber);
+      // int version = int.parse(packageInfo.buildNumber);
 
-      return version >= minVersion;
+      // return version >= minVersion;
+      return true;
     } catch (err) {
       print('Error Version Service - Version check' + err.toString());
       throw (err);

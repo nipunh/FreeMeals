@@ -6,13 +6,12 @@ import 'package:freemeals/enums/connectivity_status.dart';
 
 
 class ConnectivityService {
-  StreamController<ConnectivityStatus> connectionStatusController =
-      StreamController<ConnectivityStatus>();
+  StreamController<ConnectivityStatus> connectionStatusController =  StreamController<ConnectivityStatus>();
 
   ConnectivityService() {
     Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) async {
+    .onConnectivityChanged
+    .listen((ConnectivityResult result) async {
       var connectionStatus = await _getStatusFromResult(result);
       connectionStatusController.sink.add(connectionStatus);
     });
