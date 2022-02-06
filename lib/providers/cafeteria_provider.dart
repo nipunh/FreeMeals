@@ -126,6 +126,7 @@ class CafeteriaProvider extends ChangeNotifier {
       QuerySnapshot<Map<String, dynamic>> cafeDocs = await _cafeteria
           .where('disabled', isEqualTo: false)
           .where('city', isEqualTo: city)
+          .orderBy('cafeCode')
           .get();
 
       List<Cafeteria> cafeterias = cafeDocs.docs.map((doc) {

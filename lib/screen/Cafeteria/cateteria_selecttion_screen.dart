@@ -51,7 +51,6 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
   ViewState _viewState = ViewState.Idle;
   String city;
   String companyCode;
-  final user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
@@ -142,107 +141,149 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     bool isTab = DeviceService().isTablet(context);
-
+    User user = FirebaseAuth.instance.currentUser;
     if (_viewState == ViewState.ConnectionError)
       return ErrorConnectionPage(routeName: CafeteriaSelectionScreen.routeName);
     if (_viewState == ViewState.Error)
       return ErrorPage(routeName: CafeteriaSelectionScreen.routeName);
     else {
+      print(user.uid);
       return MultiProvider(
-          providers: [
-            StreamProvider(
-                initialData: ConnectivityStatus.Connected,
-                create: (ctx) =>
-                    ConnectivityService().connectionStatusController.stream),
-            StreamProvider(
-              create: (ctx) => UserService().getUserData(user.uid),
-              initialData: const Loading1(),
-              catchError: (_, error) => Error1(error.toString()),
-            )
-          ],
-          child: Consumer<ConnectivityStatus>(
-            builder: (ctx, connectionStatus, ch)  => (connectionStatus == ConnectivityStatus.None)
-            ? ErrorConnectionPage(routeName: CafeteriaSelectionScreen.routeName)
-                : Consumer<UserData>(builder: (ctx, data, ch) {
-                      final cafeteriaProvider =Provider.of<CafeteriaProvider>(context);
-                      Cafeteria selectedCafeteria = cafeteriaProvider.selectedCafeteria;
-                      List<Cafeteria> cafes = cafeteriaProvider.cafes;
-                      print(data);
-                      if (data is Loading1) {
-                        return LoadingPage();
-                      } else if (data is Error1) {
-                        return ErrorPage(routeName: CafeteriaSelectionScreen.routeName);
-                      } else if (data is UserDoc) {
-                        UserDoc userData = data;
-                        return SafeArea(
-                          child: Scaffold(
-                            backgroundColor: Colors.white,
-                            body: Container(
-                              margin: EdgeInsets.all(12),
-                              child: StaggeredGridView.countBuilder(
-                                padding: const EdgeInsets.all(12.0),
-                                crossAxisCount: 4,
-                                mainAxisSpacing: 24,
-                                crossAxisSpacing: 12,
-                                itemCount: cafes.length,
-                                itemBuilder:
-                                    (BuildContext context, int index) =>
-                                        CafeteraCard(cafes[index], userData),
-                                staggeredTileBuilder: (int index) =>
-                                    StaggeredTile.fit(2),
-                              ),
+        providers: [
+          StreamProvider(
+              initialData: ConnectivityStatus.Connected,
+              create: (ctx) =>
+                  ConnectivityService().connectionStatusController.stream),
+          StreamProvider(
+            create: (ctx) => UserService().getUserData(user.uid),
+            initialData: const Loading1(),
+            catchError: (_, error) => Error1(error.toString()),
+          )
+        ],
+        child: Consumer<ConnectivityStatus>(
+          builder: (ctx, connectionStatus, ch) => (connectionStatus ==
+                  ConnectivityStatus.None)
+              ? ErrorConnectionPage(
+                  routeName: CafeteriaSelectionScreen.routeName)
+              : Consumer<UserData>(builder: (ctx, data, ch) {
+                  final cafeteriaProvider =
+                      Provider.of<CafeteriaProvider>(context);
+                  // Cafeteria selectedCafeteria = cafeteriaProvider.selectedCafeteria;
+                  List<Cafeteria> cafes = cafeteriaProvider.cafes;
+                  print(data);
+                  if (data is Loading1) {
+                    return LoadingPage();
+                  } else if (data is Error1) {
+                    print(Error1(data.errorMsg));
+                    return ErrorPage(
+                        routeName: CafeteriaSelectionScreen.routeName);
+                  } else if (data is UserDoc) {
+                    UserDoc userData = data;
+                    return SafeArea(
+                      child: Scaffold(
+                        backgroundColor: Colors.white,
+                        body: Column(children: [
+                          Container(
+                            margin: EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 4.0),
+                            width: MediaQuery.of(context).size.width - 30,
+                            height: 120.0,
+                            decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0))),
+                            child: Center(
+                              child: Text("TBD"),
                             ),
                           ),
-                        );
-                      } else {
-                        return Container();
-                      }
+                          Container(
+                            margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
+                            width: MediaQuery.of(context).size.width - 30,
+                            height: 50.0,
+                            decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0))),
+                            child: Center(
+                              child: Text("Search Bar"),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
+                            width: MediaQuery.of(context).size.width - 30,
+                            height: 30.0,
+                            decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10.0))),
+                            child: Center(
+                              child: Text("Filters"),
+                            ),
+                          ),
+                          Expanded(
+                              child: StaggeredGridView.countBuilder(
+                            padding: const EdgeInsets.all(12.0),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 4,
+                            crossAxisSpacing: 4,
+                            itemCount: cafes.length,
+                            itemBuilder: (BuildContext context, int index) =>
+                                CafeteraCard(cafes[index], userData),
+                            staggeredTileBuilder: (int index) =>
+                                StaggeredTile.fit(2),
+                          )),
+                        ]),
+                      ),
+                    );
+                  } else {
+                    print('Cafe selection screen consumer userDoc error');
+                    return Container();
+                  }
 
-            // child: Scaffold(
-            //   appBar: AppBar(
-            //     title: Text('Select Cafeteria from'),
-            //   ),
-            //   body: Padding(
-            //     padding: const EdgeInsets.fromLTRB(12, 0, 10, 5),
-            //     child: ListView(
-            //     children: [
-            //       if (selectedCafeteria != null)
-            //         ListTile(
-            //           title: Text(
-            //             'Current Cafeteria',
-            //             style: Theme.of(context).textTheme.headline6,
-            //           ),
-            //           dense: true,
-            //         ),
-            //         if (selectedCafeteria != null)
-            //         CafeteriaDetails(cafe: selectedCafeteria,oldCafe: selectedCafeteria),
-            //         Divider(),
-            //         ListTile(
-            //           title: Text(
-            //             'Search Cafeteria',
-            //             style: Theme.of(context).textTheme.headline6,
-            //           ),
-            //           dense: true,
-            //         ),
-            //         Divider(),
-            //          Container(
-            //            margin: EdgeInsets.all(12),
-            //            child: StaggeredGridView.countBuilder(
-            //             padding: const EdgeInsets.all(12.0),
-            //             crossAxisCount: 4,
-            //             mainAxisSpacing: 24,
-            //             crossAxisSpacing: 12,
-            //             itemCount: cafes.length,
-            //             itemBuilder: (BuildContext context, int index) => CafeteraCard(cafes[index]),
-            //             staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
-            //         ))
-            //       ],
-            //   ),
+                  // child: Scaffold(
+                  //   appBar: AppBar(
+                  //     title: Text('Select Cafeteria from'),
+                  //   ),
+                  //   body: Padding(
+                  //     padding: const EdgeInsets.fromLTRB(12, 0, 10, 5),
+                  //     child: ListView(
+                  //     children: [
+                  //       if (selectedCafeteria != null)
+                  //         ListTile(
+                  //           title: Text(
+                  //             'Current Cafeteria',
+                  //             style: Theme.of(context).textTheme.headline6,
+                  //           ),
+                  //           dense: true,
+                  //         ),
+                  //         if (selectedCafeteria != null)
+                  //         CafeteriaDetails(cafe: selectedCafeteria,oldCafe: selectedCafeteria),
+                  //         Divider(),
+                  //         ListTile(
+                  //           title: Text(
+                  //             'Search Cafeteria',
+                  //             style: Theme.of(context).textTheme.headline6,
+                  //           ),
+                  //           dense: true,
+                  //         ),
+                  //         Divider(),
+                  //          Container(
+                  //            margin: EdgeInsets.all(12),
+                  //            child: StaggeredGridView.countBuilder(
+                  //             padding: const EdgeInsets.all(12.0),
+                  //             crossAxisCount: 4,
+                  //             mainAxisSpacing: 24,
+                  //             crossAxisSpacing: 12,
+                  //             itemCount: cafes.length,
+                  //             itemBuilder: (BuildContext context, int index) => CafeteraCard(cafes[index]),
+                  //             staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+                  //         ))
+                  //       ],
+                  //   ),
 
-            // )
-            // );
-            }
-          ))
+                  // )
+                  // );
+                }),
+        ),
       );
     }
   }

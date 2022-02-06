@@ -19,6 +19,8 @@ class Cafeteria {
   Map<String, dynamic> bannerSize;
   bool cafeLoyalty;
   int companyCode;
+  int cafeLoyaltyStamps;
+
 
   Cafeteria({
     @required this.id,
@@ -37,7 +39,9 @@ class Cafeteria {
     @required this.loyaltyStamps,
     @required this.bannerSize,
     @required this.cafeLoyalty,
-    @required this.companyCode
+    @required this.companyCode,
+    @required this.cafeLoyaltyStamps,
+
   });
 
   static Cafeteria fromDocToCafeteria(
@@ -65,6 +69,7 @@ class Cafeteria {
       banners:
           (data['banners'] == null) ? [] : List<String>.from(data['banners']),
           companyCode: data['companyCode'],
+      cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? 0.toInt() : data['cafeLoyaltyStamps'].toInt()
     );
   }
 }
