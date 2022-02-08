@@ -7,6 +7,7 @@ import 'package:freemeals/screen/Cafeteria/cafeteria_splash_screen.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/Cafeteria/freemeals_splash_screen.dart';
 import 'package:freemeals/screen/name_screen.dart';
+import 'package:freemeals/screen/root_app.dart';
 import 'package:freemeals/screen/version_check_screen.dart';
 import 'package:freemeals/services/cafeteria_service.dart';
 import 'package:freemeals/services/version_service.dart';
@@ -37,29 +38,29 @@ class HandleMain extends StatelessWidget {
           else {
             if (snapshot.hasData) {
               bool versionCheck = snapshot.data;
-               
+
               if (versionCheck) {
-                if (user == null){
-                    return AuthScreen();}
-                else if (user.displayName == null ||
+                if (user == null) {
+                  return AuthScreen();
+                } else if (user.displayName == null ||
                     user.displayName.isEmpty ||
                     user.email == null ||
-                    user.email.isEmpty){
+                    user.email.isEmpty) {
                   print("name screen");
                   return NameScreen();
-                  }
-                else if (selectCafe.cafeId == null ||
-                    selectCafe.cafeName == null ||
-                    selectCafe.city == null
+                } else if (selectCafe.cafeId == null ||
+                        selectCafe.cafeName == null ||
+                        selectCafe.city == null
                     // selectCafe.companyId == null
-                    ){
+                    ) {
                   print("cafetria Selection");
-                  return CafeteriaSelectionScreen();
-                  }
-                else {
-                   print("future builder");
+                  // return CafeteriaSelectionScreen();
+                  return RootApp();
+                } else {
+                  print("future builder");
                   return FutureBuilder(
-                      future: CafeteriasService().getCafeteriaByID(selectCafe.cafeId),
+                      future: CafeteriasService()
+                          .getCafeteriaByID(selectCafe.cafeId),
                       builder: (ctx, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting)
                           return FreeMealsSplashScreen();
@@ -68,7 +69,8 @@ class HandleMain extends StatelessWidget {
                             return CafeteriaSplashScreen(cafe: snapshot.data);
                           } else {
                             print('Error - get Cafe');
-                            return CafeteriaSelectionScreen();
+                            // return CafeteriaSelectionScreen();
+                            return RootApp();
                           }
                         }
                       });
@@ -86,8 +88,8 @@ class HandleMain extends StatelessWidget {
                   user.email.isEmpty)
                 return NameScreen();
               else if (selectCafe.cafeId == null ||
-                  selectCafe.cafeName == null ||
-                  selectCafe.city == null
+                      selectCafe.cafeName == null ||
+                      selectCafe.city == null
                   // selectCafe.companyId == null
                   )
                 return CafeteriaSelectionScreen();

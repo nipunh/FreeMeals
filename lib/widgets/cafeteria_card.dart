@@ -20,8 +20,8 @@ class CafeteraCard extends StatelessWidget {
   dynamic myFabButton = Container(
 
 
-    width: 80.0,
-    height: 22.0,
+    width: 90.0,
+    height: 30.0,
     child: new RawMaterialButton(
       fillColor: Colors.white70,
       shape: new RoundedRectangleBorder(
@@ -33,9 +33,9 @@ class CafeteraCard extends StatelessWidget {
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: new BorderRadius.circular(11.0),
+              borderRadius: new BorderRadius.circular(15.0),
               child: Image.asset('assets/images/manager.jpg',
-                  height: 22.0, width: 22.0),
+                  height: 30.0, width: 30.0),
             ),
             SizedBox(width: 5.0),
             Text(

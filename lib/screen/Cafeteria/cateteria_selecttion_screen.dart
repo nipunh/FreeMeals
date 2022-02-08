@@ -8,6 +8,7 @@ import 'package:freemeals/providers/cafeteria_provider.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:freemeals/services/device_service.dart';
 import 'package:freemeals/services/user_service.dart';
+import 'package:freemeals/util/bottom_items.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
@@ -48,6 +49,7 @@ class CafeteriaSelectionScreen extends StatefulWidget {
 class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
   bool _isInit = true;
   bool _loading = true;
+  int pageIndex = 0;
   ViewState _viewState = ViewState.Idle;
   String city;
   String companyCode;
@@ -181,32 +183,33 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                     UserDoc userData = data;
                     return SafeArea(
                       child: Scaffold(
+                        // bottomSheet: getFooter(),
                         backgroundColor: Colors.white,
                         body: Column(children: [
-                          Container(
-                            margin: EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 4.0),
-                            width: MediaQuery.of(context).size.width - 30,
-                            height: 120.0,
-                            decoration: BoxDecoration(
-                                color: Colors.black12,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0))),
-                            child: Center(
-                              child: Text("TBD"),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
-                            width: MediaQuery.of(context).size.width - 30,
-                            height: 50.0,
-                            decoration: BoxDecoration(
-                                color: Colors.black12,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0))),
-                            child: Center(
-                              child: Text("Search Bar"),
-                            ),
-                          ),
+                          // Container(
+                          //   margin: EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 4.0),
+                          //   width: MediaQuery.of(context).size.width - 30,
+                          //   height: 120.0,
+                          //   decoration: BoxDecoration(
+                          //       color: Colors.black12,
+                          //       borderRadius:
+                          //           BorderRadius.all(Radius.circular(10.0))),
+                          //   child: Center(
+                          //     child: Text("TBD"),
+                          //   ),
+                          // ),
+                          // Container(
+                          //   margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
+                          //   width: MediaQuery.of(context).size.width - 30,
+                          //   height: 50.0,
+                          //   decoration: BoxDecoration(
+                          //       color: Colors.black12,
+                          //       borderRadius:
+                          //           BorderRadius.all(Radius.circular(10.0))),
+                          //   child: Center(
+                          //     child: Text("Search Bar"),
+                          //   ),
+                          // ),
                           Container(
                             margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
                             width: MediaQuery.of(context).size.width - 30,
@@ -221,10 +224,10 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                           ),
                           Expanded(
                               child: StaggeredGridView.countBuilder(
-                            padding: const EdgeInsets.all(12.0),
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 4,
-                            crossAxisSpacing: 4,
+                            padding: const EdgeInsets.all(4.0),
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 2,
+                            crossAxisSpacing: 2,
                             itemCount: cafes.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 CafeteraCard(cafes[index], userData),
@@ -286,6 +289,43 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
         ),
       );
     }
+  }
+
+  Widget getFooter() {
+    var size = MediaQuery.of(context).size;
+    return Container(
+        width: double.infinity,
+        height: 60,
+        decoration: BoxDecoration(color: Colors.white10),
+        child : Padding(
+          padding : const EdgeInsets.only(left : 20, right :20, bottom: 5, top: 10 ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(iconItems.length, (index) {
+            return GestureDetector( 
+            onTap : (){
+              pageIndex = index;
+              print(RouteNames[index]);
+              return null;
+            },
+            child : Column(children: [
+              iconItems[index],
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                textItems[index],
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87),
+              )
+            ])
+            );
+          }),
+        )
+      )
+    );
   }
 }
 

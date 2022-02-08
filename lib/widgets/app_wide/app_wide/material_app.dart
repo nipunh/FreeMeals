@@ -52,8 +52,7 @@ class MatApp extends StatelessWidget {
       home: (error)
           ? SyncronizedErrorScreen()
           : (!initialized)
-              ? FreeMealsSplashScreen()
-              : HandleMain(selectCafe: selectCafe),
+              ? FreeMealsSplashScreen() : HandleMain(selectCafe: selectCafe),
       routes: {
         // VendorListScreen.routeName: (ctx) => VendorListScreen(),
         // VendorItemScreen.routeName: (ctx) => VendorItemScreen(),
