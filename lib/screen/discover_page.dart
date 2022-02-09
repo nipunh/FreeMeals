@@ -42,27 +42,33 @@ class _DiscoverPageState extends State<DiscoverPage> {
                             height: size.height,
                             // decoration:
                             //     BoxDecoration(color: Colors.blueGrey[50]),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: size.height * 0.3,
-
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.blueGrey[200] 
-                                        ),
-                                        child: Column(
-                                          children: <Widget>[
-                                            getProfile()
-                                          ],
-                                        ),
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  height: size.height * 0.3,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    decoration:
+                                        BoxDecoration(color: Colors.black),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        getProfile(items[0]['profileImg']),
+                                        getIcons(
+                                            Icons.message_rounded, 35.0, "88"),
+                                        getIcons(Icons.remove_circle_outlined,
+                                            35.0, "88"),
+                                        getIcons(Icons.ac_unit, 35.0, "88"),
+                                        getAlbum(items[0]['albumImg'])
+                                      ],
                                     ),
-                                  )
-                              ],),
-                            )
-                          )
+                                  ),
+                                )
+                              ],
+                            ),
+                          ))
                         ],
                       ),
                     )
@@ -76,44 +82,91 @@ class _DiscoverPageState extends State<DiscoverPage> {
     );
   }
 
-  Widget getProfile(){
-    return 
-    Container(
-        width: 55,
-        height: 55,
-        child: Stack(
-          children: <Widget>[
-            Container(
+  Widget getAlbum(albumImg){
+    return Container(
+      width: 55,
+      height: 55,
+      child: Stack(
+        children: <Widget>[
+          Container(
+            width: 55,
+            height: 55,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black
+            ),
+          ),
+
+          Center(
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: NetworkImage(albumImg), fit: BoxFit.cover
+                )
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getIcons(icon, size, count) {
+    return Column(
+      children: <Widget>[
+        Icon(
+          icon,
+          color: Colors.white,
+          size: size,
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Text("13K",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600))
+      ],
+    );
+  }
+
+  Widget getProfile(profileImg) {
+    return Container(
+      width: 55,
+      height: 55,
+      child: Stack(
+        children: <Widget>[
+          Container(
               height: 50,
               width: 50,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                shape: BoxShape.circle,
-                image : DecorationImage(
-                  image: NetworkImage(items[0]['profileImg']), fit : BoxFit.cover )
-                )
-              ),
-              Positioned(
-                left: 18,
-                bottom: -5,
-                child: Container(
+                  border: Border.all(color: Colors.white),
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: NetworkImage(profileImg),
+                      fit: BoxFit.cover))),
+          Positioned(
+              left: 18,
+              bottom: -5,
+              child: Container(
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.blueGrey[200]
-                ),
+                    shape: BoxShape.circle, color: Colors.blueGrey[200]),
                 child: Center(
-                  child: Icon(Icons.add, color: Colors.white, size: 15,),
-                ),                
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 15,
+                  ),
+                ),
               ))
-          ],
-        ),
-      );
+        ],
+      ),
+    );
   }
 }
-
-
 
 class LeftPannel extends StatelessWidget {
   const LeftPannel({
@@ -128,8 +181,7 @@ class LeftPannel extends StatelessWidget {
     return Container(
       width: size.width * 0.8,
       height: size.height,
-      decoration:
-          BoxDecoration(color: Colors.black),
+      decoration: BoxDecoration(color: Colors.black),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,12 +198,10 @@ class LeftPannel extends StatelessWidget {
           SizedBox(height: 10),
           Row(
             children: <Widget>[
-              Icon(Icons.music_note,
-                  color: Colors.white, size: 15),
+              Icon(Icons.music_note, color: Colors.white, size: 15),
               Text(
                 items[0]['songName'],
-                style: TextStyle(
-                    color: Colors.white, fontSize: 12),
+                style: TextStyle(color: Colors.white, fontSize: 12),
               ),
             ],
           ),
