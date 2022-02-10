@@ -1,177 +1,253 @@
 import 'package:flutter/material.dart';
 import 'package:freemeals/config/data_json.dart';
+import 'package:freemeals/widgets/discover_page/icon_widget.dart';
+import 'package:video_player/video_player.dart';
 
 class DiscoverPage extends StatefulWidget {
   @override
   _DiscoverPageState createState() => _DiscoverPageState();
 }
 
-class _DiscoverPageState extends State<DiscoverPage> {
+class _DiscoverPageState extends State<DiscoverPage>
+    with SingleTickerProviderStateMixin {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: items.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _tabController.dispose();
+  }
+
+  Widget getBody() {
+    var size = MediaQuery.of(context).size;
+    return RotatedBox(
+      quarterTurns: 1,
+      child: TabBarView(
+        controller: _tabController,
+        children: List.generate(
+            items.length,
+            (index) => RotatedBox(
+                  quarterTurns: -1,
+                  child: VideoPlayerItem(
+                    size: size,
+                    name: items[index]['name'],
+                    videoUrl: items[index]['videoUrl'],
+                    caption: items[index]['caption'],
+                    songName: items[index]['songName'],
+                    profileImg: items[index]['profileImg'],
+                    likes: items[index]['likes'],
+                    comments: items[index]['comments'],
+                    shares: items[index]['shares'],
+                    albumImg: items[index]['albumImg'],
+                  ),
+                )),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return Container(
-      width: size.width,
-      height: size.height,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            width: size.width,
-            height: size.height,
-            decoration: BoxDecoration(
-              color: Colors.black,
+    return getBody();
+  }
+}
+
+class VideoPlayerItem extends StatefulWidget {
+  final String name;
+  final String videoUrl;
+  final String caption;
+  final String songName;
+  final String profileImg;
+  final String likes;
+  final String comments;
+  final String shares;
+  final String albumImg;
+
+  const VideoPlayerItem({
+    Key key,
+    @required this.size,
+    this.name,
+    this.caption,
+    this.songName,
+    this.profileImg,
+    this.likes,
+    this.comments,
+    this.shares,
+    this.albumImg,
+    this.videoUrl,
+  }) : super(key: key);
+
+  final Size size;
+
+  @override
+  State<VideoPlayerItem> createState() => _VideoPlayerItemState();
+}
+
+class _VideoPlayerItemState extends State<VideoPlayerItem>
+    with SingleTickerProviderStateMixin {
+  VideoPlayerController _videoPlayerController;
+  bool isShowPlaying = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _videoPlayerController = VideoPlayerController.network(widget.videoUrl)
+      ..initialize().then((value) => _videoPlayerController.play());
+
+      setState(() {
+        isShowPlaying = false;
+      });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _videoPlayerController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => setState(() {
+        _videoPlayerController.value.isPlaying
+            ? _videoPlayerController.pause()
+            : _videoPlayerController.play();
+
+          isShowPlaying = true;
+      }),
+      child: Container(
+        width: widget.size.width,
+        height: widget.size.height,
+        color: Colors.black,
+        child: Stack(
+          children: <Widget>[
+            Container(
+              width: widget.size.width,
+              height: widget.size.height,
+              child: Stack(
+                children: <Widget>[
+                  VideoPlayer(_videoPlayerController),
+                  _videoPlayerController.value.isPlaying && isShowPlaying
+                      ?   Container() : Center( 
+                          child: Icon(Icons.play_arrow,
+                              size: 80, color: Colors.white.withOpacity(0.5)),
+                        )
+                      
+                ],
+              ),
             ),
-          ),
-          Container(
-            width: size.width,
-            height: size.height,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 25, right: 15, left: 15, bottom: 10),
-                child: Column(
-                  children: <Widget>[
-                    HeaderHomePage(),
-                    Flexible(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          LeftPannel(size: size),
-                          Expanded(
-                              child: Container(
-                            height: size.height,
-                            // decoration:
-                            //     BoxDecoration(color: Colors.blueGrey[50]),
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  height: size.height * 0.3,
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    decoration:
-                                        BoxDecoration(color: Colors.black),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        getProfile(items[0]['profileImg']),
-                                        getIcons(
-                                            Icons.message_rounded, 35.0, "88"),
-                                        getIcons(Icons.remove_circle_outlined,
-                                            35.0, "88"),
-                                        getIcons(Icons.ac_unit, 35.0, "88"),
-                                        getAlbum(items[0]['albumImg'])
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
+            Container(
+              width: widget.size.width,
+              height: widget.size.height,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: 25, right: 15, left: 15, bottom: 10),
+                  child: Column(
+                    children: <Widget>[
+                      HeaderHomePage(),
+                      Flexible(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            LeftPannel(
+                              size: widget.size,
+                              name: widget.name,
+                              caption: widget.caption,
+                              songName: widget.songName,
                             ),
-                          ))
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget getAlbum(albumImg){
-    return Container(
-      width: 55,
-      height: 55,
-      child: Stack(
-        children: <Widget>[
-          Container(
-            width: 55,
-            height: 55,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.black
-            ),
-          ),
-
-          Center(
-            child: Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: NetworkImage(albumImg), fit: BoxFit.cover
-                )
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget getIcons(icon, size, count) {
-    return Column(
-      children: <Widget>[
-        Icon(
-          icon,
-          color: Colors.white,
-          size: size,
-        ),
-        SizedBox(
-          height: 5,
-        ),
-        Text("13K",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600))
-      ],
-    );
-  }
-
-  Widget getProfile(profileImg) {
-    return Container(
-      width: 55,
-      height: 55,
-      child: Stack(
-        children: <Widget>[
-          Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white),
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: NetworkImage(profileImg),
-                      fit: BoxFit.cover))),
-          Positioned(
-              left: 18,
-              bottom: -5,
-              child: Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, color: Colors.blueGrey[200]),
-                child: Center(
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 15,
+                            RightPanel(
+                              size: widget.size,
+                              albumImg: widget.albumImg,
+                              comments: widget.comments,
+                              likes: widget.likes,
+                              profileImg: widget.profileImg,
+                              shares: widget.shares,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              ))
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
+class RightPanel extends StatelessWidget {
+  final String profileImg;
+  final String likes;
+  final String comments;
+  final String shares;
+  final String albumImg;
+
+  const RightPanel({
+    Key key,
+    @required this.size,
+    this.profileImg,
+    this.likes,
+    this.comments,
+    this.shares,
+    this.albumImg,
+  }) : super(key: key);
+
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Container(
+      height: size.height,
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: size.height * 0.3,
+          ),
+          Expanded(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  getProfile(profileImg),
+                  getIcons(Icons.message_rounded, 35.0, likes),
+                  getIcons(Icons.remove_circle_outlined, 35.0, comments),
+                  getIcons(Icons.ac_unit, 35.0, shares),
+                  getAlbum(albumImg)
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    ));
+  }
+}
+
 class LeftPannel extends StatelessWidget {
+  final String name;
+  final String caption;
+  final String songName;
+
   const LeftPannel({
     Key key,
     @required this.size,
+    this.name,
+    this.caption,
+    this.songName,
   }) : super(key: key);
 
   final Size size;
@@ -181,18 +257,18 @@ class LeftPannel extends StatelessWidget {
     return Container(
       width: size.width * 0.8,
       height: size.height,
-      decoration: BoxDecoration(color: Colors.black),
+      // decoration: BoxDecoration(color: Colors.black),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            items[0]['name'],
+            name,
             style: TextStyle(color: Colors.white),
           ),
           SizedBox(height: 10),
           Text(
-            items[0]['caption'],
+            caption,
             style: TextStyle(color: Colors.white),
           ),
           SizedBox(height: 10),
@@ -200,7 +276,7 @@ class LeftPannel extends StatelessWidget {
             children: <Widget>[
               Icon(Icons.music_note, color: Colors.white, size: 15),
               Text(
-                items[0]['songName'],
+                songName,
                 style: TextStyle(color: Colors.white, fontSize: 12),
               ),
             ],

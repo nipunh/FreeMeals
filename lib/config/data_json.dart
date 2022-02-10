@@ -1,6 +1,6 @@
 List items = [
     {
-      "videoUrl" : "assets/videos/video_1.mp4",
+      "videoUrl" : "https://firebasestorage.googleapis.com/v0/b/freemeals-3d905.appspot.com/o/dummyVideos%2Fvideo_1.mp4?alt=media&token=44e5c34c-16ca-41e8-ac84-44a7aa841906",
       "name" : "Vannak Niza🦋",
       "caption" : "Morning, everyone!!",
       "songName" : "original sound - Łÿ Pîkâ Ćhûû",
@@ -11,7 +11,7 @@ List items = [
       "albumImg" : "https://images.unsplash.com/photo-1502982899975-893c9cf39028?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"
     },
     {
-      "videoUrl" : "assets/videos/video_2.mp4",
+      "videoUrl" : "https://firebasestorage.googleapis.com/v0/b/freemeals-3d905.appspot.com/o/dummyVideos%2Fvideo_2.mp4?alt=media&token=b5ff5f76-452b-4568-b90b-4401d0f305f4",
       "name" : "Dara Chamroeun",
       "caption" : "Oops 🙊 #fyp #cambodiatiktok",
       "songName" : "original sound - 💛💛Khantana 🌟",
@@ -22,7 +22,7 @@ List items = [
       "albumImg" : "https://images.unsplash.com/photo-1462804512123-465343c607ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80"
     },
     {
-      "videoUrl" : "assets/videos/video_3.mp4",
+      "videoUrl" : "https://firebasestorage.googleapis.com/v0/b/freemeals-3d905.appspot.com/o/dummyVideos%2Fvideo_3.mp4?alt=media&token=5ac3c70f-abec-4ea1-bd5f-853a19f2fe99",
       "name" : "9999womenfashion",
       "caption" : "#블루모드",
       "songName" : "original sound - 🖤Khün MÄk🇰🇭",
