@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:freemeals/config/stories_data.dart';
-import 'package:freemeals/enums/stories_mediaType.dart';
 import 'package:freemeals/models/story_model.dart';
 import 'package:freemeals/screen/stories_page.dart';
 import 'package:freemeals/widgets/animated_bar.dart';
