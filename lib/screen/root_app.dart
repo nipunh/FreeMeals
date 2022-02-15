@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/screen/stories_page.dart';
+import 'package:freemeals/screen/story_screen.dart';
 
 class RootApp extends StatefulWidget {
   @override
@@ -8,20 +10,14 @@ class RootApp extends StatefulWidget {
 }
 
 class _RootAppState extends State<RootApp> {
-  int pageIndex = 0;
+  int pageIndex = 3;
 
     List<Widget> pages = [
-    // MapPage(),
-    // ChatPage(),
-    // CameraPage(),
-    // ChatPage(),
-    // StoriesPage(),
-      DiscoverPage(),
+      CafeteriaSelectionScreen(),
+      CafeteriaSelectionScreen(),
+      CafeteriaSelectionScreen(),
       StoriesPage(),
-      StoriesPage(),
-      StoriesPage(),
-      StoriesPage(),
-      
+      DiscoverPage(),   
   ];
 
   @override

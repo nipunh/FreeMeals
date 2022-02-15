@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freemeals/models/cafe_model.dart';
 
-abstract class UserData {}
+class UserData {}
 
 class UserDoc implements UserData {
   String id;
@@ -10,6 +10,7 @@ class UserDoc implements UserData {
   String emailAddress;
   String displayName;
   String userType;
+  String profileImageUrl;
   Map<String, dynamic> cafeLoyaltyStamps;
 
   UserDoc({
@@ -18,14 +19,14 @@ class UserDoc implements UserData {
     @required this.emailAddress,
     @required this.displayName,
     @required this.userType,
+    @required this.profileImageUrl,
     @required this.cafeLoyaltyStamps
   });
 
   static UserDoc fromDoctoUserInfo(
     
     DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    
-    CafesData cafe;
+
 
     final data = snapshot.data();
 
@@ -35,6 +36,7 @@ class UserDoc implements UserData {
       emailAddress: data['emailAddress'] ?? '',
       displayName: data['displayName'] ?? '',
       userType: data['userType'] ?? '',
+      profileImageUrl : data['profileImageUrl'] ?? '',
       cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? {}
         : data["cafeLoyaltyStamps"].map((entry) => ({[entry] : data["cafeLoyaltyStamps"][entry]  }))
     );

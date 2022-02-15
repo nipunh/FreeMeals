@@ -1,10 +1,12 @@
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:freemeals/config/stories_data.dart';
 import 'package:freemeals/enums/connectivity_status.dart';
 import 'package:freemeals/enums/view_state.dart';
 import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/providers/cafeteria_provider.dart';
+import 'package:freemeals/screen/story_screen.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:freemeals/services/device_service.dart';
 import 'package:freemeals/services/user_service.dart';
@@ -181,11 +183,54 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                         routeName: CafeteriaSelectionScreen.routeName);
                   } else if (data is UserDoc) {
                     UserDoc userData = data;
+                    var size = MediaQuery.of(context).size;
                     return SafeArea(
                       child: Scaffold(
                         // bottomSheet: getFooter(),
                         backgroundColor: Colors.white,
                         body: Column(children: [
+                          Container(
+                            width: size.width,
+                            height: size.height * 0.15,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: 2,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (index == 0) {
+                                    return SizedBox(
+                                      width: 10.0,
+                                    );
+                                  }
+                                  return Container(
+                                    margin: EdgeInsets.all(5.0),
+                                    width: 70.0,
+                                    height: 70.0,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.black45,
+                                            offset: Offset(0, 2),
+                                            blurRadius: 6.0)
+                                      ],
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => StoryScreen()));
+                                      },
+                                      child: CircleAvatar(
+                                        child: ClipOval(
+                                          child: Image(
+                                              height: 70.0,
+                                              width: 70.0,
+                                              image: NetworkImage(userStory['profileImageUrl']),
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
                           // Container(
                           //   margin: EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 4.0),
                           //   width: MediaQuery.of(context).size.width - 30,
@@ -210,18 +255,18 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                           //     child: Text("Search Bar"),
                           //   ),
                           // ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
-                            width: MediaQuery.of(context).size.width - 30,
-                            height: 30.0,
-                            decoration: BoxDecoration(
-                                color: Colors.black12,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10.0))),
-                            child: Center(
-                              child: Text("Filters"),
-                            ),
-                          ),
+                          // Container(
+                          //   margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
+                          //   width: MediaQuery.of(context).size.width - 30,
+                          //   height: 30.0,
+                          //   decoration: BoxDecoration(
+                          //       color: Colors.black12,
+                          //       borderRadius:
+                          //           BorderRadius.all(Radius.circular(10.0))),
+                          //   child: Center(
+                          //     child: Text("Filters"),
+                          //   ),
+                          // ),
                           Expanded(
                               child: StaggeredGridView.countBuilder(
                             padding: const EdgeInsets.all(4.0),
@@ -297,35 +342,33 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(color: Colors.white10),
-        child : Padding(
-          padding : const EdgeInsets.only(left : 20, right :20, bottom: 5, top: 10 ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(iconItems.length, (index) {
-            return GestureDetector( 
-            onTap : (){
-              pageIndex = index;
-              print(RouteNames[index]);
-              return null;
-            },
-            child : Column(children: [
-              iconItems[index],
-              SizedBox(
-                height: 5,
-              ),
-              Text(
-                textItems[index],
-                style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87),
-              )
-            ])
-            );
-          }),
-        )
-      )
-    );
+        child: Padding(
+            padding:
+                const EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: List.generate(iconItems.length, (index) {
+                return GestureDetector(
+                    onTap: () {
+                      pageIndex = index;
+                      print(RouteNames[index]);
+                      return null;
+                    },
+                    child: Column(children: [
+                      iconItems[index],
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        textItems[index],
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87),
+                      )
+                    ]));
+              }),
+            )));
   }
 }
 

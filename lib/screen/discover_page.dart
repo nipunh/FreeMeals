@@ -4,6 +4,10 @@ import 'package:freemeals/widgets/discover_page/icon_widget.dart';
 import 'package:video_player/video_player.dart';
 
 class DiscoverPage extends StatefulWidget {
+
+  final bool data;
+  DiscoverPage({this.data});
+
   @override
   _DiscoverPageState createState() => _DiscoverPageState();
 }
@@ -21,7 +25,6 @@ class _DiscoverPageState extends State<DiscoverPage>
   @override
   void dispose() {
     super.dispose();
-
     _tabController.dispose();
   }
 
@@ -97,21 +100,17 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-    _videoPlayerController = VideoPlayerController.network(widget.videoUrl)
-      ..initialize().then((value) => _videoPlayerController.play());
 
-      setState(() {
-        isShowPlaying = false;
-      });
+    super.initState();
+
+    _videoPlayerController = VideoPlayerController.network(widget.videoUrl)
+      ..initialize().then((value) => setState((){}));
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+     _videoPlayerController.dispose();
     super.dispose();
-    _videoPlayerController.dispose();
   }
 
   @override
@@ -121,8 +120,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
         _videoPlayerController.value.isPlaying
             ? _videoPlayerController.pause()
             : _videoPlayerController.play();
-
-          isShowPlaying = true;
       }),
       child: Container(
         width: widget.size.width,
@@ -136,11 +133,11 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
               child: Stack(
                 children: <Widget>[
                   VideoPlayer(_videoPlayerController),
-                  _videoPlayerController.value.isPlaying && isShowPlaying
-                      ?   Container() : Center( 
-                          child: Icon(Icons.play_arrow,
-                              size: 80, color: Colors.white.withOpacity(0.5)),
-                        )
+                  // _videoPlayerController.value.isPlaying && isShowPlaying
+                  //     ?   Container() : Center( 
+                  //         child: Icon(Icons.play_arrow,
+                  //             size: 80, color: Colors.white.withOpacity(0.5)),
+                  //       )
                       
                 ],
               ),
@@ -165,6 +162,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
                               caption: widget.caption,
                               songName: widget.songName,
                             ),
+
                             RightPanel(
                               size: widget.size,
                               albumImg: widget.albumImg,
