@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:freemeals/models/cafe_model.dart';
+import 'package:freemeals/models/reels_model.dart';
 import 'package:freemeals/models/user_model.dart';
+import 'package:freemeals/screen/discover_page.dart';
+import 'package:freemeals/services/cafeteria_service.dart';
+import 'package:freemeals/services/reel_services.dart';
 
-class CafeteraCard extends StatelessWidget {
+class CafeteraCard extends StatefulWidget {
   final Cafeteria cafe;
   final UserDoc user;
 
   CafeteraCard(this.cafe, this.user);
 
+  @override
+  State<CafeteraCard> createState() => _CafeteraCardState();
+}
+
+class _CafeteraCardState extends State<CafeteraCard> {
+  List<Reel> ReelList = [];
+
   List<Icon> _loyaltyStamps() {
     List<Icon> stars = [];
-    for (int i = 0; i < cafe.cafeLoyaltyStamps; i++) {
+    for (int i = 0; i < widget.cafe.cafeLoyaltyStamps; i++) {
       stars.add(
           Icon(Icons.check_circle_rounded, color: i < 4 ? Colors.amber.shade400 : Colors.white));
     }
@@ -18,8 +29,6 @@ class CafeteraCard extends StatelessWidget {
   }
 
   dynamic myFabButton = Container(
-
-
     width: 90.0,
     height: 30.0,
     child: new RawMaterialButton(
@@ -54,49 +63,59 @@ class CafeteraCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Card(
-      clipBehavior: Clip.antiAlias,
-      margin: EdgeInsets.all(4.0),
-      elevation: 18.0,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0))),
+    return GestureDetector(
+      onTap:() async => {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => DiscoverPage(reelList: ReelList))),
+        ReelServices().getReelsByCafeteriaID(widget.cafe.id).then((List<Reel> reels){
+          setState((){
+              ReelList = reels;
+          });
+        })
+      },
       child: Container(
-          height: (200 * cafe.bannerSize["height"]).toDouble(),
-          width: (200 * cafe.bannerSize['width']).toDouble(),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            image: DecorationImage(
-                image: NetworkImage(cafe.banners[0]), fit: BoxFit.cover),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              ButtonBar(
-                alignment: MainAxisAlignment.end,
-                children: [myFabButton],
-              ),
-              new Container(
-                  decoration: new BoxDecoration(
-                      color: Colors.white54,
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10.0),
-                          bottomRight: Radius.circular(10.0))),
-                  child: new ListTile(
-                    title: Text(
-                      cafe.name,
-                      style: TextStyle(
-                        color: ThemeData.dark().primaryColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+          child: Card(
+        clipBehavior: Clip.antiAlias,
+        margin: EdgeInsets.all(4.0),
+        elevation: 18.0,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        child: Container(
+            height: (200 * widget.cafe.bannerSize["height"]).toDouble(),
+            width: (200 * widget.cafe.bannerSize['width']).toDouble(),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              image: DecorationImage(
+                  image: NetworkImage(widget.cafe.banners[0]), fit: BoxFit.cover),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                ButtonBar(
+                  alignment: MainAxisAlignment.end,
+                  children: [myFabButton],
+                ),
+                new Container(
+                    decoration: new BoxDecoration(
+                        color: Colors.white54,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: new ListTile(
+                      title: Text(
+                        widget.cafe.name,
+                        style: TextStyle(
+                          color: ThemeData.dark().primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    subtitle: Row(children: _loyaltyStamps()),
-                  )),
-            ],
-          )),
-    ));
+                      subtitle: Row(children: _loyaltyStamps()),
+                    )),
+              ],
+            )),
+      )),
+    );
 
     // ignore: dead_code
     //   return Container(

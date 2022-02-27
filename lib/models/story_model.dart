@@ -1,6 +1,3 @@
-
-import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:freemeals/enums/stories_mediaType.dart';
@@ -13,7 +10,7 @@ class Story {
    String cafeId;
    int views;
    DateTime uploadedAt;
-   Geolocation location;
+   String location;
    String url;
 
    Story({

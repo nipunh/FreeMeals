@@ -6,6 +6,7 @@ import 'package:freemeals/providers/cafeteria_provider.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/Cafeteria/freemeals_splash_screen.dart';
 import 'package:freemeals/screen/ErrorScreen/syncronized_error_screen.dart';
+import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/util/theme.dart';
 // import 'package:platos_client_app/handle_main.dart';
 // import 'package:platos_client_app/providers/cafeteria_provider.dart';
@@ -60,6 +61,7 @@ class MatApp extends StatelessWidget {
         // OrdersScreen.routeName: (ctx) => OrdersScreen(),
         // FavoriteScreen.routeName: (ctx) => FavoriteScreen(),
         CafeteriaSelectionScreen.routeName: (ctx) => CafeteriaSelectionScreen(),
+        DiscoverPage.routeName : (ctx) => DiscoverPage(),
         // AuthScreen.routeName: (ctx) => AuthScreen(),
         // SearchScreen.routeName: (ctx) => SearchScreen(),
         // AccountInfoScreen.routeName: (ctx) => AccountInfoScreen(),

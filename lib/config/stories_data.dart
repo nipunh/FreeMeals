@@ -1,6 +1,7 @@
 
 // ignore_for_file: missing_required_param
 
+import 'package:freemeals/enums/stories_mediaType.dart';
 import 'package:freemeals/models/story_model.dart';
 import 'package:freemeals/models/user_model.dart';
 

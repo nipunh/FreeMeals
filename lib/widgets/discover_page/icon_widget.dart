@@ -36,8 +36,7 @@
         SizedBox(
           height: 5,
         ),
-        Text("13K",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600))
+        // Text("13K",style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600))
       ],
     );
   }

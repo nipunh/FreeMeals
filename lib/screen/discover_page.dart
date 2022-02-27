@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:freemeals/config/data_json.dart';
+import 'package:freemeals/models/reels_model.dart';
 import 'package:freemeals/widgets/discover_page/icon_widget.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_player/video_player.dart'; 
 
 class DiscoverPage extends StatefulWidget {
 
-  final bool data;
-  DiscoverPage({this.data});
+  final List<Reel> reelList;
+
+  const DiscoverPage({Key key, this.reelList}) : super(key: key);
+
+  static const routeName = '/discovery-page';
 
   @override
   _DiscoverPageState createState() => _DiscoverPageState();
@@ -14,12 +17,16 @@ class DiscoverPage extends StatefulWidget {
 
 class _DiscoverPageState extends State<DiscoverPage>
     with SingleTickerProviderStateMixin {
+
   TabController _tabController;
+  List<Reel> reelList;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: items.length, vsync: this);
+    
+     reelList = widget.reelList;
+    _tabController = TabController(length: reelList.length, vsync: this);
   }
 
   @override
@@ -29,26 +36,27 @@ class _DiscoverPageState extends State<DiscoverPage>
   }
 
   Widget getBody() {
+     print(reelList.length);
     var size = MediaQuery.of(context).size;
     return RotatedBox(
       quarterTurns: 1,
       child: TabBarView(
         controller: _tabController,
         children: List.generate(
-            items.length,
+            reelList.length,
             (index) => RotatedBox(
                   quarterTurns: -1,
                   child: VideoPlayerItem(
                     size: size,
-                    name: items[index]['name'],
-                    videoUrl: items[index]['videoUrl'],
-                    caption: items[index]['caption'],
-                    songName: items[index]['songName'],
-                    profileImg: items[index]['profileImg'],
-                    likes: items[index]['likes'],
-                    comments: items[index]['comments'],
-                    shares: items[index]['shares'],
-                    albumImg: items[index]['albumImg'],
+                    name: reelList[index].userName,
+                    videoUrl: reelList[index].videoUrl,
+                    caption: reelList[index].caption,
+                    // songName: reelList[index].songName,
+                    profileImg: reelList[index].profileImg,
+                    likes: reelList[index].likes,
+                    // comments: reelList[index].,
+                    shares: reelList[index].shares,
+                    albumImg: reelList[index].profileImg,
                   ),
                 )),
       ),
@@ -68,9 +76,9 @@ class VideoPlayerItem extends StatefulWidget {
   final String caption;
   final String songName;
   final String profileImg;
-  final String likes;
+  final int likes;
   final String comments;
-  final String shares;
+  final int shares;
   final String albumImg;
 
   const VideoPlayerItem({
@@ -90,96 +98,105 @@ class VideoPlayerItem extends StatefulWidget {
   final Size size;
 
   @override
-  State<VideoPlayerItem> createState() => _VideoPlayerItemState();
+  State<VideoPlayerItem> createState() => _VideoPlayerreelListtate();
 }
 
-class _VideoPlayerItemState extends State<VideoPlayerItem>
+class _VideoPlayerreelListtate extends State<VideoPlayerItem>
     with SingleTickerProviderStateMixin {
   VideoPlayerController _videoPlayerController;
   bool isShowPlaying = false;
 
   @override
   void initState() {
-
     super.initState();
 
     _videoPlayerController = VideoPlayerController.network(widget.videoUrl)
-      ..initialize().then((value) => setState((){}));
+      ..initialize().then((value) => setState(() {
+            _videoPlayerController.play();
+          }));
   }
 
   @override
   void dispose() {
-     _videoPlayerController.dispose();
+    _videoPlayerController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => setState(() {
-        _videoPlayerController.value.isPlaying
-            ? _videoPlayerController.pause()
-            : _videoPlayerController.play();
-      }),
-      child: Container(
-        width: widget.size.width,
-        height: widget.size.height,
-        color: Colors.black,
-        child: Stack(
-          children: <Widget>[
-            Container(
-              width: widget.size.width,
-              height: widget.size.height,
-              child: Stack(
-                children: <Widget>[
-                  VideoPlayer(_videoPlayerController),
-                  // _videoPlayerController.value.isPlaying && isShowPlaying
-                  //     ?   Container() : Center( 
-                  //         child: Icon(Icons.play_arrow,
-                  //             size: 80, color: Colors.white.withOpacity(0.5)),
-                  //       )
-                      
-                ],
+    return Scaffold(
+      body: InkWell(
+        onTap: () => setState(() {
+          _videoPlayerController.value.isPlaying
+              ? _videoPlayerController.pause()
+              : _videoPlayerController.play();
+        }),
+        child: Container(
+          width: widget.size.width,
+          height: widget.size.height,
+          color: Colors.black,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                width: widget.size.width,
+                height: widget.size.height,
+                child: Stack(
+                  children: <Widget>[
+                    VideoPlayer(_videoPlayerController),
+                    // _videoPlayerController.value.isPlaying && isShowPlaying
+                    //     ?   Container() : Center(
+                    //         child: Icon(Icons.play_arrow,
+                    //             size: 80, color: Colors.white.withOpacity(0.5)),
+                    //       )
+                  ],
+                ),
               ),
-            ),
-            Container(
-              width: widget.size.width,
-              height: widget.size.height,
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 25, right: 15, left: 15, bottom: 10),
-                  child: Column(
-                    children: <Widget>[
-                      HeaderHomePage(),
-                      Flexible(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            LeftPannel(
-                              size: widget.size,
-                              name: widget.name,
-                              caption: widget.caption,
-                              songName: widget.songName,
-                            ),
-
-                            RightPanel(
-                              size: widget.size,
-                              albumImg: widget.albumImg,
-                              comments: widget.comments,
-                              likes: widget.likes,
-                              profileImg: widget.profileImg,
-                              shares: widget.shares,
-                            )
-                          ],
-                        ),
-                      )
-                    ],
+              Container(
+                width: widget.size.width,
+                height: widget.size.height,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 25, right: 15, left: 15, bottom: 10),
+                    child: Column(
+                      children: <Widget>[
+                        HeaderHomePage(),
+                        Flexible(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              LeftPanel(
+                                size: widget.size,
+                                albumImg: widget.albumImg,
+                                comments: widget.comments,
+                                likes: widget.likes,
+                                profileImg: widget.profileImg,
+                                shares: widget.shares,
+                              ),
+                              CenterPannel(
+                                size: widget.size,
+                                name: widget.name,
+                                caption: widget.caption,
+                                songName: widget.songName,
+                              ),
+                              RightPanel(
+                                size: widget.size,
+                                albumImg: widget.albumImg,
+                                comments: widget.comments,
+                                likes: widget.likes,
+                                profileImg: widget.profileImg,
+                                shares: widget.shares,
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -188,9 +205,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem>
 
 class RightPanel extends StatelessWidget {
   final String profileImg;
-  final String likes;
+  final int likes;
   final String comments;
-  final String shares;
+  final int shares;
   final String albumImg;
 
   const RightPanel({
@@ -208,39 +225,95 @@ class RightPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: Container(
-      height: size.height,
-      child: Column(
-        children: <Widget>[
-          Container(
-            height: size.height * 0.3,
-          ),
-          Expanded(
-            child: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  getProfile(profileImg),
-                  getIcons(Icons.message_rounded, 35.0, likes),
-                  getIcons(Icons.remove_circle_outlined, 35.0, comments),
-                  getIcons(Icons.ac_unit, 35.0, shares),
-                  getAlbum(albumImg)
-                ],
-              ),
+      child: Container(
+        height: size.height * 0.6,
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: size.height * 0.3,
             ),
-          )
+            Expanded(
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    // getProfile(profileImg),
+                    getIcons(Icons.favorite, 35.0, likes),
+                    getIcons(Icons.comment, 35.0, comments),
+                    getIcons(Icons.share, 35.0, shares),
+                    // getAlbum(albumImg)
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LeftPanel extends StatefulWidget {
+  final String profileImg;
+  final int likes;
+  final String comments;
+  final int shares;
+  final String albumImg;
+
+  LeftPanel({
+    Key key,
+    @required this.size,
+    this.profileImg,
+    this.likes,
+    this.comments,
+    this.shares,
+    this.albumImg,
+  }) : super(key: key);
+
+  final Size size;
+
+  @override
+  State<LeftPanel> createState() => _LeftPanelState();
+}
+
+class _LeftPanelState extends State<LeftPanel> {
+  _loyaltyStamps() {
+    List<Wrap> stars = [];
+    for (int i = 0; i < 7; i++) {
+      stars.add(Wrap(
+        children: [
+          Icon(Icons.check_circle_rounded,
+              color: i < 4 ? Colors.purpleAccent[200] : Colors.white)
         ],
+      ));
+    }
+    return stars;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: Container(
+      margin: EdgeInsets.only(top: widget.size.height * 0.20),
+      height: widget.size.height * 0.3,
+      width: widget.size.width,
+      decoration: BoxDecoration(
+          color: Colors.white24,
+          borderRadius: BorderRadius.all(Radius.circular(15.0))),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: _loyaltyStamps(),
       ),
     ));
   }
 }
 
-class LeftPannel extends StatelessWidget {
+class CenterPannel extends StatelessWidget {
   final String name;
   final String caption;
   final String songName;
 
-  const LeftPannel({
+  const CenterPannel({
     Key key,
     @required this.size,
     this.name,
@@ -262,17 +335,17 @@ class LeftPannel extends StatelessWidget {
         children: <Widget>[
           Text(
             name,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white, fontSize: 25),
           ),
           SizedBox(height: 10),
           Text(
             caption,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white, fontSize: 18),
           ),
           SizedBox(height: 10),
           Row(
             children: <Widget>[
-              Icon(Icons.music_note, color: Colors.white, size: 15),
+              Icon(Icons.music_note, color: Colors.white, size: 25),
               Text(
                 songName,
                 style: TextStyle(color: Colors.white, fontSize: 12),
@@ -292,31 +365,43 @@ class HeaderHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text("Following",
-            style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 16,
-                fontWeight: FontWeight.w500)),
-        SizedBox(
-          width: 5,
-        ),
-        Text("|",
-            style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-        SizedBox(
-          width: 5,
-        ),
-        Text("For You",
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-      ],
-    );
+    final size = MediaQuery.of(context).size;
+    return Container(
+        height: size.height * 0.06,
+        width: size.width * 0.60,
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(30.0)),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          CircleAvatar(
+            child: ClipOval(
+              child: Image(
+                  height: size.height * 0.06,
+                  width: size.height * 0.06,
+                  image: NetworkImage(
+                      "https://firebasestorage.googleapis.com/v0/b/freemeals-3d905.appspot.com/o/dummyCafeImages%2Fpexels-karolina-grabowska-6919992.jpg?alt=media&token=7d72b535-1231-4afd-9236-4cb25dc3d705"),
+                  fit: BoxFit.cover),
+            ),
+          ),
+          Text("Deli Planet",
+              style: TextStyle(
+                  color: Colors.white.withOpacity(0.75),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold)),
+          SizedBox(
+            width: 5,
+          ),
+          ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      side: BorderSide(color: Colors.white70))),
+            ),
+            onPressed: () {},
+            child: Text('Book Table'),
+          )
+        ]));
   }
 }

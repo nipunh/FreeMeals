@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freemeals/screen/AnimationScreen.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
+import 'package:freemeals/screen/ManagerScreens/MAnagerHomeScreen.dart';
+import 'package:freemeals/screen/WaiterScreens/WaiterHomeScreen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/screen/stories_page.dart';
 import 'package:freemeals/screen/story_screen.dart';
@@ -10,15 +13,25 @@ class RootApp extends StatefulWidget {
 }
 
 class _RootAppState extends State<RootApp> {
-  int pageIndex = 3;
+  int pageIndex = 1;
 
-    List<Widget> pages = [
+    List<Widget> userPages = [
       CafeteriaSelectionScreen(),
-      CafeteriaSelectionScreen(),
+      AnimationScreen(),
       CafeteriaSelectionScreen(),
       StoriesPage(),
       DiscoverPage(),   
-  ];
+    ];
+
+    List<Widget> adminPages = [
+      ManagerHomeScreen(),
+    ];
+
+    List<Widget> waiterPages = [
+      WaiterHomeScreen(),  
+    ];
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +45,7 @@ class _RootAppState extends State<RootApp> {
     // return pages.elementAt(pageIndex);
     return IndexedStack(
       index: pageIndex,
-      children: pages,
+      children: userPages,
     );
   }
 

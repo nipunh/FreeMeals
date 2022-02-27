@@ -216,6 +216,7 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                                     ),
                                     child: GestureDetector(
                                       onTap: () {
+                                        
                                         Navigator.push(context, MaterialPageRoute(builder: (context) => StoryScreen()));
                                       },
                                       child: CircleAvatar(
