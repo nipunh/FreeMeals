@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/screen/AnimationScreen.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/ManagerScreens/MAnagerHomeScreen.dart';
@@ -6,37 +7,43 @@ import 'package:freemeals/screen/WaiterScreens/WaiterHomeScreen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/screen/stories_page.dart';
 import 'package:freemeals/screen/story_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RootApp extends StatefulWidget {
+
+  final UserDoc user;
+
+  RootApp({Key key, @required this.user}) : super(key: key);
+
   @override
   _RootAppState createState() => _RootAppState();
 }
 
 class _RootAppState extends State<RootApp> {
-  int pageIndex = 1;
+  int pageIndex = 0;
 
-    List<Widget> userPages = [
-      CafeteriaSelectionScreen(),
-      AnimationScreen(),
-      CafeteriaSelectionScreen(),
-      StoriesPage(),
-      DiscoverPage(),   
-    ];
+  List<Widget> userPages = [
+    CafeteriaSelectionScreen(),
+    AnimationScreen(),
+    StoriesPage(),
+    DiscoverPage(),
+  ];
 
-    List<Widget> adminPages = [
-      ManagerHomeScreen(),
-    ];
+  List<Widget> adminPages = [
+    ManagerHomeScreen(),
+  ];
 
-    List<Widget> waiterPages = [
-      WaiterHomeScreen(),  
-    ];
-
-
+  List<Widget> waiterPages = [
+    WaiterHomeScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: getBody(),
+      body:  IndexedStack(
+        index: pageIndex,
+        children: widget.user.userType == 0 ? waiterPages : userPages
+      ),
       bottomNavigationBar: getFooter(),
     );
   }
@@ -51,13 +58,12 @@ class _RootAppState extends State<RootApp> {
 
   Widget getFooter() {
     List iconItems = [
-      Icons.pin_drop_outlined, 
+      Icons.pin_drop_outlined,
       Icons.chat_bubble_outline_rounded,
-      Icons.photo_camera_outlined,
       Icons.local_restaurant_outlined,
       Icons.amp_stories_outlined,
     ];
-    List textItems = ["Map", "Chat", "Camera", "Stories", "Discover"];
+    List textItems = ["Map", "Chat", "Stories", "Discover"];
     return Container(
       width: double.infinity,
       height: 60,
@@ -65,11 +71,9 @@ class _RootAppState extends State<RootApp> {
           color: Colors.white.withOpacity(0.5),
           border: Border(
               top:
-                  BorderSide(width: 2, color: Colors.black.withOpacity(0.06)))
-          ),
+                  BorderSide(width: 2, color: Colors.black.withOpacity(0.06)))),
       child: Padding(
-        padding:
-            const EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 10),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -103,7 +107,8 @@ class _RootAppState extends State<RootApp> {
       ),
     );
   }
-    selectedTab(index) {
+
+  selectedTab(index) {
     setState(() {
       pageIndex = index;
     });

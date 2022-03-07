@@ -22,10 +22,45 @@ class UserService {
     return stream.map(_snapshotCredits);
   }
 
-  UserDoc _snapshotCredits(DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    return UserDoc.fromDoctoUserInfo(snapshot);
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserByID(String userId) async {
+    try {
+      
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await _user.doc(userId).get();
+
+          if(userDoc.exists){
+            return userDoc;
+          }else{
+            print("returning null");
+            return null;
+          }
+    } catch (err) {
+      print('error user service- get user by selected user Id = ' +
+          err.toString());
+      throw (err);
+    }
   }
 
+  Stream<List<UserData>> getWaiters(String cafeId) {
+    Stream<QuerySnapshot<Map<String, dynamic>>> stream = _user
+        .where("cafeId", isEqualTo: cafeId)
+        .where("status", isEqualTo: 0)
+        .orderBy('status')
+        .snapshots();
+
+    return stream.map(_snapshotCreditsWaiter);
+  }
+
+  List<UserData> _snapshotCreditsWaiter(QuerySnapshot<Map<String, dynamic>> snapshot){
+    final List<UserData> cartItems = snapshot.docs.map((doc) {
+      return UserDoc.fromDoctoUserInfo(doc);
+    }).toList();
+    return cartItems;
+  }
+
+  UserData _snapshotCredits(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    return UserDoc.fromDoctoUserInfo(snapshot);
+  }
   bool isLeapYear(int value) =>
       value % 400 == 0 || (value % 4 == 0 && value % 100 != 0);
   int daysInMonth(int year, int month) {
@@ -48,6 +83,28 @@ class UserService {
     var result = _daysInMonth[month];
     if (month == 2 && isLeapYear(year)) result++;
     return result;
+  }
+
+  Future<void> selectWaiter(String waiterId, int status) async {
+    try {
+      await _user
+          .doc(waiterId)
+          .update({"status" : status});
+
+      _user.doc(waiterId).collection("orders").doc().set({
+        'displayName' : "",
+        'userId' : "",
+        'orderStatus' : 0,
+        'waiterRequestTime' : null,
+        'waiterAcceptedTime' : null,
+        'numberOfCustomers' : 0,
+        'tableNumber' : 0,
+        'userList' : [],
+      });
+    } catch (err) {
+      print('error while selecting waiter = ' + err.toString());
+      throw (err);
+    }
   }
 
 //   Future<bool> subsidyEmployeeIdCheck(String userId, Cafeteria cafe) async {

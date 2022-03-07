@@ -65,7 +65,7 @@ class _CafeteraCardState extends State<CafeteraCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap:() async => {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => DiscoverPage(reelList: ReelList))),
+        Navigator.pushNamed(context, DiscoverPage.routeName),
         ReelServices().getReelsByCafeteriaID(widget.cafe.id).then((List<Reel> reels){
           setState((){
               ReelList = reels;

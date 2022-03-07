@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:freemeals/models/cafe_model.dart';
+import 'package:freemeals/constants/userType_constants.dart';
 
 class UserData {}
 
@@ -9,9 +9,11 @@ class UserDoc implements UserData {
   String phone;
   String emailAddress;
   String displayName;
-  String userType;
+  int userType;
   String profileImageUrl;
   Map<String, dynamic> cafeLoyaltyStamps;
+  String caption;
+  int status;
 
   UserDoc({
     @required this.id,
@@ -20,14 +22,14 @@ class UserDoc implements UserData {
     @required this.displayName,
     @required this.userType,
     @required this.profileImageUrl,
-    @required this.cafeLoyaltyStamps
+    @required this.cafeLoyaltyStamps,
+    this.caption,
+    this.status
   });
 
   static UserDoc fromDoctoUserInfo(
     
     DocumentSnapshot<Map<String, dynamic>> snapshot) {
-
-
     final data = snapshot.data();
 
     return UserDoc(
@@ -35,11 +37,12 @@ class UserDoc implements UserData {
       phone: data['phone'] ?? '',
       emailAddress: data['emailAddress'] ?? '',
       displayName: data['displayName'] ?? '',
-      userType: data['userType'] ?? '',
-      profileImageUrl : data['profileImageUrl'] ?? '',
-      cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? {}
-        : data["cafeLoyaltyStamps"].map((entry) => ({[entry] : data["cafeLoyaltyStamps"][entry]  }))
-    );
+      userType: data['userType'] != null ? data['userType'] : 0,
+      profileImageUrl : data['profileImageUrl'] ?? '' ,
+      cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? {} : data["cafeLoyaltyStamps"].map((entry) => ({[entry] : data["cafeLoyaltyStamps"][entry]  })),
+      caption : (data['caption'] == null) ? "At your service" : data["caption"],
+      status : data['status'] ?? 0,
+        );
   }
 }
 

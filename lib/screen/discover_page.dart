@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:freemeals/config/data_json.dart';
 import 'package:freemeals/models/reels_model.dart';
+import 'package:freemeals/models/waiter_Selection.dart';
+import 'package:freemeals/screen/Cafeteria/waiter_selection_screen.dart';
 import 'package:freemeals/widgets/discover_page/icon_widget.dart';
-import 'package:video_player/video_player.dart'; 
+import 'package:video_player/video_player.dart';
 
 class DiscoverPage extends StatefulWidget {
-
-  final List<Reel> reelList;
-
-  const DiscoverPage({Key key, this.reelList}) : super(key: key);
-
   static const routeName = '/discovery-page';
 
   @override
@@ -17,16 +15,13 @@ class DiscoverPage extends StatefulWidget {
 
 class _DiscoverPageState extends State<DiscoverPage>
     with SingleTickerProviderStateMixin {
-
   TabController _tabController;
   List<Reel> reelList;
 
   @override
   void initState() {
     super.initState();
-    
-     reelList = widget.reelList;
-    _tabController = TabController(length: reelList.length, vsync: this);
+    _tabController = new TabController(length: items.length, vsync: this);
   }
 
   @override
@@ -36,27 +31,26 @@ class _DiscoverPageState extends State<DiscoverPage>
   }
 
   Widget getBody() {
-     print(reelList.length);
     var size = MediaQuery.of(context).size;
     return RotatedBox(
       quarterTurns: 1,
       child: TabBarView(
         controller: _tabController,
         children: List.generate(
-            reelList.length,
+            items.length,
             (index) => RotatedBox(
                   quarterTurns: -1,
                   child: VideoPlayerItem(
                     size: size,
-                    name: reelList[index].userName,
-                    videoUrl: reelList[index].videoUrl,
-                    caption: reelList[index].caption,
-                    // songName: reelList[index].songName,
-                    profileImg: reelList[index].profileImg,
-                    likes: reelList[index].likes,
-                    // comments: reelList[index].,
-                    shares: reelList[index].shares,
-                    albumImg: reelList[index].profileImg,
+                    name: items[index]['name'],
+                    videoUrl: items[index]['videoUrl'],
+                    caption: items[index]['caption'],
+                    songName: items[index]['songName'],
+                    profileImg: items[index]['profileImg'],
+                    likes: items[index]['likes'],
+                    comments: items[index]['comments'],
+                    shares: items[index]['shares'],
+                    albumImg: items[index]['profileImg'],
                   ),
                 )),
       ),
@@ -76,9 +70,9 @@ class VideoPlayerItem extends StatefulWidget {
   final String caption;
   final String songName;
   final String profileImg;
-  final int likes;
+  final String likes;
   final String comments;
-  final int shares;
+  final String shares;
   final String albumImg;
 
   const VideoPlayerItem({
@@ -205,9 +199,9 @@ class _VideoPlayerreelListtate extends State<VideoPlayerItem>
 
 class RightPanel extends StatelessWidget {
   final String profileImg;
-  final int likes;
+  final String likes;
   final String comments;
-  final int shares;
+  final String shares;
   final String albumImg;
 
   const RightPanel({
@@ -226,6 +220,7 @@ class RightPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
+        margin: EdgeInsets.only(right: 15),
         height: size.height * 0.6,
         child: Column(
           children: <Widget>[
@@ -255,9 +250,9 @@ class RightPanel extends StatelessWidget {
 
 class LeftPanel extends StatefulWidget {
   final String profileImg;
-  final int likes;
+  final String likes;
   final String comments;
-  final int shares;
+  final String shares;
   final String albumImg;
 
   LeftPanel({
@@ -294,14 +289,13 @@ class _LeftPanelState extends State<LeftPanel> {
   Widget build(BuildContext context) {
     return Expanded(
         child: Container(
-      margin: EdgeInsets.only(top: widget.size.height * 0.20),
-      height: widget.size.height * 0.3,
-      width: widget.size.width,
-      decoration: BoxDecoration(
-          color: Colors.white24,
-          borderRadius: BorderRadius.all(Radius.circular(15.0))),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        margin: EdgeInsets.only(top: widget.size.height * 0.20),
+        height: widget.size.height * 0.3,
+        decoration: BoxDecoration(
+            color: Colors.white24,
+            borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: _loyaltyStamps(),
       ),
     ));
@@ -326,15 +320,15 @@ class CenterPannel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: size.width * 0.8,
       height: size.height,
+      width: size.width*0.8,
       // decoration: BoxDecoration(color: Colors.black),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            name,
+            "Deli PLanet",
             style: TextStyle(color: Colors.white, fontSize: 25),
           ),
           SizedBox(height: 10),
@@ -399,7 +393,9 @@ class HeaderHomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30.0),
                       side: BorderSide(color: Colors.white70))),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new WaiterSelectionScreen(waiterSelection : new WaiterSelection("Priyank"))));
+            },
             child: Text('Book Table'),
           )
         ]));
