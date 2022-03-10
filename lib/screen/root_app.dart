@@ -47,8 +47,8 @@ class _RootAppState extends State<RootApp> {
       body:  IndexedStack(
         index: pageIndex,
         children: 
-        // waiterPages 
-        widget.user.userType == 0 ? waiterPages : userPages
+        waiterPages 
+        // widget.user.userType == 0 ? waiterPages : userPages
       ),
       bottomNavigationBar: getFooter(),
     );

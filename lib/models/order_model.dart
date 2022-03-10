@@ -44,6 +44,12 @@ class OrderDoc implements OrderData {
   }
 }
 
+class OrderRequests implements OrderData {
+  List<OrderDoc> orderLists;
+
+  OrderRequests(this.orderLists);
+}
+
 class Error1 implements OrderData {
   String errorMsg;
   Error1(this.errorMsg);

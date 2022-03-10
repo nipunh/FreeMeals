@@ -122,11 +122,11 @@ class WaiterProvider extends ChangeNotifier {
 
   List<UserDoc> _waiters = [];
 
-  List<OrderDoc> _orders = [];
+  List<OrderRequests> _orders = [];
 
   List<UserDoc> get waiters => [..._waiters];
 
-  List<OrderDoc> get orders => [..._orders];
+  List<OrderRequests> get orders => [..._orders];
 
   UserDoc _selectedWaiter;
 
@@ -193,29 +193,28 @@ class WaiterProvider extends ChangeNotifier {
   //   }
   // }
 
-  Future<void> getWaitersOrders(String waiterId) async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> waiterDocs = await _waiterCol
-          .doc(waiterId)
-          .collection("orders")
-          .where("orderStatus", isEqualTo: 0)
-          .get();
+  // Future<void> getWaitersOrders(String waiterId) async {
+  //   try {
+  //     QuerySnapshot<Map<String, dynamic>> waiterDocs = await _waiterCol
+  //         .doc(waiterId)
+  //         .collection("orders")
+  //         .where("orderStatus", isEqualTo: 0)
+  //         .get();
 
-        print(waiterDocs.docs.first.data());
-      List<OrderDoc> orders = waiterDocs.docs.map((doc) {
-        return OrderDoc.fromDoctoOrderInfo(doc);
-      }).toList();
+  //       print(waiterDocs.docs.first.data());
+  //     List<OrderDoc> orders = waiterDocs.docs.map((doc) {
+  //       return OrderDoc.fromDoctoOrderInfo(doc);
+  //     }).toList();
 
-      _orders = orders;
+  //     _orders = orders;
 
-      
-      notifyListeners();
-    } catch (err) {
-      print('error waiter provider - get orders = ' +
-          err.toString());
-      throw (err);
-    }
-  }
+  //     notifyListeners();
+  //   } catch (err) {
+  //     print('error waiter provider - get orders = ' +
+  //         err.toString());
+  //     throw (err);
+  //   }
+  // }
 
   void setCafesToEmpty() {
     _waiters = [];
