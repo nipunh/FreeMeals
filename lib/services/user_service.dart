@@ -85,17 +85,17 @@ class UserService {
     return result;
   }
 
-  Future<void> selectWaiter(String waiterId, int status) async {
+  Future<void> selectWaiter(String waiterId, int status, User user) async {
     try {
       await _user
           .doc(waiterId)
           .update({"status" : status});
 
       _user.doc(waiterId).collection("orders").doc().set({
-        'displayName' : "",
-        'userId' : "",
+        'displayName' : user.displayName == null ? "Anonymous" : user.displayName,
+        'userId' : user.uid == null ? "" : user.uid,
         'orderStatus' : 0,
-        'waiterRequestTime' : null,
+        'waiterRequestTime' : DateTime.now(),
         'waiterAcceptedTime' : null,
         'numberOfCustomers' : 0,
         'tableNumber' : 0,

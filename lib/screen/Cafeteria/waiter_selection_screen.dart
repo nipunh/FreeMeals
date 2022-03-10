@@ -14,14 +14,14 @@ import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WaiterSelectionScreen extends StatefulWidget {
   static String routeName = '/waiter-selection-screen';
 
   final WaiterSelection waiterSelection;
 
-  WaiterSelectionScreen({Key key, @required this.waiterSelection})
-      : super(key: key);
+  WaiterSelectionScreen({Key key, @required this.waiterSelection}) : super(key: key);
 
   @override
   _WaiterSelectionScreenState createState() => _WaiterSelectionScreenState();
@@ -34,6 +34,7 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User user = FirebaseAuth.instance.currentUser;
     return Scaffold(
         body: Container(
             child: MultiProvider(
@@ -70,7 +71,7 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                   new ListTile(
                                     enabled: waiter.status == 0 ? true : false,
                                     onTap: () {
-                                      UserService().selectWaiter(waiter.id, 1);
+                                      UserService().selectWaiter(waiter.id, 1, user);
                                     },
                                     leading: ClipOval(
                                       child: CachedNetworkImage(

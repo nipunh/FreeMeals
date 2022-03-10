@@ -2,14 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:freemeals/enums/connectivity_status.dart';
 import 'package:freemeals/models/order_model.dart';
+import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
+import 'package:freemeals/services/user_service.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
 import 'package:provider/provider.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 
 class WaiterHomeScreen extends StatefulWidget {
   static String routeName = '/waiter-home-screen';
-
   @override
   _WaiterHomeScreenState createState() => _WaiterHomeScreenState();
 }
@@ -33,8 +34,8 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                     ErrorConnectionPage(routeName: WaiterHomeScreen.routeName);
                   } else {
                     final waiterProvider = Provider.of<WaiterProvider>(context);
-                    waiterProvider.getWaitersOrders("CXdKnqsdwetprt885KVx");
-                    List<OrderData> selectedWaiter = waiterProvider.orders;
+                    waiterProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
+                    List<OrderDoc> selectedWaiter = waiterProvider.orders;
                     return SafeArea(
                       child: Scaffold(
                         appBar: AppBar(
@@ -53,7 +54,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                                     enabled:
                                         order.orderStatus == 0 ? true : false,
                                     onTap: () {
-                                      // UserService().selectWaiter(waiter.id, 1);
+                                      // UserService().getWaiterOrders(widget.waiter.id);
                                     },
                                     leading: ClipOval(
                                       child: CachedNetworkImage(
@@ -66,7 +67,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                                     ),
                                     title: new Text(order.displayName),
                                     subtitle: Text(
-                                        "Requested at : $order.waiterRequestTime"),
+                                        "Requested at : ${order.waiterRequestTime.toString()}"),
                                   ),
                                 ],
                               );

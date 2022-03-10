@@ -198,14 +198,17 @@ class WaiterProvider extends ChangeNotifier {
       QuerySnapshot<Map<String, dynamic>> waiterDocs = await _waiterCol
           .doc(waiterId)
           .collection("orders")
-          .where("status", isEqualTo: 0)
+          .where("orderStatus", isEqualTo: 0)
           .get();
 
+        print(waiterDocs.docs.first.data());
       List<OrderDoc> orders = waiterDocs.docs.map((doc) {
         return OrderDoc.fromDoctoOrderInfo(doc);
       }).toList();
 
       _orders = orders;
+
+      
       notifyListeners();
     } catch (err) {
       print('error waiter provider - get orders = ' +

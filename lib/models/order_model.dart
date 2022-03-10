@@ -9,8 +9,8 @@ class OrderDoc implements OrderData {
   String displayName;
   int tableNumber;
   int numberOfCustomers;
-  String waiterRequestTime;
-  String waiterAcceptedTime;
+  DateTime waiterRequestTime;
+  DateTime waiterAcceptedTime;
   Map<String, dynamic> userList;
   int orderStatus;
 
@@ -36,9 +36,9 @@ class OrderDoc implements OrderData {
       displayName: data['displayName'] ?? '',
       tableNumber: data['tableNumber'] ?? '',
       numberOfCustomers: data['numberOfCustomers'] ?? "",
-      waiterRequestTime : data['waiterRequestTime'] ?? '' ,
-      waiterAcceptedTime: data['waiterAcceptedTime'] ?? "",
-      userList : data['userList']  ?? [],
+      waiterRequestTime : data['waiterRequestTime'] != null ? data['waiterRequestTime'].toDate().toLocal() : null,
+      waiterAcceptedTime: data['waiterAcceptedTime'] != null ? data['waiterAcceptedTime'].toDate().toLocal() : null,
+      // userList : data['userList']  ?? [],
       orderStatus : data['orderStatus'] ?? 0,
     );
   }

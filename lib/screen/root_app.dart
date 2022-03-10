@@ -15,6 +15,8 @@ class RootApp extends StatefulWidget {
 
   RootApp({Key key, @required this.user}) : super(key: key);
 
+ 
+
   @override
   _RootAppState createState() => _RootAppState();
 }
@@ -37,12 +39,16 @@ class _RootAppState extends State<RootApp> {
     WaiterHomeScreen(),
   ];
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body:  IndexedStack(
         index: pageIndex,
-        children: widget.user.userType == 0 ? waiterPages : userPages
+        children: 
+        // waiterPages 
+        widget.user.userType == 0 ? waiterPages : userPages
       ),
       bottomNavigationBar: getFooter(),
     );
