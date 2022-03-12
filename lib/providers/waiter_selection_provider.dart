@@ -117,8 +117,7 @@ class SelectedWaiter extends ChangeNotifier {
 }
 
 class WaiterProvider extends ChangeNotifier {
-  final CollectionReference _waiterCol =
-      FirebaseFirestore.instance.collection('users');
+  final CollectionReference _waiterCol = FirebaseFirestore.instance.collection('users');
 
   List<UserDoc> _waiters = [];
 

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:freemeals/providers/order_provider.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:freemeals/services/notification_service.dart';
@@ -65,6 +66,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (ctx) => CafeteriaProvider()),
         ChangeNotifierProvider(create: (ctx) => SelectedCafeteria()),
         ChangeNotifierProvider(create: (ctx) => WaiterProvider()),
+        ChangeNotifierProvider(create: (ctx) => OrderProvider()),
         // ChangeNotifierProvider(create: (ctx) => CartProvider()),
         // ChangeNotifierProvider(create: (ctx) => VegOnly()),
         // ChangeNotifierProvider(create: (ctx) => FavoritePageProvider()),
