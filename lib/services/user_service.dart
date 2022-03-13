@@ -107,6 +107,19 @@ class UserService {
     }
   }
 
+  void acceptUserRequest(String waiterId, String orderId, int tableNumber){
+    try{
+        _user.doc(waiterId).collection("orders").doc(orderId).update({
+          "OrderStatus" : 1,
+          "waiterAcceptedTime" : DateTime.now(),
+          "tableNumber" : tableNumber,
+        });
+     } catch (err) {
+      print('error while acceptUserRequest = ' + err.toString());
+      throw (err);
+    }
+  }
+
 
 //   Future<bool> subsidyEmployeeIdCheck(String userId, Cafeteria cafe) async {
 //     try {

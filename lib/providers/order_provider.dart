@@ -148,10 +148,6 @@ class OrderProvider extends ChangeNotifier {
         _orders = [];
 
       }
-      
-
-      
-
       notifyListeners();
     } catch (err) {
       print('error waiter provider - get orders = ' +

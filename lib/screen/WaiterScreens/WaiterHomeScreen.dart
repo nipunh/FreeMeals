@@ -1,3 +1,6 @@
+
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:freemeals/enums/connectivity_status.dart';
@@ -16,6 +19,9 @@ import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
 import 'package:provider/provider.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:data_connection_checker/data_connection_checker.dart';
+import 'package:numberpicker/numberpicker.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 class WaiterHomeScreen extends StatefulWidget {
   static String routeName = '/waiter-home-screen';
@@ -71,6 +77,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User user = FirebaseAuth.instance.currentUser;
     return Scaffold(
         body: Container(
             child: MultiProvider(
@@ -91,6 +98,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
             final orderProvider = Provider.of<OrderProvider>(context);
             orderProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
             List<OrderDoc> orderRequest = orderProvider.orders;
+
             return SafeArea(
                 child: Scaffold(
                     appBar: AppBar(
@@ -111,7 +119,8 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                                     enabled:
                                         order.orderStatus == 0 ? true : false,
                                     onTap: () {
-                                      // UserService().selectWaiter(order.id, 1, user);
+                                      _settingModalBottomSheet(context);
+                                      // UserService().acceptUserRequest(user.uid, order.id);
                                     },
                                     leading: ClipOval(
                                       child: CachedNetworkImage(
@@ -134,4 +143,56 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
       }),
     )));
   }
+}
+
+void _settingModalBottomSheet(context) {
+  int _currentHorizontalIntValue = 1;
+  Size size = MediaQuery.of(context).size;
+  showModalBottomSheet(
+      isDismissible: true,
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+            padding: EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
+            height: size.height * 0.35,
+            decoration: BoxDecoration(
+              
+            ),
+            child: new Form(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text("Select Table number for customer"),
+                  NumberPicker(
+                    value: _currentHorizontalIntValue,
+                    minValue: 1,
+                    maxValue: 15,
+                    step: 1,
+                    itemHeight: 50,
+                    axis: Axis.horizontal,
+                    // onChanged: (value) =>
+                    //     setState(() => _currentHorizontalIntValue = value),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.black26),
+                    ),
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      icon: const Icon(Icons.person),
+                      hintText: 'Enter number of people on table',
+                      labelText: 'Customer Count',
+                    ),
+                  ),
+                  new Container(
+                      padding: const EdgeInsets.only(left: 150.0, top: 40.0),
+                      child: new RaisedButton(
+                        child: const Text('Submit'),
+                        onPressed: null,
+                      )),
+                ],
+              ),
+            ));
+      });
 }
