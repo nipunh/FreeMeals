@@ -21,7 +21,8 @@ class WaiterSelectionScreen extends StatefulWidget {
 
   final WaiterSelection waiterSelection;
 
-  WaiterSelectionScreen({Key key, @required this.waiterSelection}) : super(key: key);
+  WaiterSelectionScreen({Key key, @required this.waiterSelection})
+      : super(key: key);
 
   @override
   _WaiterSelectionScreenState createState() => _WaiterSelectionScreenState();
@@ -31,6 +32,32 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
   bool _isInit = true;
   ViewState _viewState = ViewState.Idle;
   List<UserData> waiters = [];
+  bool isLoading = true;
+
+  void _settingModalBottomSheet(context) {
+    int _currentHorizontalIntValue = 1;
+    Size size = MediaQuery.of(context).size;
+    showModalBottomSheet(
+        isDismissible: true,
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            padding: EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
+            height: size.height * 0.35,
+            decoration: BoxDecoration(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text("Awaiting Waiter Confirmation", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                SizedBox(height: 70),
+                isLoading ? SizedBox(child : CircularProgressIndicator(), height: 60 , width: 60) : 
+                Icon(Icons.check_circle_outline_outlined, size: 30, color: Colors.greenAccent)
+              ],
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +98,9 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                   new ListTile(
                                     enabled: waiter.status == 0 ? true : false,
                                     onTap: () {
-                                      UserService().selectWaiter(waiter.id, 1, user);
+                                      _settingModalBottomSheet(context);
+                                      UserService()
+                                          .selectWaiter(waiter.id, 1, user);
                                     },
                                     leading: ClipOval(
                                       child: CachedNetworkImage(

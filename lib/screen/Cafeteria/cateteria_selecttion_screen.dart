@@ -186,7 +186,6 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                     var size = MediaQuery.of(context).size;
                     return SafeArea(
                       child: Scaffold(
-                        // bottomSheet: getFooter(),
                         backgroundColor: Colors.white,
                         body: Column(children: [
                           Container(

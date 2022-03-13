@@ -1,4 +1,3 @@
-
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -147,35 +146,39 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
 
 void _settingModalBottomSheet(context) {
   int _currentHorizontalIntValue = 1;
-  Size size = MediaQuery.of(context).size;
   showModalBottomSheet(
       isDismissible: true,
       context: context,
       builder: (BuildContext bc) {
         return Container(
-            padding: EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
-            height: size.height * 0.35,
-            decoration: BoxDecoration(
-              
-            ),
+          height: MediaQuery.of(context).size.height * 0.40,
+            padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
             child: new Form(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("Select Table number for customer"),
-                  NumberPicker(
-                    value: _currentHorizontalIntValue,
-                    minValue: 1,
-                    maxValue: 15,
-                    step: 1,
-                    itemHeight: 50,
-                    axis: Axis.horizontal,
-                    // onChanged: (value) =>
-                    //     setState(() => _currentHorizontalIntValue = value),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.black26),
+                  Text("Enter the following details", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                  SizedBox(height: 10),
+                  // NumberPicker(
+                  //   value: _currentHorizontalIntValue,
+                  //   minValue: 1,
+                  //   maxValue: 15,
+                  //   step: 1,
+                  //   itemHeight: 50,
+                  //   axis: Axis.horizontal,
+                  //   // onChanged: (value) =>
+                  //   //     setState(() => _currentHorizontalIntValue = value),
+                  //   decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(16),
+                  //     border: Border.all(color: Colors.black26),
+                  //   ),
+                  // ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      icon: const Icon(Icons.dining),
+                      hintText: 'Enter table number',
+                      labelText: 'Table Number',
                     ),
                   ),
                   TextFormField(
@@ -187,8 +190,8 @@ void _settingModalBottomSheet(context) {
                   ),
                   new Container(
                       padding: const EdgeInsets.only(left: 150.0, top: 40.0),
-                      child: new RaisedButton(
-                        child: const Text('Submit'),
+                      child: new ElevatedButton(
+                        child: const Text('Next'),
                         onPressed: null,
                       )),
                 ],
