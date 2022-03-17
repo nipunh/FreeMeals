@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freemeals/config/data_json.dart';
 import 'package:freemeals/models/reels_model.dart';
 import 'package:freemeals/models/waiter_Selection.dart';
+import 'package:freemeals/screen/BookTable/book_table.dart';
 import 'package:freemeals/screen/Cafeteria/waiter_selection_screen.dart';
 import 'package:freemeals/widgets/discover_page/icon_widget.dart';
 import 'package:video_player/video_player.dart';
@@ -394,7 +395,7 @@ class HeaderHomePage extends StatelessWidget {
                       side: BorderSide(color: Colors.white70))),
             ),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new WaiterSelectionScreen(waiterSelection : new WaiterSelection("Priyank"))));
+              Navigator.push(context, new MaterialPageRoute(builder: (context) => new BookTable()));
             },
             child: Text('Book Table'),
           )
