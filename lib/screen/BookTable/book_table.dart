@@ -24,28 +24,25 @@ class _BookTableState extends State<BookTable> {
   List<SlotTime> slots = [];
   SlotTime slot;
 
-    @override
-  void initState() {
-    slots = [...widget.slotTimes];
-    slots.insert(0, SlotTime(slot: '', seats: 1));
-    slots.insert(
-        1,
-        SlotTime(
-            slot: 'Not Required-Selected a slot on a previous order',
-            seats: 1));
+  // @override
+  // void initState() {
+  //   slots = [...widget.slotTimes];
+  //   slots.insert(0, SlotTime(slot: '', seats: 1));
+  //   slots.insert(1,SlotTime(
+  //       slot: 'Not Required-Selected a slot on a previous order',
+  //       seats: 1));
 
-    slot = slots.first;
-    super.initState();
-  }
+  //   slot = slots.first;
+  //   super.initState();
+  // }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
-
     final notificationService = NotificationService();
     // final localdb = DatabaseHelper();
     // final cartContainer = Provider.of<CartProvider>(context, listen: false);
@@ -57,181 +54,18 @@ class _BookTableState extends State<BookTable> {
       ),
       body: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              DropdownButtonFormField<SlotTime>(
-                decoration: InputDecoration(
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  fillColor: Colors.blue,
-                  labelText: 'Select Time Slot',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                isExpanded: true,
-                isDense: true,
-                value: slot,
-                onChanged: (SlotTime value) {
-                  setState(() {
-                    slot = value;
-                  });
-                },
-                items: slots
-                    .map(
-                      (SlotTime value) => DropdownMenuItem<SlotTime>(
-                        child: FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: RichText(
-                            text: TextSpan(
-                                // style: DefaultTextStyle.of(context).style,
-                                children: [
-                                  if (value.slot == '')
-                                    TextSpan(
-                                      text: value.slot + ' ',
-                                      style: TextStyle(
-                                        fontSize: !isTab
-                                            ? Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                .fontSize
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize,
-                                      ),
-                                    ),
-                                  if (value.slot ==
-                                      'Not Required-Selected a slot on a previous order')
-                                    TextSpan(
-                                      text: "Not Required ",
-                                      style: TextStyle(
-                                          fontSize: !isTab
-                                              ? Theme.of(context)
-                                                  .textTheme
-                                                  .caption
-                                                  .fontSize
-                                              : Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText2
-                                                  .fontSize,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  if (value.slot ==
-                                      'Not Required-Selected a slot on a previous order')
-                                    TextSpan(
-                                      text:
-                                          '- Selected a slot on a previous order' +
-                                              ' ',
-                                      style: TextStyle(
-                                        fontSize: !isTab
-                                            ? Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                .fontSize
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize,
-                                        color: Colors.black,
-                                        //fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  if (value.slot != '' &&
-                                      value.slot !=
-                                          'Not Required-Selected a slot on a previous order')
-                                    TextSpan(
-                                      text: value.slot,
-                                      style: TextStyle(
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: !isTab
-                                            ? Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                .fontSize
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  if (value.slot != '' &&
-                                      value.slot !=
-                                          'Not Required-Selected a slot on a previous order')
-                                    TextSpan(
-                                      text: ' - ',
-                                      style: TextStyle(
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: !isTab
-                                            ? Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                .fontSize
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  if (value.slot != '' &&
-                                      value.slot !=
-                                          'Not Required-Selected a slot on a previous order')
-                                    TextSpan(
-                                      text: value.seats.toString(),
-                                      style: TextStyle(
-                                        color: Colors.green[700],
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: !isTab
-                                            ? Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                .fontSize
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize,
-                                      ),
-                                    ),
-                                  if (value.slot != '' &&
-                                      value.slot !=
-                                          'Not Required-Selected a slot on a previous order')
-                                    TextSpan(
-                                      text: ' seats remaining ',
-                                      style: TextStyle(
-                                        fontStyle: FontStyle.normal,
-                                        fontSize: !isTab
-                                            ? Theme.of(context)
-                                                .textTheme
-                                                .caption
-                                                .fontSize
-                                            : Theme.of(context)
-                                                .textTheme
-                                                .bodyText2
-                                                .fontSize,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  if (value.slot != '' && slot == value)
-                                    WidgetSpan(
-                                      child: Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                        size: !isTab ? 20 : 30,
-                                      ),
-                                    )
-                                ]),
-                          ),
-                        ),
-                        value: value,
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-          ),
+          Row(children: <Widget>[
+            DropdownButton<int>(
+              items: <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((int value) {
+                return DropdownMenuItem<int>(
+                  value: value,
+                  child: Text(value.toString()),
+                );
+              }).toList(),
+              onChanged: (_) {},
+            ),
+            
+          ]),
         ],
       ),
     );
