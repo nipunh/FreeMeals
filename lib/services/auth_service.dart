@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freemeals/enums/screen_name.dart';
+import 'package:freemeals/services/user_preferences.dart';
 
 import 'notification_service.dart';
 
@@ -29,7 +30,6 @@ class AuthService {
 
       if (user == null || user.phoneNumber != phonenumber) {
         UserCredential result = await _auth.signInWithCredential(credential);
-
         user = result.user;
       }
 
@@ -60,6 +60,13 @@ class AuthService {
         }
         String name = userDoc.data()['displayName'];
         String email = userDoc.data()['emailAddress'];
+
+        await UserPreferences.setUserId(userDoc.data()['userId']);
+        await UserPreferences.setUserEmail(email);
+        await UserPreferences.setUserName(name);
+        await UserPreferences.setUserProfileImg(userDoc.data()['profileImageUrl']);
+        await UserPreferences.setUserType(userDoc.data()['userType'].toString());
+
         if (name == null || name.isEmpty || email == null || email.isEmpty)
           return ScreenName.Name;
         return ScreenName.CafeSelection;

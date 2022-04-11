@@ -44,7 +44,8 @@ class HandleMain extends StatelessWidget {
 
               if (versionCheck) {
                 if (user == null) {
-                  return AuthScreen();
+                  // return AuthScreen();
+                  return RootApp();
                 } else if (user.displayName == null ||
                     user.displayName.isEmpty ||
                     user.email == null ||
@@ -58,7 +59,6 @@ class HandleMain extends StatelessWidget {
                   return FutureBuilder(
                       future: UserService().getUserByID(user.uid),
                       builder: (ctx, snapshot) {
-                        
                         if (snapshot.connectionState == ConnectionState.waiting)
                           return FreeMealsSplashScreen();
                         else {
@@ -66,7 +66,7 @@ class HandleMain extends StatelessWidget {
                             return RootApp(user: UserDoc.fromDoctoUserInfo(snapshot.data));
                           } else {
                             print('Error - get user, handle main');
-                            return DiscoverPage();
+                            return RootApp();
                           }
                         }
                       });
@@ -93,7 +93,8 @@ class HandleMain extends StatelessWidget {
             } else {
               print('Error - version check');
               if (user == null)
-                return AuthScreen();
+                // return AuthScreen();
+                return RootApp();
               else if (user.displayName == null ||
                   user.displayName.isEmpty ||
                   user.email == null ||

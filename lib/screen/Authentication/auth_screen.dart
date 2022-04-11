@@ -8,6 +8,7 @@ import 'package:freemeals/enums/connectivity_status.dart';
 import 'package:freemeals/enums/screen_name.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/ErrorScreen/error_screen.dart';
+import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/screen/name_screen.dart';
 import 'package:freemeals/services/auth_service.dart';
 import 'package:freemeals/services/connectivity_service.dart';
@@ -312,10 +313,10 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                                                 .pushReplacementNamed(
                                                     NameScreen.routeName);
                                           }
-                                          if (screen == ScreenName.CafeSelection) {
+                                          if (screen == ScreenName.Discovery) {
                                             Navigator.of(context)
                                                 .pushReplacementNamed(
-                                                    CafeteriaSelectionScreen.routeName);
+                                                    DiscoverPage.routeName);
                                           }
                                         } else {
                                           setState(() {
@@ -432,9 +433,9 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
       if (screen == ScreenName.Name) {
         Navigator.of(context).pushReplacementNamed(NameScreen.routeName);
       }
-      if (screen == ScreenName.CafeSelection) {
+      if (screen == ScreenName.Discovery) {
         Navigator.of(context)
-            .pushReplacementNamed(CafeteriaSelectionScreen.routeName);
+            .pushReplacementNamed(DiscoverPage.routeName);
       }
     };
 

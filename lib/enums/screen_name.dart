@@ -6,5 +6,6 @@ enum ScreenName {
   Favorite,
   Search,
   Cart,
-  Orders
+  Orders,
+  Discovery
 }

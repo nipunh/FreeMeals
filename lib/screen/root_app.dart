@@ -9,6 +9,7 @@ import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/screen/stories_page.dart';
 import 'package:freemeals/screen/story_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freemeals/services/user_preferences.dart';
 
 import 'Cafeteria/waiter_selection_screen.dart';
 
@@ -23,6 +24,25 @@ class RootApp extends StatefulWidget {
 
 class _RootAppState extends State<RootApp> {
   int pageIndex = 0;
+  int userType = 2;
+
+  @override
+  void didChangeDependencies() async {
+    bool _isInit = true;
+
+    if (_isInit) {
+      // if (UserPreferences.getUserEmailAddress() == null)
+      //   await UserPreferences.setUserEmail(widget.user.emailAddress);
+      // if (UserPreferences.getUserId() == null)
+      //   await UserPreferences.setUserId(widget.user.id);
+      // if (UserPreferences.getUserName() == null)
+      //   await UserPreferences.setUserName(widget.user.displayName);
+      // if (UserPreferences.getUserType() == null)
+      //   await UserPreferences.setUserType(widget.user.userType.toString());
+      // userType = UserPreferences.getUserType() ?? 1;
+    }
+    super.didChangeDependencies();
+  }
 
   List<Widget> userPages = [DiscoverPage(), CafeteriaSelectionScreen()];
 
@@ -40,10 +60,13 @@ class _RootAppState extends State<RootApp> {
       extendBody: true,
       body: IndexedStack(
           index: pageIndex,
-          children:
-              // waiterPages),
-              widget.user.userType == 0 ? waiterPages : userPages),
-      bottomNavigationBar: getFooter(),
+          children: userType == 2
+              ? adminPages
+              : userType == 0
+                  ? waiterPages
+                  : userPages),
+      // widget.user.userType == 0 ? waiterPages : userPages),
+      bottomNavigationBar: userType == 1 ? getFooter() : null,
     );
   }
 
@@ -108,8 +131,7 @@ class _RootAppState extends State<RootApp> {
                   borderRadius: BorderRadius.circular(10.0),
                   side: BorderSide(color: Colors.white70))),
         ),
-        onPressed: () {
-        },
+        onPressed: () {},
         child: Wrap(
           children: [
             Text(

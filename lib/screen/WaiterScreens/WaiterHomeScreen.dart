@@ -78,69 +78,88 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
   Widget build(BuildContext context) {
     User user = FirebaseAuth.instance.currentUser;
     return Scaffold(
+        appBar: AppBar(
+          title: Text("Server Home"),
+          actions: [
+            GestureDetector(
+              child: CircleAvatar(
+                backgroundColor: Colors.black12,
+                child: ClipOval(
+                    child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                )),
+              ),
+            )
+          ],
+        ),
         body: Container(
             child: MultiProvider(
-      providers: [
-        StreamProvider(
-            initialData: ConnectivityStatus.Connected,
-            create: (ctx) =>
-                ConnectivityService().connectionStatusController.stream),
-      ],
-      child: Consumer<ConnectivityStatus>(builder: (ctx, connectionStatus, ch) {
-        if (connectionStatus == ConnectivityStatus.None) {
-          return ErrorConnectionPage(
-              routeName: CafeteriaSelectionScreen.routeName);
-        } else {
-          if (_viewState == ViewState.Loading)
-            return LoadingPage();
-          else {
-            final orderProvider = Provider.of<OrderProvider>(context);
-            orderProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
-            List<OrderDoc> orderRequest = orderProvider.orders;
+          providers: [
+            StreamProvider(
+                initialData: ConnectivityStatus.Connected,
+                create: (ctx) =>
+                    ConnectivityService().connectionStatusController.stream),
+          ],
+          child: Consumer<ConnectivityStatus>(
+              builder: (ctx, connectionStatus, ch) {
+            if (connectionStatus == ConnectivityStatus.None) {
+              return ErrorConnectionPage(
+                  routeName: CafeteriaSelectionScreen.routeName);
+            } else {
+              if (_viewState == ViewState.Loading)
+                return LoadingPage();
+              else {
+                final orderProvider = Provider.of<OrderProvider>(context);
+                orderProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
+                List<OrderDoc> orderRequest = orderProvider.orders;
 
-            return SafeArea(
-                child: Scaffold(
-                    appBar: AppBar(
-                      title: Text('Awaiting Customers'),
-                    ),
-                    body: Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                        child: ListView.separated(
-                            separatorBuilder: (context, index) => Divider(
-                                  color: Colors.black,
-                                ),
-                            itemCount: orderRequest.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              OrderDoc order = orderRequest.elementAt(index);
-                              return new Column(
-                                children: <Widget>[
-                                  new ListTile(
-                                    enabled:
-                                        order.orderStatus == 0 ? true : false,
-                                    onTap: () {
-                                      _settingModalBottomSheet(context);
-                                      // UserService().acceptUserRequest(user.uid, order.id);
-                                    },
-                                    leading: ClipOval(
-                                      child: CachedNetworkImage(
-                                        imageUrl: "",
-                                        placeholder: (context, url) =>
-                                            new CircularProgressIndicator(),
-                                        errorWidget: (context, url, error) =>
-                                            new Icon(Icons.error),
-                                      ),
+                return SafeArea(
+                    child: Scaffold(
+                        appBar: AppBar(
+                          title: Text('Awaiting Customers'),
+                        ),
+                        body: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                            child: ListView.separated(
+                                separatorBuilder: (context, index) => Divider(
+                                      color: Colors.black,
                                     ),
-                                    title: new Text(order.displayName),
-                                    subtitle: Text(
-                                        order.waiterRequestTime.toString()),
-                                  ),
-                                ],
-                              );
-                            }))));
-          }
-        }
-      }),
-    )));
+                                itemCount: orderRequest.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  OrderDoc order =
+                                      orderRequest.elementAt(index);
+                                  return new Column(
+                                    children: <Widget>[
+                                      new ListTile(
+                                        enabled: order.orderStatus == 0
+                                            ? true
+                                            : false,
+                                        onTap: () {
+                                          _settingModalBottomSheet(context);
+                                          // UserService().acceptUserRequest(user.uid, order.id);
+                                        },
+                                        leading: ClipOval(
+                                          child: CachedNetworkImage(
+                                            imageUrl: "",
+                                            placeholder: (context, url) =>
+                                                new CircularProgressIndicator(),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    new Icon(Icons.error),
+                                          ),
+                                        ),
+                                        title: new Text(order.displayName),
+                                        subtitle: Text(
+                                            order.waiterRequestTime.toString()),
+                                      ),
+                                    ],
+                                  );
+                                }))));
+              }
+            }
+          }),
+        )));
   }
 }
 
@@ -151,14 +170,17 @@ void _settingModalBottomSheet(context) {
       context: context,
       builder: (BuildContext bc) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.40,
+            height: MediaQuery.of(context).size.height * 0.40,
             padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
             child: new Form(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("Enter the following details", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                  Text(
+                    "Enter the following details",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: 10),
                   // NumberPicker(
                   //   value: _currentHorizontalIntValue,

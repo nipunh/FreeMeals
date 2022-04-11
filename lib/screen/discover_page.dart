@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:freemeals/config/data_json.dart';
 import 'package:freemeals/models/reels_model.dart';
 import 'package:freemeals/models/waiter_Selection.dart';
+import 'package:freemeals/screen/Authentication/auth_screen.dart';
 import 'package:freemeals/screen/BookTable/book_table.dart';
 import 'package:freemeals/screen/Cafeteria/waiter_selection_screen.dart';
+import 'package:freemeals/screen/profile_page.dart';
 import 'package:freemeals/widgets/discover_page/icon_widget.dart';
 import 'package:video_player/video_player.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DiscoverPage extends StatefulWidget {
   static const routeName = '/discovery-page';
@@ -119,6 +123,7 @@ class _VideoPlayerreelListtate extends State<VideoPlayerItem>
 
   @override
   Widget build(BuildContext context) {
+    User user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       body: InkWell(
         onTap: () => setState(() {
@@ -152,10 +157,43 @@ class _VideoPlayerreelListtate extends State<VideoPlayerItem>
                 child: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        top: 25, right: 15, left: 15, bottom: 10),
+                        top: 25, right: 5, left: 5, bottom: 10),
                     child: Column(
                       children: <Widget>[
-                        HeaderHomePage(),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  HeaderHomePage(),
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(
+                                        context,
+                                        user == null
+                                            ? new MaterialPageRoute(
+                                                builder: (context) =>
+                                                    new AuthScreen())
+                                            : new MaterialPageRoute(
+                                                builder: (context) =>
+                                                    new ProfilePage())),
+                                    child: SizedBox(
+                                      width: 60,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white54,
+                                        child: ClipOval(
+                                            child: Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                        )),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ]),
                         Flexible(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -290,13 +328,13 @@ class _LeftPanelState extends State<LeftPanel> {
   Widget build(BuildContext context) {
     return Expanded(
         child: Container(
-        margin: EdgeInsets.only(top: widget.size.height * 0.20),
-        height: widget.size.height * 0.3,
-        decoration: BoxDecoration(
-            color: Colors.white24,
-            borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      margin: EdgeInsets.only(top: widget.size.height * 0.20),
+      height: widget.size.height * 0.3,
+      decoration: BoxDecoration(
+          color: Colors.white24,
+          borderRadius: BorderRadius.all(Radius.circular(15.0))),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: _loyaltyStamps(),
       ),
     ));
@@ -322,7 +360,7 @@ class CenterPannel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: size.height,
-      width: size.width*0.8,
+      width: size.width * 0.8,
       // decoration: BoxDecoration(color: Colors.black),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -361,9 +399,10 @@ class HeaderHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Container(
         height: size.height * 0.06,
-        width: size.width * 0.60,
+        width: size.width * 0.70,
         decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.5),
             borderRadius: BorderRadius.circular(30.0)),
@@ -395,7 +434,8 @@ class HeaderHomePage extends StatelessWidget {
                       side: BorderSide(color: Colors.white70))),
             ),
             onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new BookTable()));
+              Navigator.push(context,
+                  new MaterialPageRoute(builder: (context) => new BookTable()));
             },
             child: Text('Book Table'),
           )
