@@ -151,7 +151,6 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
     if (_viewState == ViewState.Error)
       return ErrorPage(routeName: CafeteriaSelectionScreen.routeName);
     else {
-      print(user.uid);
       return MultiProvider(
         providers: [
           StreamProvider(
@@ -174,7 +173,6 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                       Provider.of<CafeteriaProvider>(context);
                   // Cafeteria selectedCafeteria = cafeteriaProvider.selectedCafeteria;
                   List<Cafeteria> cafes = cafeteriaProvider.cafes;
-                  print(data);
                   if (data is Loading1) {
                     return LoadingPage();
                   } else if (data is Error1) {

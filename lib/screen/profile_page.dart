@@ -1,21 +1,46 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:freemeals/enums/connectivity_status.dart';
+import 'package:freemeals/enums/view_state.dart';
+import 'package:freemeals/models/bookeingRequest_model.dart';
 import 'package:freemeals/models/user_model.dart';
+import 'package:freemeals/providers/bookingTable_provider.dart';
+import 'package:freemeals/screen/Authentication/auth_screen.dart';
 import 'package:freemeals/screen/UserProfile/numbers_widget.dart';
 import 'package:freemeals/screen/UserProfile/profile_widget.dart';
+import 'package:freemeals/services/auth_service.dart';
+import 'package:freemeals/services/bookTable_services.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/button_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
+import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
+import 'package:provider/provider.dart';
+import 'package:freemeals/services/connectivity_service.dart';
+import 'package:data_connection_checker/data_connection_checker.dart';
 
 class ProfilePage extends StatefulWidget {
+  static String routeName = '/profile-page';
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  static List<BookingDoc> myBookings;
+  User user = FirebaseAuth.instance.currentUser;
+  ViewState _viewState = ViewState.Idle;
+  bool _isInit = true;
+  bool _loading = true;
+
+  // @override
+  // void initState() {
+  //   myBookings = BookTableService().getAllUserBookings(user.uid);
+  //   super.initState();
+  // }
+
   @override
   Widget build(BuildContext context) {
-    User user = FirebaseAuth.instance.currentUser;
-
+    print(myBookings);
     return Scaffold(
       appBar: AppBar(
         title: Text("User Details"),
@@ -56,8 +81,11 @@ class _ProfilePageState extends State<ProfilePage> {
       );
 
   Widget buildUpgradeButton() => ButtonWidget(
-        text: 'Upgrade To PRO',
-        onClicked: () {},
+        text: 'Logout',
+        onClicked: () {
+          AuthService().signOut();
+          Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+        },
       );
 
   Widget buildAbout(User user) => Container(
@@ -79,6 +107,65 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             Divider(),
+            Container(
+              child: MultiProvider(
+                  providers: [
+                    StreamProvider(
+                        initialData: ConnectivityStatus.Connected,
+                        create: (ctx) => ConnectivityService()
+                            .connectionStatusController
+                            .stream),
+                  ],
+                  child: Consumer<ConnectivityStatus>(
+                      builder: (ctx, connectionStatus, ch) {
+                    if (connectionStatus == ConnectivityStatus.None) {
+                      return ErrorConnectionPage(
+                          routeName: ProfilePage.routeName);
+                    } else {
+                      if (_viewState == ViewState.Loading)
+                        return LoadingPage();
+                      else {
+                        final bookingProvider =
+                            Provider.of<BookingRequestProvider>(context);
+                        bookingProvider.getUserBookings(user.uid);
+                        List<BookingDoc> bookings =
+                            bookingProvider.customerBookings;
+                        return ExpansionTile(
+                          title: Text(
+                            "Reservations",
+                            style: TextStyle(
+                                fontSize: 22.0, fontWeight: FontWeight.bold),
+                          ),
+                          childrenPadding: EdgeInsets.only(left :15, right: 15),
+                          children: [
+                            new ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: bookings.length,
+                              itemBuilder: (BuildContext ctx, int index) {
+                                return new Container(
+                                    height: 50 ,
+                                    margin: EdgeInsets.only(bottom: 5),
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        border: Border.all(
+                                            width: 1, color: Colors.grey[300]),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10))),
+                                    child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Column( children : [Text(bookings[index].cafeName)])
+                                        ]));
+                              },
+                            )
+                          ],
+                        );
+                      }
+                    }
+                  })),
+            ),
             ExpansionTile(
               title: Text(
                 "Orders",
@@ -94,20 +181,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             Divider(),
-            ExpansionTile(
-              title: Text(
-                "Reservations",
-                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-              ),
-              children: <Widget>[
-                ListTile(
-                  title: Text(
-                    "Expand tile to see previous orders",
-                    style: TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                )
-              ],
-            ),
           ],
         ),
       );

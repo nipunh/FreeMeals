@@ -37,6 +37,8 @@ dependencies:
   pointycastle: ^3.5.0
   cached_network_image: ^3.2.0
   numberpicker: ^2.1.1
+  assorted_layout_widgets: ^5.6.1
+  qr_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -45,6 +47,7 @@ dev_dependencies:
   firebase_core: ^1.6.0
   firebase_storage: ^10.0.3
   cloud_firestore: ^2.5.2
+  carousel_slider: ^4.0.0
   flutter_staggered_grid_view: ^0.3.2
   shared_preferences: ^2.0.7
   connectivity: ^3.0.6

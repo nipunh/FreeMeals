@@ -134,7 +134,7 @@ class OrderProvider extends ChangeNotifier {
       _orderCol
           .doc(waiterId)
           .collection("orders")
-          .where("orderStatus", isEqualTo: 0)
+          .where("orderStatus", whereIn: [0, 1])
           .get();
 
 

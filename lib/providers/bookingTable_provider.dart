@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:freemeals/models/bookeingRequest_model.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/foundation.dart';
 
 class SelectedWaiter extends ChangeNotifier {
@@ -116,22 +117,20 @@ class SelectedWaiter extends ChangeNotifier {
   }
 }
 
-class WaiterProvider extends ChangeNotifier {
-  final CollectionReference _waiterCol = FirebaseFirestore.instance.collection('users');
+class BookingRequestProvider extends ChangeNotifier {
+  final CollectionReference _waiterCol =
+      FirebaseFirestore.instance.collection('cafeterias');
 
-  final CollectionReference _cafeteriaRef = FirebaseFirestore.instance.collection('cafeterias');
+  final CollectionReference _tableBookingCol =
+      FirebaseFirestore.instance.collection('tableBookings');
 
-  List<UserDoc> _waiters = [];
+  List<BookingDoc> _bookings = [];
 
-  List<dynamic> _banners = [];
+  List<BookingDoc> get bookings => [..._bookings];
 
-  List<OrderRequests> _orders = [];
+  List<BookingDoc> _customerBookings = [];
 
-  List<UserDoc> get waiters => [..._waiters];
-
-  List<OrderRequests> get orders => [..._orders];
-
-  List<String> get banners => [..._banners];
+  List<BookingDoc> get customerBookings => [..._customerBookings];
 
   UserDoc _selectedWaiter;
 
@@ -157,41 +156,39 @@ class WaiterProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getWaiters(String cafeId) async {
+  Future<void> getBookingRequests(String cafeId) async {
     try {
-      QuerySnapshot<Map<String, dynamic>> waiterDocs = await _waiterCol
-          .where("userType", isEqualTo: 0)
+      QuerySnapshot<Map<String, dynamic>> requestDocs = await _tableBookingCol
           .where("cafeId", isEqualTo: cafeId)
-          .where("status", whereIn: [0, 1])
+          .where("requestStatus", isEqualTo: 0)
           .get();
 
-      List<UserDoc> waiters = waiterDocs.docs.map((doc) {
-        return UserDoc.fromDoctoUserInfo(doc);
+      List<BookingDoc> requests = requestDocs.docs.map((doc) {
+        return BookingDoc.fromDoctoBookingInfo(doc);
       }).toList();
 
-      _waiters = waiters;
+      _bookings = requests;
       notifyListeners();
     } catch (err) {
-      print('error waiter provider - get Waiters = ' +
-          err.toString());
+      print('error waiter provider - get Waiters = ' + err.toString());
       throw (err);
     }
   }
 
-  Future<void> getOfferBanners(String cafeId) async{
+    Future<void> getUserBookings(String userId) async {
     try {
+      QuerySnapshot<Map<String, dynamic>> requestDocs = await _tableBookingCol
+          .where("customerId", isEqualTo: userId)
+          .get();
 
-      DocumentSnapshot<dynamic> cafeDoc = await _cafeteriaRef.doc(cafeId).get();
-      if(cafeDoc.exists){
-        List<dynamic> data = cafeDoc.data()["offerBanners"];
-        _banners = data;
-      }else{
-        _banners = [];
-      }
+      List<BookingDoc> requests = requestDocs.docs.map((doc) {
+        return BookingDoc.fromDoctoBookingInfo(doc);
+      }).toList();
+
+      _customerBookings = requests;
       notifyListeners();
     } catch (err) {
-      print('error waiter provider - get Waiters = ' +
-          err.toString());
+      print('error waiter provider - get Waiters = ' + err.toString());
       throw (err);
     }
   }
@@ -240,7 +237,7 @@ class WaiterProvider extends ChangeNotifier {
   // }
 
   void setCafesToEmpty() {
-    _waiters = [];
+    _bookings = [];
     notifyListeners();
   }
 }

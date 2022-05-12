@@ -30,8 +30,8 @@ class ProfileWidget extends StatelessWidget {
 
   Widget buildImage() {
     final image = NetworkImage(imagePath);
-
-    return ClipOval(
+    return ClipRRect(
+          borderRadius: BorderRadius.circular(40.0),
       child: Material(
         color: Colors.transparent,
         child: Ink.image(
@@ -52,7 +52,7 @@ class ProfileWidget extends StatelessWidget {
           color: color,
           all: 8,
           child: Icon(
-            Icons.edit,
+            Icons.star,
             color: Colors.white,
             size: 20,
           ),

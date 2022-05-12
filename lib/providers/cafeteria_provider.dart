@@ -19,6 +19,7 @@ class SelectedCafeteria extends ChangeNotifier {
       throw Exception(err);
     }
   }
+
   String get cafeId {
     if (_cafeId != null)
       return _cafeId;
@@ -46,8 +47,8 @@ class SelectedCafeteria extends ChangeNotifier {
     }
   }
 
-  Future<void> setCafeteria(String cafeteriaId, String cafeteriaName,
-      String cafeCity) async {
+  Future<void> setCafeteria(
+      String cafeteriaId, String cafeteriaName, String cafeCity) async {
     try {
       _cafeId = cafeteriaId;
       _cafeName = cafeteriaName;
@@ -62,8 +63,8 @@ class SelectedCafeteria extends ChangeNotifier {
   Future<void> savePreferences() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('id', _cafeId);
-      prefs.setString('name', _cafeName);
+      prefs.setString('cafeId', _cafeId);
+      prefs.setString('cafeName', _cafeName);
       prefs.setString('city', _city);
       return;
     } catch (err) {
@@ -75,12 +76,11 @@ class SelectedCafeteria extends ChangeNotifier {
   Future<void> loadPreferences() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String cafeId = prefs.getString('id');
-      String cafeName = prefs.getString('name');
+      String cafeId = prefs.getString('cafeId');
+      String cafeName = prefs.getString('cafeName');
       String city = prefs.getString('city');
-      if (cafeId != null &&
-          cafeName != null &&
-          city != null) setCafeteria(cafeId, cafeName, city);
+      if (cafeId != null && cafeName != null && city != null)
+        setCafeteria(cafeId, cafeName, city);
     } catch (err) {
       print('loadPreference Cafe error = $err');
       throw Exception(err);
@@ -89,7 +89,6 @@ class SelectedCafeteria extends ChangeNotifier {
 }
 
 class CafeteriaProvider extends ChangeNotifier {
-
   final CollectionReference _cafeteria = FirebaseFirestore.instance.collection('cafeterias');
 
   List<Cafeteria> _cafes = [];
@@ -102,7 +101,6 @@ class CafeteriaProvider extends ChangeNotifier {
 
   Future<void> getSelectedCafe(String selectedCafeteriaId) async {
     try {
-    
       _selectedCafeteria = null;
       _cafes = [];
       if (selectedCafeteriaId == null || selectedCafeteriaId.isEmpty) {
@@ -130,11 +128,9 @@ class CafeteriaProvider extends ChangeNotifier {
           .get();
 
       List<Cafeteria> cafeterias = cafeDocs.docs.map((doc) {
-        
         return Cafeteria.fromDocToCafeteria(doc);
       }).toList();
 
-    
       _cafes = [];
       _cafes = cafeterias;
       notifyListeners();

@@ -10,6 +10,7 @@ import 'package:freemeals/screen/stories_page.dart';
 import 'package:freemeals/screen/story_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freemeals/services/user_preferences.dart';
+import 'package:freemeals/widgets/app_wide/app_wide/NavigationBar.dart';
 
 import 'Cafeteria/waiter_selection_screen.dart';
 
@@ -24,7 +25,7 @@ class RootApp extends StatefulWidget {
 
 class _RootAppState extends State<RootApp> {
   int pageIndex = 0;
-  int userType = 2;
+  int userType = 1;
 
   @override
   void didChangeDependencies() async {
@@ -65,8 +66,7 @@ class _RootAppState extends State<RootApp> {
               : userType == 0
                   ? waiterPages
                   : userPages),
-      // widget.user.userType == 0 ? waiterPages : userPages),
-      bottomNavigationBar: userType == 1 ? getFooter() : null,
+      bottomNavigationBar: userType == 1 ? NavBar(context: context,) : null,
     );
   }
 
@@ -78,105 +78,11 @@ class _RootAppState extends State<RootApp> {
     );
   }
 
-  Widget getFooter() {
-    List bottomBarElements = [
-      ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(Colors.white.withOpacity(0.30)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          )),
-        ),
-        // onPressed: () {
-        //   Navigator.push(
-        //       context,
-        //       new MaterialPageRoute(
-        //           builder: (context) => new CafeteriaSelectionScreen()));
-        // },
-        child: Text('Stories',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold)),
-      ),
-      ElevatedButton(
-          style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.purple[400]),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            )),
-          ),
-          onPressed: () {
-            Navigator.push(
-                context,
-                new MaterialPageRoute(
-                    builder: (context) => new WaiterSelectionScreen(
-                        waiterSelection: new WaiterSelection("Priyank"))));
-          },
-          child: Text("Start Order",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold))),
-      ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(Colors.white.withOpacity(0.8)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.white70))),
-        ),
-        onPressed: () {},
-        child: Wrap(
-          children: [
-            Text(
-              'W',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900),
-            ),
-            Text('.',
-                style: TextStyle(
-                    color: Colors.purple[400],
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900))
-          ],
-        ),
-      )
-    ];
-
-    return Container(
-      width: double.infinity,
-      height: 60,
-      color: Color(0x00ffffff),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(bottomBarElements.length, (index) {
-            return InkWell(
-                onTap: () {
-                  // pageIndex == 0 && index == 0
-                  //     ? selectedTab(2)
-                  //     : selectedTab(index);
-                },
-                child: bottomBarElements[index]);
-          }),
-        ),
-      ),
-    );
-  }
-
   selectedTab(index) {
     setState(() {
       pageIndex = index;
     });
   }
 }
+
+

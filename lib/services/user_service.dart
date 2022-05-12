@@ -22,18 +22,18 @@ class UserService {
     return stream.map(_snapshotCredits);
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getUserByID(String userId) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserByID(
+      String userId) async {
     try {
-      
       DocumentSnapshot<Map<String, dynamic>> userDoc =
           await _user.doc(userId).get();
 
-          if(userDoc.exists){
-            return userDoc;
-          }else{
-            print("returning null");
-            return null;
-          }
+      if (userDoc.exists) {
+        return userDoc;
+      } else {
+        print("returning null");
+        return null;
+      }
     } catch (err) {
       print('error user service- get user by selected user Id = ' +
           err.toString());
@@ -42,25 +42,47 @@ class UserService {
   }
 
   Stream<List<UserData>> getWaiters(String cafeId) {
+    print("in service");
     Stream<QuerySnapshot<Map<String, dynamic>>> stream = _user
         .where("cafeId", isEqualTo: cafeId)
-        .where("status", isEqualTo: 0)
+        // .where("status", isEqualTo: 0)
         .orderBy('status')
         .snapshots();
 
     return stream.map(_snapshotCreditsWaiter);
   }
 
-  List<UserData> _snapshotCreditsWaiter(QuerySnapshot<Map<String, dynamic>> snapshot){
+  List<UserData> _snapshotCreditsWaiter(
+      QuerySnapshot<Map<String, dynamic>> snapshot) {
     final List<UserData> cartItems = snapshot.docs.map((doc) {
       return UserDoc.fromDoctoUserInfo(doc);
     }).toList();
+
     return cartItems;
+  }
+
+
+  Stream<List<dynamic>> getOfferBanners(String cafeId) {
+    try {
+     Stream<DocumentSnapshot<Map<String, dynamic>>> stream =  _db.collection("cafeterias").doc(cafeId).snapshots();
+      
+      return  stream.map(_snapshotBanner);
+      
+    } catch (err) {
+      print('error waiter provider - get Waiters = ' +
+          err.toString());
+      throw (err);
+    }
+  }
+
+  List<dynamic> _snapshotBanner(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    return snapshot.data()["offerBanners"];
   }
 
   UserData _snapshotCredits(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     return UserDoc.fromDoctoUserInfo(snapshot);
   }
+
   bool isLeapYear(int value) =>
       value % 400 == 0 || (value % 4 == 0 && value % 100 != 0);
   int daysInMonth(int year, int month) {
@@ -85,41 +107,80 @@ class UserService {
     return result;
   }
 
-  Future<void> selectWaiter(String waiterId, int status, User user) async {
+  Future<String> selectWaiter(String waiterId, int status, User user) async {
     try {
-      await _user
-          .doc(waiterId)
-          .update({"status" : status});
+      DateTime dateStart = DateTime.now().subtract(Duration(minutes: 30));
+      Timestamp timeStart = Timestamp.fromDate(dateStart);
 
-      _user.doc(waiterId).collection("orders").doc().set({
-        'displayName' : user.displayName == null ? "Anonymous" : user.displayName,
-        'userId' : user.uid == null ? "" : user.uid,
-        'orderStatus' : 0,
-        'waiterRequestTime' : DateTime.now(),
-        'waiterAcceptedTime' : null,
-        'numberOfCustomers' : 0,
-        'tableNumber' : 0,
-        'userList' : [],
-      });
+      QuerySnapshot<Map<String, dynamic>> userDoc = await _user
+          .doc(waiterId)
+          .collection("orders")
+          .where("userId", isEqualTo: user.uid)
+          .where("cafeId", isEqualTo: "CXdKnqsdwetprt885KVx")
+          .where("waiterRequestTime", isGreaterThanOrEqualTo: timeStart)
+          .where("waiterRequestTime", isLessThanOrEqualTo: Timestamp.now())
+          .get();
+
+      if (userDoc.size > 0) {
+        print("OrderRequest Already exist");
+        return userDoc.docs.first.id;
+      } else {
+        await _user.doc(waiterId).update({"status": status});
+
+        DocumentReference<Map<String, dynamic>> orderReqDoc =
+            _user.doc(waiterId).collection("orders").doc();
+
+        orderReqDoc.set({
+          'cafeId': "CXdKnqsdwetprt885KVx",
+          'displayName':
+              user.displayName == null ? "Anonymous" : user.displayName,
+          'userId': user.uid == null ? "" : user.uid,
+          'orderStatus': 0,
+          'waiterRequestTime': DateTime.now(),
+          'waiterAcceptedTime': null,
+          'numberOfCustomers': 0,
+          'tableNumber': 0,
+          'userList': [],
+        });
+
+        return orderReqDoc.id;
+      }
     } catch (err) {
       print('error while selecting waiter = ' + err.toString());
-      throw (err);
+      return null;
     }
   }
 
-  void acceptUserRequest(String waiterId, String orderId, int tableNumber){
-    try{
-        _user.doc(waiterId).collection("orders").doc(orderId).update({
-          "OrderStatus" : 1,
-          "waiterAcceptedTime" : DateTime.now(),
-          "tableNumber" : tableNumber,
-        });
-     } catch (err) {
+  Future<bool> deleteOrderRequest(String waiterId, String orderId) async {
+    try {
+      print(waiterId);
+      _user
+          .doc(waiterId)
+          .collection("orders")
+          .doc(orderId)
+          .delete()
+          .then((value) => print("Document Deleted"),
+              onError: (e) => print("Error updating document $e"));
+      return true;
+    } catch (err) {
+      print(err);
+      return false;
+    }
+  }
+
+  void acceptUserRequest(String waiterId, String orderId, int tableNumber, int noOfCustomers) {
+    try {
+       _user.doc(waiterId).collection("orders").doc(orderId).update({
+        "OrderStatus": 1,
+        "waiterAcceptedTime": DateTime.now(),
+        "tableNumber": tableNumber,
+        "numberOfCustomers" : noOfCustomers
+      });
+    } catch (err) {
       print('error while acceptUserRequest = ' + err.toString());
       throw (err);
     }
   }
-
 
 //   Future<bool> subsidyEmployeeIdCheck(String userId, Cafeteria cafe) async {
 //     try {
@@ -292,6 +353,5 @@ class UserService {
 //     }
 //   }
 // }
-
 
 }

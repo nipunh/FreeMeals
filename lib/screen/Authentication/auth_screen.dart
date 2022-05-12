@@ -74,7 +74,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
   int resendToken = 0;
   String phoneNo = '';
   String phoneNumber = '';
-  String phoneIsoCode = 'IN';
+  String phoneIsoCode = 'CA';
   bool countDone = false;
   bool codeSent = false;
   bool _loading = false;
@@ -299,7 +299,6 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                                           final screen = await AuthService()
                                               .signInWithOTP(smsCode,
                                                   verificationId, phoneNo);
-
                                           FocusScope.of(context).unfocus();
                                           if (screen == null) {
                                             Navigator.of(context)

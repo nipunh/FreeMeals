@@ -50,7 +50,6 @@ class HandleMain extends StatelessWidget {
                     user.displayName.isEmpty ||
                     user.email == null ||
                     user.email.isEmpty) {
-                  print("name screen");
                   return NameScreen();
                 } else if (selectCafe.cafeId == null ||
                         selectCafe.cafeName == null ||

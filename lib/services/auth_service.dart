@@ -56,20 +56,21 @@ class AuthService {
             'empId': null
           });
 
-          return ScreenName.Name;
+          return ScreenName.Discovery;
         }
         String name = userDoc.data()['displayName'];
         String email = userDoc.data()['emailAddress'];
 
-        await UserPreferences.setUserId(userDoc.data()['userId']);
+        await UserPreferences.setUserId(user.uid);
         await UserPreferences.setUserEmail(email);
         await UserPreferences.setUserName(name);
         await UserPreferences.setUserProfileImg(userDoc.data()['profileImageUrl']);
         await UserPreferences.setUserType(userDoc.data()['userType'].toString());
 
         if (name == null || name.isEmpty || email == null || email.isEmpty)
-          return ScreenName.Name;
-        return ScreenName.CafeSelection;
+          return ScreenName.Discovery;
+
+        return ScreenName.Discovery;
       } else
         return null;
     } catch (err) {
@@ -84,6 +85,7 @@ class AuthService {
       log('data: $phoneNumber');
       AuthCredential authCreds =
           PhoneAuthProvider.credential(verificationId: verId, smsCode: smsCode);
+
       return await signIn(authCreds, phoneNumber);
     } catch (err) {
       print('error Auth service - sign in with OTP = ' + err.toString());

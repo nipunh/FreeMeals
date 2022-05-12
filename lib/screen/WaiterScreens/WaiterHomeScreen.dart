@@ -10,6 +10,8 @@ import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/providers/order_provider.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
+import 'package:freemeals/screen/Order/ongoingOrder_screen.dart';
+import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/services/order_service.dart';
 import 'package:freemeals/services/user_service.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
@@ -104,8 +106,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
           child: Consumer<ConnectivityStatus>(
               builder: (ctx, connectionStatus, ch) {
             if (connectionStatus == ConnectivityStatus.None) {
-              return ErrorConnectionPage(
-                  routeName: CafeteriaSelectionScreen.routeName);
+              return ErrorConnectionPage(routeName: DiscoverPage.routeName);
             } else {
               if (_viewState == ViewState.Loading)
                 return LoadingPage();
@@ -113,7 +114,6 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                 final orderProvider = Provider.of<OrderProvider>(context);
                 orderProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
                 List<OrderDoc> orderRequest = orderProvider.orders;
-
                 return SafeArea(
                     child: Scaffold(
                         appBar: AppBar(
@@ -136,8 +136,10 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                                             ? true
                                             : false,
                                         onTap: () {
-                                          _settingModalBottomSheet(context);
-                                          // UserService().acceptUserRequest(user.uid, order.id);
+                                          _settingModalBottomSheet(
+                                              context,
+                                              "BXO9L4PwBrMHTCK3z6yhNjfPHsG3",
+                                              order.id);
                                         },
                                         leading: ClipOval(
                                           child: CachedNetworkImage(
@@ -163,61 +165,71 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
   }
 }
 
-void _settingModalBottomSheet(context) {
+void _settingModalBottomSheet(context, waiterId, orderId) {
   int _currentHorizontalIntValue = 1;
+  int tableNumber = 0;
+  int noOfCustomer = 0;
+
   showModalBottomSheet(
       isDismissible: true,
       context: context,
       builder: (BuildContext bc) {
-        return Container(
-            height: MediaQuery.of(context).size.height * 0.40,
-            padding: EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
-            child: new Form(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Enter the following details",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 10),
-                  // NumberPicker(
-                  //   value: _currentHorizontalIntValue,
-                  //   minValue: 1,
-                  //   maxValue: 15,
-                  //   step: 1,
-                  //   itemHeight: 50,
-                  //   axis: Axis.horizontal,
-                  //   // onChanged: (value) =>
-                  //   //     setState(() => _currentHorizontalIntValue = value),
-                  //   decoration: BoxDecoration(
-                  //     borderRadius: BorderRadius.circular(16),
-                  //     border: Border.all(color: Colors.black26),
-                  //   ),
-                  // ),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.dining),
-                      hintText: 'Enter table number',
-                      labelText: 'Table Number',
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          return Container(
+              height: MediaQuery.of(context).size.height * 0.40,
+              padding:
+                  EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
+              child: new Form(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Enter the following details",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.person),
-                      hintText: 'Enter number of people on table',
-                      labelText: 'Customer Count',
+                    SizedBox(height: 10),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: const Icon(Icons.dining),
+                        hintText: 'Enter table number',
+                        labelText: 'Table Number',
+                      ),
+                      onChanged: ((value) => {
+                            setState(() {
+                              tableNumber = int.parse(value);
+                            })
+                          }),
                     ),
-                  ),
-                  new Container(
-                      padding: const EdgeInsets.only(left: 150.0, top: 40.0),
-                      child: new ElevatedButton(
-                        child: const Text('Next'),
-                        onPressed: null,
-                      )),
-                ],
-              ),
-            ));
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: const Icon(Icons.person),
+                        hintText: 'Enter number of people on table',
+                        labelText: 'Customer Count',
+                      ),
+                      onChanged: ((value) => {
+                            setState(() {
+                              noOfCustomer = int.parse(value);
+                            })
+                          }),
+                    ),
+                    new Container(
+                        padding: const EdgeInsets.only(left: 150.0, top: 40.0),
+                        child: new ElevatedButton(
+                          child: const Text('Next'),
+                          onPressed: () {
+                            UserService().acceptUserRequest(
+                                waiterId, orderId, tableNumber, noOfCustomer);
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => OngoingOrder()));
+                          },
+                        )),
+                  ],
+                ),
+              ));
+        });
       });
 }
