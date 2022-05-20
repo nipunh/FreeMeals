@@ -518,12 +518,14 @@ class _BookTableState extends State<BookTable> {
             )),
         onPressed: () async {
           if (user != null) {
-            String bookingId = BookTableService().registerTable(
+            String bookingId ="";
+            
+             BookTableService().registerTable(
                 "CXdKnqsdwetprt885KVx",
                 selectedDate,
                 _party,
                 selectedTimeSlot,
-                user);
+                user).then((value) => bookingId = value);
 
             BookTableService()
                 .getBookingDetails(bookingId)

@@ -7,7 +7,10 @@ import 'package:freemeals/models/user_model.dart';
 
 class UserService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final CollectionReference _user = FirebaseFirestore.instance.collection('users');
+  final CollectionReference _user =
+      FirebaseFirestore.instance.collection('users');
+  final CollectionReference tableBookingReference =
+      FirebaseFirestore.instance.collection('tableBookings');
 
   // final CollectionReference _companies =
   //     FirebaseFirestore.instance.collection('companies');
@@ -61,21 +64,20 @@ class UserService {
     return cartItems;
   }
 
-
   Stream<List<dynamic>> getOfferBanners(String cafeId) {
     try {
-     Stream<DocumentSnapshot<Map<String, dynamic>>> stream =  _db.collection("cafeterias").doc(cafeId).snapshots();
-      
-      return  stream.map(_snapshotBanner);
-      
+      Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+          _db.collection("cafeterias").doc(cafeId).snapshots();
+
+      return stream.map(_snapshotBanner);
     } catch (err) {
-      print('error waiter provider - get Waiters = ' +
-          err.toString());
+      print('error waiter provider - get Waiters = ' + err.toString());
       throw (err);
     }
   }
 
-  List<dynamic> _snapshotBanner(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+  List<dynamic> _snapshotBanner(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
     return snapshot.data()["offerBanners"];
   }
 
@@ -154,13 +156,9 @@ class UserService {
   Future<bool> deleteOrderRequest(String waiterId, String orderId) async {
     try {
       print(waiterId);
-      _user
-          .doc(waiterId)
-          .collection("orders")
-          .doc(orderId)
-          .delete()
-          .then((value) => print("Document Deleted"),
-              onError: (e) => print("Error updating document $e"));
+      _user.doc(waiterId).collection("orders").doc(orderId).delete().then(
+          (value) => print("Document Deleted"),
+          onError: (e) => print("Error updating document $e"));
       return true;
     } catch (err) {
       print(err);
@@ -168,13 +166,26 @@ class UserService {
     }
   }
 
-  void acceptUserRequest(String waiterId, String orderId, int tableNumber, int noOfCustomers) {
+  void acceptTableBookingRequest(String bookingId, int status) async {
     try {
-       _user.doc(waiterId).collection("orders").doc(orderId).update({
+      await tableBookingReference.doc(bookingId).update({
+        "requestStatus": status,
+        "requestApprovedTime": DateTime.now(),
+      });
+    } catch (err) {
+      print('error while acceptTableBookingRequest = ' + err.toString());
+      throw (err);
+    }
+  }
+
+  void acceptUserRequest(
+      String waiterId, String orderId, int tableNumber, int noOfCustomers) {
+    try {
+      _user.doc(waiterId).collection("orders").doc(orderId).update({
         "OrderStatus": 1,
         "waiterAcceptedTime": DateTime.now(),
         "tableNumber": tableNumber,
-        "numberOfCustomers" : noOfCustomers
+        "numberOfCustomers": noOfCustomers
       });
     } catch (err) {
       print('error while acceptUserRequest = ' + err.toString());

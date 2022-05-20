@@ -25,11 +25,13 @@ class BookTableService {
     var data = snapshot.data();
   }
 
-  String registerTable(String cafeId, DateTime selectedDate, int party,
-      DateTime selectedTime, User user) {
+  Future<String> registerTable(String cafeId, DateTime selectedDate, int party,
+      DateTime selectedTime, User user) async {
     try {
-      var bookingDoc = _tableBooking.doc();
 
+      DocumentSnapshot<Map<String, dynamic>> cafeDoc = await _cafe.doc(cafeId).get();
+
+      var bookingDoc = _tableBooking.doc();
       bookingDoc.set({
         'cafeteriaId': cafeId,
         'bookingDate': selectedDate,
@@ -40,7 +42,7 @@ class BookTableService {
         "phoneNumber": user.phoneNumber,
         "bookedAt": DateTime.now(),
         "customerName": user.displayName,
-        "requestStatus": 0,
+        "requestStatus": cafeDoc.data()["autoAcceptTableRequest"] == true ? 1 : 0 ,
         "cafeName" : "Deli Planet",
       });
 
@@ -85,4 +87,14 @@ class BookTableService {
       print(err);
     }
   }
+
+  void updateTableBookingSttaus(bookingId, status) async{
+    try {
+      await _tableBooking.doc(bookingId).update({
+        'requestStatus' : status
+      });
+    } catch (err) {
+      print(err);
+    }
+  } 
 }

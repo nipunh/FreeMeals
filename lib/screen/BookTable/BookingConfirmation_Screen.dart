@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freemeals/constants/request_constants.dart';
 import 'package:freemeals/models/bookeingRequest_model.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -37,7 +38,7 @@ class BookingConfirmation_Screen extends StatelessWidget {
                     child: RichText(
                         text: TextSpan(children: [
                       TextSpan(
-                        text: "Booking Confirmed \n",
+                        text: RequestDecrypt.tableBookingStatus[booking.requestStatus],
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.black,

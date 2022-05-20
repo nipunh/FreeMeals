@@ -20,6 +20,7 @@ class Cafeteria {
   bool cafeLoyalty;
   int companyCode;
   int cafeLoyaltyStamps;
+  bool autoAcceptTableRequest;
 
 
   Cafeteria({
@@ -41,7 +42,7 @@ class Cafeteria {
     @required this.cafeLoyalty,
     @required this.companyCode,
     @required this.cafeLoyaltyStamps,
-
+    @required this.autoAcceptTableRequest,
   });
 
   static Cafeteria fromDocToCafeteria(
@@ -69,7 +70,8 @@ class Cafeteria {
       banners:
           (data['banners'] == null) ? [] : List<String>.from(data['banners']),
           companyCode: data['companyCode'],
-      cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? 0.toInt() : data['cafeLoyaltyStamps'].toInt()
+      cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? 0.toInt() : data['cafeLoyaltyStamps'].toInt(),
+      autoAcceptTableRequest: data['autoAcceptTableRequest'] ?? false,
     );
   }
 }

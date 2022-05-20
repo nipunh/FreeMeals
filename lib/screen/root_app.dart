@@ -25,7 +25,7 @@ class RootApp extends StatefulWidget {
 
 class _RootAppState extends State<RootApp> {
   int pageIndex = 0;
-  int userType = 1;
+  int userType = 2;
 
   @override
   void didChangeDependencies() async {

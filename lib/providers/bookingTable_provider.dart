@@ -159,8 +159,7 @@ class BookingRequestProvider extends ChangeNotifier {
   Future<void> getBookingRequests(String cafeId) async {
     try {
       QuerySnapshot<Map<String, dynamic>> requestDocs = await _tableBookingCol
-          .where("cafeId", isEqualTo: cafeId)
-          .where("requestStatus", isEqualTo: 0)
+          .where("cafeteriaId", isEqualTo: cafeId)
           .get();
 
       List<BookingDoc> requests = requestDocs.docs.map((doc) {

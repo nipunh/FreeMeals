@@ -159,6 +159,9 @@ class WaiterProvider extends ChangeNotifier {
 
   Future<void> getWaiters(String cafeId) async {
     try {
+
+print("im here");
+
       QuerySnapshot<Map<String, dynamic>> waiterDocs = await _waiterCol
           .where("userType", isEqualTo: 0)
           .where("cafeId", isEqualTo: cafeId)

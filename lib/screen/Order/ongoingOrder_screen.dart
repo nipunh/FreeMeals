@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:freemeals/models/cart_model.dart';
+import 'package:freemeals/providers/products_provider.dart';
+import 'package:freemeals/screen/Order/products_overview_screen.dart';
+import 'package:provider/provider.dart';
 
 class OngoingOrder extends StatefulWidget {
-  // const OngoingOrder({ Key? key }) : super(key: key);
-
+  static final routeName = '/routeName';
   @override
   State<OngoingOrder> createState() => _OngoingOrderState();
 }
@@ -10,8 +13,18 @@ class OngoingOrder extends StatefulWidget {
 class _OngoingOrderState extends State<OngoingOrder> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(child: Text("Ongoing Order")),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => Products(),
+        ),
+        ChangeNotifierProvider(
+          create: (ctx) => Cart(),
+        ),
+      ],
+      child: Container(
+        child: ProductsOverviewScreen()
+      ),
     );
   }
 }
