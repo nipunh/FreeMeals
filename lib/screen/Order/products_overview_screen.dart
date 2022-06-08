@@ -15,6 +15,7 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFav = false;
+  final orderDocId = "";
 
   @override
   Widget build(BuildContext context) {

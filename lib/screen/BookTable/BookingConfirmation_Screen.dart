@@ -3,10 +3,10 @@ import 'package:freemeals/constants/request_constants.dart';
 import 'package:freemeals/models/bookeingRequest_model.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class BookingConfirmation_Screen extends StatelessWidget {
+class BookingConfirmationScreen extends StatelessWidget {
   BookingDoc booking;
 
-  BookingConfirmation_Screen({key, @required this.booking}) : super(key: key);
+  BookingConfirmationScreen({key, @required this.booking}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class BookingConfirmation_Screen extends StatelessWidget {
                       ),
                       TextSpan(
                           text:
-                              "We have booked your spot for the ${booking.bookingDate.day}/${booking.bookingDate.month}/${booking.bookingDate.year} at the ${booking.cafeName}. Please arrive at the restaurant at the selected time.",
+                              "\n\nWe have booked your spot for the ${booking.bookingDate.day}/${booking.bookingDate.month}/${booking.bookingDate.year} at the ${booking.cafeName}. Please arrive at the restaurant at the selected time.",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,

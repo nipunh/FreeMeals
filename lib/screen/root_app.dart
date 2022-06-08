@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/models/waiter_Selection.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/screen/AnimationScreen.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/ManagerScreens/MAnagerHomeScreen.dart';
@@ -12,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freemeals/services/user_preferences.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/NavigationBar.dart';
 
+import 'package:provider/provider.dart';
 import 'Cafeteria/waiter_selection_screen.dart';
 
 class RootApp extends StatefulWidget {
@@ -25,12 +27,12 @@ class RootApp extends StatefulWidget {
 
 class _RootAppState extends State<RootApp> {
   int pageIndex = 0;
-  int userType = 2;
+  int userType = 1;
 
   @override
   void didChangeDependencies() async {
     bool _isInit = true;
-
+    print(UserPreferences.getUserType());
     if (_isInit) {
       // if (UserPreferences.getUserEmailAddress() == null)
       //   await UserPreferences.setUserEmail(widget.user.emailAddress);
@@ -57,6 +59,9 @@ class _RootAppState extends State<RootApp> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    UserDoc selectedUser = userProvider.selectedUser;
+    print(selectedUser);
     return Scaffold(
       extendBody: true,
       body: IndexedStack(
@@ -66,7 +71,7 @@ class _RootAppState extends State<RootApp> {
               : userType == 0
                   ? waiterPages
                   : userPages),
-      bottomNavigationBar: userType == 1 ? NavBar(context: context,) : null,
+      bottomNavigationBar: NavBar(context: context,)
     );
   }
 

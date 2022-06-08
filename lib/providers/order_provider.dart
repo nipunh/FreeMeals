@@ -119,6 +119,10 @@ class SelectedOrder extends ChangeNotifier {
 class OrderProvider extends ChangeNotifier {
   final CollectionReference _orderCol = FirebaseFirestore.instance.collection('users');
 
+    final CollectionReference _orderRef = FirebaseFirestore.instance.collection('orders');
+
+  OrderDoc currentOrder;
+
   List<OrderDoc> _orders = [];
 
   List<OrderDoc> get orders => [..._orders];
@@ -131,10 +135,9 @@ class OrderProvider extends ChangeNotifier {
   Future<void> getWaitersOrders(String waiterId) async {
     try {
       QuerySnapshot<Map<String, dynamic>> waiterDocs = await 
-      _orderCol
-          .doc(waiterId)
-          .collection("orders")
-          .where("orderStatus", whereIn: [0, 1])
+          _orderCol
+          .where("waiterId", isEqualTo : waiterId)
+          .where("orderStatus", whereIn: [1, 2])
           .get();
 
 
@@ -154,6 +157,51 @@ class OrderProvider extends ChangeNotifier {
           err.toString());
       throw (err);
     }
+  }
+
+  Future<void> startNewOrder(String waiterId, int orderId, int tableNumber, int numberOfCustomers) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> orderDoc = await 
+          _orderRef
+          .where('orderId', isEqualTo: orderId )
+          .where("orderStatus", whereIn: [0])
+          .limit(1)
+          .get();
+
+      if(orderDoc.docs.isNotEmpty){
+        OrderDoc orderData =  OrderDoc.fromDoctoOrderInfo(orderDoc.docs.first);
+
+        _orderRef.doc(orderData.id).update(
+          {
+            "waiterId" : waiterId,
+            "orderStatus" : 1,
+            "tableNumber" : tableNumber,
+            "numberOfCustomers" :numberOfCustomers,
+            "waiterAcceptedTime" : DateTime.now(),
+            "userList" : {orderData.userId : {}}
+          }
+        );
+
+      }
+      notifyListeners();
+    } catch (err) {
+      print('error waiter provider - get orders = ' +
+          err.toString());
+      throw (err);
+    }
+  }
+
+  Future<OrderDoc> getOrder(String orderDocId) async {
+      DocumentSnapshot<Map<String, dynamic>> orderDoc = await 
+          _orderRef
+          .doc(orderDocId)
+          .get();
+
+      if(orderDoc.exists){
+        OrderDoc orderData =  OrderDoc.fromDoctoOrderInfo(orderDoc);
+        currentOrder = orderData;
+      }
+      notifyListeners();
   }
 
   void setCafesToEmpty() {

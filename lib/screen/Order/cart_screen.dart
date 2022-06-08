@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freemeals/models/cart_model.dart';
+import 'package:freemeals/services/user_service.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/app_wide/app_wide/cart_item.dart' as ci;
 

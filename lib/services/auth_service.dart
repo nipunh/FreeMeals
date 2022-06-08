@@ -5,7 +5,9 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freemeals/enums/screen_name.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/services/user_preferences.dart';
+import 'package:freemeals/services/user_service.dart';
 
 import 'notification_service.dart';
 
@@ -66,6 +68,8 @@ class AuthService {
         await UserPreferences.setUserName(name);
         await UserPreferences.setUserProfileImg(userDoc.data()['profileImageUrl']);
         await UserPreferences.setUserType(userDoc.data()['userType'].toString());
+
+        // await SelectedUser().setUser(userDoc.data()['id'], userDoc.data()['displayName'], userDoc.data()['userType']);
 
         if (name == null || name.isEmpty || email == null || email.isEmpty)
           return ScreenName.Discovery;

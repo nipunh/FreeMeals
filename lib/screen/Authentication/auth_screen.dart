@@ -296,9 +296,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                                       if (connectionStatus ==
                                           DataConnectionStatus.connected) {
                                         if (codeSent) {
-                                          final screen = await AuthService()
-                                              .signInWithOTP(smsCode,
-                                                  verificationId, phoneNo);
+                                          final screen = await AuthService().signInWithOTP(smsCode,verificationId, phoneNo);
                                           FocusScope.of(context).unfocus();
                                           if (screen == null) {
                                             Navigator.of(context)
@@ -323,7 +321,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                                             countDone = false;
                                             _loading = false;
                                           });
-                                          await verifyPhone(phoneNo);
+                                          await verifyPhone(phoneNo, context);
                                         }
                                       } else {
                                         ConnectivityService().connectionNone();
@@ -381,7 +379,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                       DataConnectionStatus connectionStatus =
                           await ConnectivityService().checkStatus();
                       if (connectionStatus == DataConnectionStatus.connected) {
-                        await verifyPhone(phoneNo);
+                        await verifyPhone(phoneNo, context);
                         setState(() {
                           countDone = false;
                         });
@@ -414,7 +412,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
     });
   }
 
-  Future<void> verifyPhone(phoneNo) async {
+  Future<void> verifyPhone(phoneNo, context) async {
     final _auth = FirebaseAuth.instance;
 
     final PhoneVerificationCompleted verified =

@@ -95,7 +95,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
             )
           ],
         ),
-        body: Container(
+        body: SingleChildScrollView(
             child: MultiProvider(
           providers: [
             StreamProvider(
@@ -103,72 +103,143 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                 create: (ctx) =>
                     ConnectivityService().connectionStatusController.stream),
           ],
-          child: Consumer<ConnectivityStatus>(
-              builder: (ctx, connectionStatus, ch) {
-            if (connectionStatus == ConnectivityStatus.None) {
-              return ErrorConnectionPage(routeName: DiscoverPage.routeName);
-            } else {
-              if (_viewState == ViewState.Loading)
-                return LoadingPage();
-              else {
-                final orderProvider = Provider.of<OrderProvider>(context);
-                orderProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
-                List<OrderDoc> orderRequest = orderProvider.orders;
-                return SafeArea(
-                    child: Scaffold(
-                        appBar: AppBar(
-                          title: Text('Awaiting Customers'),
-                        ),
-                        body: Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-                            child: ListView.separated(
-                                separatorBuilder: (context, index) => Divider(
-                                      color: Colors.black,
-                                    ),
-                                itemCount: orderRequest.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  OrderDoc order =
-                                      orderRequest.elementAt(index);
-                                  return new Column(
-                                    children: <Widget>[
-                                      new ListTile(
-                                        enabled: order.orderStatus == 0
-                                            ? true
-                                            : false,
-                                        onTap: () {
-                                          _settingModalBottomSheet(
-                                              context,
-                                              "BXO9L4PwBrMHTCK3z6yhNjfPHsG3",
-                                              order.id);
-                                        },
-                                        leading: ClipOval(
-                                          child: CachedNetworkImage(
-                                            imageUrl: "",
-                                            placeholder: (context, url) =>
-                                                new CircularProgressIndicator(),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    new Icon(Icons.error),
-                                          ),
-                                        ),
-                                        title: new Text(order.displayName),
-                                        subtitle: Text(
-                                            order.waiterRequestTime.toString()),
-                                      ),
-                                    ],
-                                  );
-                                }))));
-              }
-            }
-          }),
+          child: Container(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          _settingModalBottomSheet(context, "BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
+                        },
+                        child: Text("Start Order"))
+                  ],
+                ),
+                Consumer<ConnectivityStatus>(
+                    builder: (ctx, connectionStatus, ch) {
+                  if (connectionStatus == ConnectivityStatus.None) {
+                    return ErrorConnectionPage(
+                        routeName: DiscoverPage.routeName);
+                  } else {
+                    if (_viewState == ViewState.Loading)
+                      return LoadingPage();
+                    else {
+                      final orderProvider = Provider.of<OrderProvider>(context);
+                      orderProvider
+                          .getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
+                      List<OrderDoc> orderRequest = orderProvider.orders;
+                      return Container(
+                          child: Column(children: [
+                        Container(
+                            margin: EdgeInsets.all(10.0),
+                            padding: EdgeInsets.all(14.0),
+                            decoration: BoxDecoration(
+                                color: Colors.green[100],
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ]),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "Ongoing Order",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Divider(),
+                                ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: orderRequest
+                                        .where((element) =>
+                                            element.orderStatus == 1 ||
+                                            element.orderStatus == 2)
+                                        .toList()
+                                        .length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      List<OrderDoc> pendingRequestList =
+                                          orderRequest
+                                              .where((e) =>
+                                                  e.orderStatus == 1 ||
+                                                  e.orderStatus == 2)
+                                              .toList();
+                                      OrderDoc order =
+                                          pendingRequestList.elementAt(index);
+                                      return pendingRequestList.length > 0
+                                          ? Container(child: Text("Order"))
+                                          : ListTile(
+                                              leading:
+                                                  Text("No pending Request"),
+                                            );
+                                    })
+                              ],
+                              //  Padding(
+                              //     padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
+                              //     child: ListView.separated(
+                              //         separatorBuilder: (context, index) => Divider(
+                              //               color: Colors.black,
+                              //             ),
+                              //         itemCount: orderRequest.length,
+                              //         itemBuilder: (BuildContext context, int index) {
+                              //           OrderDoc order =
+                              //               orderRequest.elementAt(index);
+                              //           return new Column(
+                              //             children: <Widget>[
+                              //               new ListTile(
+                              //                 enabled: order.orderStatus == 0
+                              //                     ? true
+                              //                     : false,
+                              //                 onTap: () {
+                              //                   _settingModalBottomSheet(
+                              //                       context,
+                              //                       "BXO9L4PwBrMHTCK3z6yhNjfPHsG3",
+                              //                       order.id);
+                              //                 },
+                              //                 leading: ClipOval(
+                              //                   child: CachedNetworkImage(
+                              //                     imageUrl: "",
+                              //                     placeholder: (context, url) =>
+                              //                         new CircularProgressIndicator(),
+                              //                     errorWidget:
+                              //                         (context, url, error) =>
+                              //                             new Icon(Icons.error),
+                              //                   ),
+                              //                 ),
+                              //                 title: new Text(order.displayName),
+                              //                 subtitle: Text(
+                              //                     order.waiterRequestTime.toString()),
+                              //               ),
+                              //             ],
+                              //           );
+                              //         }))
+                            ))
+                      ]));
+                    }
+                  }
+                }),
+              ],
+            ),
+          ),
         )));
   }
 }
 
-void _settingModalBottomSheet(context, waiterId, orderId) {
+void _settingModalBottomSheet(context, waiterId) {
   int _currentHorizontalIntValue = 1;
   int tableNumber = 0;
   int noOfCustomer = 0;
+  int orderId = 0;
 
   showModalBottomSheet(
       isDismissible: true,
@@ -176,7 +247,7 @@ void _settingModalBottomSheet(context, waiterId, orderId) {
       builder: (BuildContext bc) {
         return StatefulBuilder(builder: (context, StateSetter setState) {
           return Container(
-              height: MediaQuery.of(context).size.height * 0.40,
+              height: MediaQuery.of(context).size.height * 0.50,
               padding:
                   EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
               child: new Form(
@@ -190,6 +261,18 @@ void _settingModalBottomSheet(context, waiterId, orderId) {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: const Icon(Icons.dining),
+                        hintText: 'Enter order id',
+                        labelText: 'Order Id',
+                      ),
+                      onChanged: ((value) => {
+                            setState(() {
+                              orderId = int.parse(value);
+                            })
+                          }),
+                    ),
                     TextFormField(
                       decoration: const InputDecoration(
                         icon: const Icon(Icons.dining),
@@ -219,7 +302,7 @@ void _settingModalBottomSheet(context, waiterId, orderId) {
                         child: new ElevatedButton(
                           child: const Text('Next'),
                           onPressed: () {
-                            UserService().acceptUserRequest(
+                            OrderProvider().startNewOrder(
                                 waiterId, orderId, tableNumber, noOfCustomer);
                             Navigator.push(
                                 context,

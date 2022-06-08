@@ -5,9 +5,11 @@ import 'package:freemeals/config/stories_data.dart';
 import 'package:freemeals/enums/connectivity_status.dart';
 import 'package:freemeals/enums/view_state.dart';
 import 'package:freemeals/models/cafe_model.dart';
+import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/models/waiter_Selection.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
+import 'package:freemeals/screen/Order/OrderWaitingScreen.dart';
 import 'package:freemeals/screen/Order/ongoingOrder_screen.dart';
 import 'package:freemeals/screen/UserProfile/profile_widget.dart';
 import 'package:freemeals/services/connectivity_service.dart';
@@ -127,7 +129,6 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                               final waiterProvider =
                                   Provider.of<WaiterProvider>(context);
                               waiterProvider.getWaiters("CXdKnqsdwetprt885KVx");
-
                               return Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
@@ -278,27 +279,32 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           UserService()
-                                                              .selectWaiter(
-                                                                  waiter.id,
-                                                                  0,
-                                                                  user)
-                                                              .then((String
-                                                                  value) {
-                                                            setState(() {
-                                                              ongoingOrderId =
-                                                                  value;
-                                                            });
-                                                            // _settingModalBottomSheet(
-                                                            //     context,
-                                                            //     value,
-                                                            //     " waiter.id");
+                                                              .createOrder(user)
+                                                              .then((OrderDoc value) {
                                                             Navigator.push(
                                                                 context,
                                                                 new MaterialPageRoute(
                                                                     builder:
                                                                         (context) =>
-                                                                            new OngoingOrder()));
+                                                                            new OrderWaitingScreen(
+                                                                              user: user,
+                                                                              orderCode: value.orderId,
+                                                                              orderDocId : value.id,
+                                                                              cafeId: value.cafeId,
+                                                                            )));
                                                           });
+
+                                                          // _settingModalBottomSheet(
+                                                          //     context,
+                                                          //     value,
+                                                          //     " waiter.id");
+                                                          //   Navigator.push(
+                                                          //       context,
+                                                          //       new MaterialPageRoute(
+                                                          //           builder:
+                                                          //               (context) =>
+                                                          //                   new OngoingOrder()));
+                                                          // });
                                                         },
                                                         child: Container(
                                                           decoration:

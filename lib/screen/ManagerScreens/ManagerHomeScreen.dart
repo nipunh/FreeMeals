@@ -76,9 +76,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                   if (_viewState == ViewState.Loading)
                     return LoadingPage();
                   else {
-                    var requestProvider = Provider.of<BookingRequestProvider>(
-                        context,
-                        listen: true);
+                    var requestProvider = Provider.of<BookingRequestProvider>(context,listen: true);
                     requestProvider.getBookingRequests("CXdKnqsdwetprt885KVx");
                     return Consumer<BookingRequestProvider>(
                       builder: (context, value, child) {

@@ -117,9 +117,11 @@ class SelectedWaiter extends ChangeNotifier {
 }
 
 class WaiterProvider extends ChangeNotifier {
-  final CollectionReference _waiterCol = FirebaseFirestore.instance.collection('users');
+  final CollectionReference _waiterCol =
+      FirebaseFirestore.instance.collection('users');
 
-  final CollectionReference _cafeteriaRef = FirebaseFirestore.instance.collection('cafeterias');
+  final CollectionReference _cafeteriaRef =
+      FirebaseFirestore.instance.collection('cafeterias');
 
   List<UserDoc> _waiters = [];
 
@@ -159,14 +161,10 @@ class WaiterProvider extends ChangeNotifier {
 
   Future<void> getWaiters(String cafeId) async {
     try {
-
-print("im here");
-
       QuerySnapshot<Map<String, dynamic>> waiterDocs = await _waiterCol
           .where("userType", isEqualTo: 0)
           .where("cafeId", isEqualTo: cafeId)
-          .where("status", whereIn: [0, 1])
-          .get();
+          .where("status", whereIn: [0, 1]).get();
 
       List<UserDoc> waiters = waiterDocs.docs.map((doc) {
         return UserDoc.fromDoctoUserInfo(doc);
@@ -175,26 +173,23 @@ print("im here");
       _waiters = waiters;
       notifyListeners();
     } catch (err) {
-      print('error waiter provider - get Waiters = ' +
-          err.toString());
+      print('error waiter provider - get Waiters = ' + err.toString());
       throw (err);
     }
   }
 
-  Future<void> getOfferBanners(String cafeId) async{
+  Future<void> getOfferBanners(String cafeId) async {
     try {
-
       DocumentSnapshot<dynamic> cafeDoc = await _cafeteriaRef.doc(cafeId).get();
-      if(cafeDoc.exists){
+      if (cafeDoc.exists) {
         List<dynamic> data = cafeDoc.data()["offerBanners"];
         _banners = data;
-      }else{
+      } else {
         _banners = [];
       }
       notifyListeners();
     } catch (err) {
-      print('error waiter provider - get Waiters = ' +
-          err.toString());
+      print('error waiter provider - get Waiters = ' + err.toString());
       throw (err);
     }
   }

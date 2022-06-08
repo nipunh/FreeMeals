@@ -13,6 +13,8 @@ class OrderDoc implements OrderData {
   DateTime waiterAcceptedTime;
   Map<String, dynamic> userList;
   int orderStatus;
+  int orderId;
+  String cafeId;
 
   OrderDoc({
     @required this.id,
@@ -23,7 +25,9 @@ class OrderDoc implements OrderData {
     this.waiterRequestTime,
     this.waiterAcceptedTime,
     this.userList,
-    @required this.orderStatus
+    @required this.orderStatus,
+    @required this.orderId,
+     @required this.cafeId
   });
 
   static OrderDoc fromDoctoOrderInfo(
@@ -40,6 +44,8 @@ class OrderDoc implements OrderData {
       waiterAcceptedTime: data['waiterAcceptedTime'] != null ? data['waiterAcceptedTime'].toDate().toLocal() : null,
       // userList : data['userList']  ?? [],
       orderStatus : data['orderStatus'] ?? 0,
+      orderId : data['orderId'] ?? 0,
+      cafeId : data['cafeId'] ?? "",
     );
   }
 }

@@ -28,7 +28,6 @@ class BookTable extends StatefulWidget {
 }
 
 class _BookTableState extends State<BookTable> {
-  // List<SlotTime> slots = [];
   List<Map<String, int>> slots = [
     {'10:00': 10},
     {'10:30': 20},
@@ -518,23 +517,20 @@ class _BookTableState extends State<BookTable> {
             )),
         onPressed: () async {
           if (user != null) {
-            String bookingId ="";
-            
-             BookTableService().registerTable(
+            String bookingId;
+            bookingId = await BookTableService().registerTable(
                 "CXdKnqsdwetprt885KVx",
                 selectedDate,
                 _party,
                 selectedTimeSlot,
-                user).then((value) => bookingId = value);
+                user);
 
-            BookTableService()
-                .getBookingDetails(bookingId)
-                .then((bookingDoc) {
+            BookTableService().getBookingDetails(bookingId).then((bookingDoc) {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          BookingConfirmation_Screen(booking: bookingDoc)));
+                          BookingConfirmationScreen(booking: bookingDoc)));
             });
 
             Navigator.of(context).pop();

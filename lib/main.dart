@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:freemeals/models/cart_model.dart';
 import 'package:freemeals/providers/bookingTable_provider.dart';
 import 'package:freemeals/providers/order_provider.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
 import 'package:freemeals/screen/Order/cart_screen.dart';
 import 'package:freemeals/services/connectivity_service.dart';
@@ -72,6 +73,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (ctx) => OrderProvider()),
         ChangeNotifierProvider(create: (ctx) => BookingRequestProvider()),
         ChangeNotifierProvider(create: (ctx) => Cart()),
+        ChangeNotifierProvider(create: (ctx) => UserProvider()),
         // ChangeNotifierProvider(create: (ctx) => CartProvider()),
         // ChangeNotifierProvider(create: (ctx) => VegOnly()),
         // ChangeNotifierProvider(create: (ctx) => FavoritePageProvider()),

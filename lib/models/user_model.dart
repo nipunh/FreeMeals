@@ -37,7 +37,7 @@ class UserDoc implements UserData {
       phone: data['phone'] ?? '',
       emailAddress: data['emailAddress'] ?? '',
       displayName: data['displayName'] ?? '',
-      userType: data['userType'] != null ? data['userType'] : 0,
+      userType: data['userType'] != null ? data['userType'] : 1,
       profileImageUrl : data['profileImageUrl'] ?? '' ,
       cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? {} : data["cafeLoyaltyStamps"].map((entry) => ({[entry] : data["cafeLoyaltyStamps"][entry]  })),
       caption : (data['caption'] == null) ? "At your service" : data["caption"],

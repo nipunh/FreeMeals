@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freemeals/models/cart_model.dart';
+import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
 // import 'package:platos_client_app/models/cafeteria_model.dart';
 // import 'package:platos_client_app/models/company_model.dart';
@@ -18,11 +20,13 @@ class UserService {
   // final CollectionReference _orders =
   //     FirebaseFirestore.instance.collection('orders');
 
-  Stream<UserData> getUserData(String userId) {
-    Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
-        _user.doc(userId).snapshots();
-
+  Stream<UserDoc> getUserData(String userId) {
+    Stream<DocumentSnapshot<Map<String, dynamic>>> stream =_user.doc(userId).snapshots();
     return stream.map(_snapshotCredits);
+  }
+
+  UserDoc _snapshotCredits(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    return UserDoc.fromDoctoUserInfo(snapshot);
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserByID(
@@ -45,7 +49,6 @@ class UserService {
   }
 
   Stream<List<UserData>> getWaiters(String cafeId) {
-    print("in service");
     Stream<QuerySnapshot<Map<String, dynamic>>> stream = _user
         .where("cafeId", isEqualTo: cafeId)
         // .where("status", isEqualTo: 0)
@@ -79,10 +82,6 @@ class UserService {
   List<dynamic> _snapshotBanner(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
     return snapshot.data()["offerBanners"];
-  }
-
-  UserData _snapshotCredits(DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    return UserDoc.fromDoctoUserInfo(snapshot);
   }
 
   bool isLeapYear(int value) =>
@@ -153,6 +152,56 @@ class UserService {
     }
   }
 
+  Future<OrderDoc> createOrder(User user) async {
+    try {
+      DateTime dateStart = DateTime.now().subtract(Duration(minutes: 30));
+      Timestamp timeStart = Timestamp.fromDate(dateStart);
+
+      QuerySnapshot<Map<String, dynamic>> userDoc = await _db
+          .collection("orders")
+          .where("userId", isEqualTo: user.uid)
+          .where("cafeId", isEqualTo: "CXdKnqsdwetprt885KVx")
+          .where("orderRequestTime", isGreaterThanOrEqualTo: timeStart)
+          .where("orderRequestTime", isLessThanOrEqualTo: Timestamp.now())
+          .get();
+
+      if (userDoc.size > 0) {
+        return OrderDoc.fromDoctoOrderInfo(userDoc.docs.first);
+      } else {
+        DocumentReference<Map<String, dynamic>> orderReqDoc =
+            _db.collection("orders").doc();
+
+        DocumentSnapshot<Map<String, dynamic>> cafeDoc = await _db
+            .collection("cafeterias")
+            .doc("CXdKnqsdwetprt885KVx")
+            .get();
+
+        int orderId = cafeDoc.data()['orderId'];
+        print(orderId);
+
+        orderReqDoc.set({
+          'cafeId': "CXdKnqsdwetprt885KVx",
+          'displayName':
+              user.displayName == null ? "Anonymous" : user.displayName,
+          'userId': user.uid == null ? "" : user.uid,
+          'orderStatus': 0,
+          'waiterRequestTime': DateTime.now(),
+          'waiterAcceptedTime': null,
+          'numberOfCustomers': 0,
+          'tableNumber': 0,
+          'userList': [],
+          'orderId': orderId + 1,
+          'waiterId': ""
+        });
+
+        return OrderDoc.fromDoctoOrderInfo(await orderReqDoc.get());
+      }
+    } catch (err) {
+      print('error while selecting waiter = ' + err.toString());
+      return null;
+    }
+  }
+
   Future<bool> deleteOrderRequest(String waiterId, String orderId) async {
     try {
       print(waiterId);
@@ -199,6 +248,12 @@ class UserService {
 //       UserDoc userData;
 //       DocumentSnapshot<Map<String, dynamic>> userDoc =
 //           await _user.doc(userId).get();
+
+  Future<bool> orderItem(Cart cartItems, String orderDocId) async {
+    try {} catch (err) {
+      print(err);
+    }
+  }
 
 //       // user data check not related to subsidy or emp Id
 //       if (userDoc.exists) {
