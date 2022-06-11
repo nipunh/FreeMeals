@@ -118,7 +118,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                         showCountryFlags: true,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: 'Phone Number',
+                          hintText: 'Phone Number 1',
                         ),
                         onPhoneNumberChange: onPhoneNumberChange,
                         initialPhoneNumber: phoneNumber,
@@ -321,7 +321,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                                             countDone = false;
                                             _loading = false;
                                           });
-                                          await verifyPhone(phoneNo, context);
+                                          await verifyPhone(phoneNo);
                                         }
                                       } else {
                                         ConnectivityService().connectionNone();
@@ -379,7 +379,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
                       DataConnectionStatus connectionStatus =
                           await ConnectivityService().checkStatus();
                       if (connectionStatus == DataConnectionStatus.connected) {
-                        await verifyPhone(phoneNo, context);
+                        await verifyPhone(phoneNo);
                         setState(() {
                           countDone = false;
                         });
@@ -412,7 +412,7 @@ class __AuthScreenWidgetState extends State<_AuthScreenWidget> {
     });
   }
 
-  Future<void> verifyPhone(phoneNo, context) async {
+  Future<void> verifyPhone(phoneNo) async {
     final _auth = FirebaseAuth.instance;
 
     final PhoneVerificationCompleted verified =

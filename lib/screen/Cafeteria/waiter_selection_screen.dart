@@ -127,7 +127,7 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                               return LoadingPage();
                             else {
                               final waiterProvider =
-                                  Provider.of<WaiterProvider>(context);
+                              Provider.of<WaiterProvider>(context);
                               waiterProvider.getWaiters("CXdKnqsdwetprt885KVx");
                               return Column(
                                 mainAxisAlignment: MainAxisAlignment.start,

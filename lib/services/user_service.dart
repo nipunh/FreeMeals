@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freemeals/models/cart_model.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
+import 'package:freemeals/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 // import 'package:platos_client_app/models/cafeteria_model.dart';
 // import 'package:platos_client_app/models/company_model.dart';
 // import 'package:platos_client_app/models/user_model.dart';
@@ -21,7 +23,8 @@ class UserService {
   //     FirebaseFirestore.instance.collection('orders');
 
   Stream<UserDoc> getUserData(String userId) {
-    Stream<DocumentSnapshot<Map<String, dynamic>>> stream =_user.doc(userId).snapshots();
+    Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+        _user.doc(userId).snapshots();
     return stream.map(_snapshotCredits);
   }
 
@@ -65,6 +68,19 @@ class UserService {
     }).toList();
 
     return cartItems;
+  }
+
+  Stream<UserDoc> getUser(String userId) {
+    Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+        _user.doc(userId).snapshots();
+
+    return stream.map(_snapshotCreditsUser);
+  }
+
+  UserDoc _snapshotCreditsUser(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    final UserDoc userItem = UserDoc.fromDoctoUserInfo(snapshot);
+    return userItem;
   }
 
   Stream<List<dynamic>> getOfferBanners(String cafeId) {
@@ -177,7 +193,6 @@ class UserService {
             .get();
 
         int orderId = cafeDoc.data()['orderId'];
-        print(orderId);
 
         orderReqDoc.set({
           'cafeId': "CXdKnqsdwetprt885KVx",
@@ -193,6 +208,11 @@ class UserService {
           'orderId': orderId + 1,
           'waiterId': ""
         });
+
+        await _db
+            .collection("cafeterias")
+            .doc("CXdKnqsdwetprt885KVx")
+            .update({'orderId': orderId + 1});
 
         return OrderDoc.fromDoctoOrderInfo(await orderReqDoc.get());
       }

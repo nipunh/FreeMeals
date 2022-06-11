@@ -1,3 +1,5 @@
+import 'package:freemeals/config/data_json.dart';
+import 'package:freemeals/models/cart_model.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
 
@@ -21,9 +23,7 @@ class OrderService {
   }
 
   Stream<OrderDoc> getOngoingOrder(String orderDocId) {
-    Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
-        _orderRef.doc(orderDocId).snapshots();
-
+    Stream<DocumentSnapshot<Map<String, dynamic>>> stream = _orderRef.doc(orderDocId).snapshots();
     return stream.map(_snapshotOrders);
   }
 
@@ -38,5 +38,20 @@ class OrderService {
 
     print(orderDoc);
     return OrderRequests(orderDoc);
+  }
+
+  Future<void> orderItemRequest(String orderDocId, CartItem items, String userId) async{
+    try{
+      DocumentSnapshot<Map<String, dynamic>> orderDoc =  await _orderRef.doc(orderDocId).get();
+      Map<String, Map<String, dynamic>> userList = orderDoc.data()["userList"];
+      
+      userList.update(userId, (value) => value.update('items', (value) => items));
+
+      print(userList);
+    
+    }catch(err){
+
+    }
+
   }
 }

@@ -56,10 +56,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     if (_error) {
-      return MatApp(initialized: _initialized, error: _error, selectCafe: null);
+      return MatApp(initialized: _initialized, error: _error, selectUser: null);
     }
     if (!_initialized) {
-      return MatApp(initialized: _initialized, error: _error, selectCafe: null);
+      return MatApp(initialized: _initialized, error: _error, selectUser: null);
     }
     return MultiProvider(
       providers: [
@@ -74,17 +74,19 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (ctx) => BookingRequestProvider()),
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProvider(create: (ctx) => UserProvider()),
+        ChangeNotifierProvider(create: (ctx) => SelectedUser()),
         // ChangeNotifierProvider(create: (ctx) => CartProvider()),
         // ChangeNotifierProvider(create: (ctx) => VegOnly()),
         // ChangeNotifierProvider(create: (ctx) => FavoritePageProvider()),
         // ChangeNotifierProvider(create: (ctx) => ItemGroupProvider()),
         // ChangeNotifierProvider(create: (ctx) => RatingProvider()),
       ],
-      child: Consumer<SelectedCafeteria>(builder: (ctx, selectCafe, ch) {
+      child: Consumer<SelectedUser>(builder: (ctx, selectUser, ch) {
         return MatApp(
           initialized: _initialized,
           error: _error,
-          selectCafe: selectCafe,
+          // selectCafe: selectCafe,
+          selectUser: selectUser
         );
       }),
     );

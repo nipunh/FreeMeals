@@ -5,6 +5,9 @@ import 'package:freemeals/enums/view_state.dart';
 import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/providers/order_provider.dart';
+import 'package:freemeals/providers/user_provider.dart';
+import 'package:freemeals/screen/Order/ongoingOrder_screen.dart';
+import 'package:freemeals/screen/Order/products_overview_screen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:freemeals/services/order_service.dart';
@@ -12,20 +15,22 @@ import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class OrderWaitingScreen extends StatelessWidget {
+class OrderWaitingScreen extends StatefulWidget {
   static const routeName = "/orderWaitingScreen";
   int orderCode;
   User user;
   String cafeId;
   String orderDocId;
 
-  OrderWaitingScreen(
-      {@required this.user,
-      @required this.orderCode,
-      @required this.orderDocId,
-      @required this.cafeId});
+  OrderWaitingScreen({this.user, this.orderCode, this.orderDocId, this.cafeId});
 
+  @override
+  State<OrderWaitingScreen> createState() => _OrderWaitingScreenState();
+}
+
+class _OrderWaitingScreenState extends State<OrderWaitingScreen> {
   @override
   Widget build(BuildContext context) {
     ViewState _viewState = ViewState.Idle;
@@ -37,81 +42,54 @@ class OrderWaitingScreen extends StatelessWidget {
         appBar: AppBar(title: Text("Order")),
         body: Container(
           child: Column(children: [
-            Center(child: Text("Show this code to your server ${orderCode}")),
-            MultiProvider(
-                providers: [
-                  StreamProvider(
-                      initialData: ConnectivityStatus.Connected,
-                      create: (ctx) => ConnectivityService()
-                          .connectionStatusController
-                          .stream),
-                  StreamProvider(
-                      create: (ctx) =>
-                          OrderService().getOngoingOrder(orderDocId),
-                      initialData: const Loading(),
-                      catchError: (_, error) => Error(error.toString())),
-                ],
-                child: Consumer<ConnectivityStatus>(
-                    builder: (ctx, connectionStatus, ch) {
-                  if (connectionStatus == ConnectivityStatus.None) {
-                    return ErrorConnectionPage(
-                        routeName: DiscoverPage.routeName);
+            Center(
+                child:
+                    Text("Show this code to your server ${widget.orderCode}")),
+            StreamBuilder(
+                stream: OrderService().getOngoingOrder(widget.orderDocId),
+                builder: (ctx, orderSnapshot) {
+                  if (orderSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return LoadingPage();
                   } else {
-                    if (_viewState == ViewState.Loading)
-                      return LoadingPage();
-                    else {
-                      // var requestProvider =Provider.of<OrderProvider>(context, listen: true);
-                      // var userProvider = Provider.of<UserProvider>(context, listen: true);
-                      // requestProvider.getOrder(orderDocId);
-                      // userProvider.getUser(user.uid);
-                      // OrderDoc currOrder = requestProvider.currentOrder;
-                      // UserDoc userDoc = userProvider.user;
-                      return Consumer<OrderProvider>(
-                          builder: (ctx, data, child) {
-                        if (data is Loading) {
-                          return LoadingPage();
-                        } else if (data is Error) {
-                          print(data);
-                          return ErrorPage(
-                              routeName: OrderWaitingScreen.routeName);
-                        } else if (data is OrderDoc) {
-                          // OrderDoc orderDetails = data2.currentOrder;
-                          // print(orderDetails.displayName);
-
-                          // If User is waiter/server
-                          // if (userDoc.userType == 0) {
-                          //   return Container(
-                          //     child: Text("Waiter SCreen"),
-                          //   );
-                          //   // if (currOrder.orderStatus == 0 &&
-                          //   //     userDoc.userType == 0) {
-                          //   //   // Waiting for the server to join
-                          //   //   return Container(
-                          //   //     child:
-                          //   //         Text(currOrder.numberOfCustomers.toString()),
-                          //   //   );
-                          //   // }
-                          // }
-
-                          // // If User is customer
-                          // if (userDoc.userType == 1) {
-                          //   return Container(
-                          //     child: Text("Customer SCreen"),
-                          //   );
-                          //   // if (currOrder.orderStatus == 1) {
-                          //   //   // Order in progress
-                          //   //   return ProductsOverviewScreen();
-                          //   // } else if (currOrder.orderStatus == 2) {
-                          //   //   // Order Completed, table closed
-                          //   //   return Container();
-                          //   // }
-                          // }
+                    final currUsertype = Provider.of<SelectedUser>(context, listen: false).userType;
+                    if (orderSnapshot.hasData) {
+                      OrderDoc data = orderSnapshot.data;
+                      print(data);
+                      // If User is waiter/server
+                      if (currUsertype == 0) {
+                        // return Container(
+                        //   child: Text("Waiter SCreen"),
+                        // );
+                        if (data.orderStatus == 0 && currUsertype == 0) {
+                          // Waiting for the server to join
+                          return Container(
+                            child:
+                                Text(data.numberOfCustomers.toString()),
+                          );
                         }
-                        return Container();
-                      });
+                      }
+
+                      // If User is customer
+                      if (currUsertype == 1) {
+                        // return Container(
+                        //   child: Center(child: Text("Customer SCreen")),
+                        // );
+                        if (data.orderStatus == 1) {
+                          // Order in progress
+                          return Container(
+                            height: 600,
+                            child: OngoingOrder(),
+                          ); 
+                        } else if (data.orderStatus == 2) {
+                          // Order Completed, table closed
+                          return Container();
+                        }
+                      }
                     }
+                    return Container(child: Text("This mf"));
                   }
-                }))
+                })
           ]),
         ));
   }

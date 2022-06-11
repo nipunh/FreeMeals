@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:freemeals/config/environment_config.dart';
 import 'package:freemeals/handle_main.dart';
 import 'package:freemeals/providers/cafeteria_provider.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/Cafeteria/freemeals_splash_screen.dart';
 import 'package:freemeals/screen/Cafeteria/waiter_selection_screen.dart';
@@ -35,7 +36,8 @@ class MatApp extends StatelessWidget {
   final bool initialized;
   final bool error;
   final SelectedCafeteria selectCafe;
-  const MatApp({Key key, this.initialized, this.error, this.selectCafe})
+  final SelectedUser selectUser;
+  const MatApp({Key key, this.initialized, this.error, this.selectCafe, this.selectUser})
       : super(key: key);
 
   @override
@@ -56,7 +58,7 @@ class MatApp extends StatelessWidget {
       home: (error)
           ? SyncronizedErrorScreen()
           : (!initialized)
-              ? FreeMealsSplashScreen() : HandleMain(selectCafe: selectCafe),
+              ? FreeMealsSplashScreen() : HandleMain(selectUser: selectUser),
       routes: {
         // VendorListScreen.routeName: (ctx) => VendorListScreen(),
         // VendorItemScreen.routeName: (ctx) => VendorItemScreen(),

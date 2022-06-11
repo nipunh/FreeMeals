@@ -62,13 +62,6 @@ class AuthService {
         }
         String name = userDoc.data()['displayName'];
         String email = userDoc.data()['emailAddress'];
-
-        await UserPreferences.setUserId(user.uid);
-        await UserPreferences.setUserEmail(email);
-        await UserPreferences.setUserName(name);
-        await UserPreferences.setUserProfileImg(userDoc.data()['profileImageUrl']);
-        await UserPreferences.setUserType(userDoc.data()['userType'].toString());
-
         // await SelectedUser().setUser(userDoc.data()['id'], userDoc.data()['displayName'], userDoc.data()['userType']);
 
         if (name == null || name.isEmpty || email == null || email.isEmpty)

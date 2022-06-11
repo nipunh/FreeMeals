@@ -63,84 +63,84 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _viewState = ViewState.Loading;
-      });
-      DataConnectionChecker().connectionStatus.catchError((err) {
-        print(err.toString());
-        setState(() {
-          _viewState = ViewState.Error;
-          return _viewState;
-        });
-      }).then((connection) {
-        if (connection == DataConnectionStatus.disconnected) {
-          return setState(() {
-            _viewState = ViewState.ConnectionError;
-          });
-        } else {
-          // final selectedCafeteriaId =
-          //     Provider.of<SelectedCafeteria>(context, listen: false).cafeId;
-          // Provider.of<CafeteriaProvider>(context, listen: false)
-          //     .getSelectedCafe(selectedCafeteriaId)
-          //     .catchError((err) {
-          //   print('error cafeteria screen - get cities/ selected cafe' +
-          //       err.toString());
-          //   return setState(() {
-          //     _viewState = ViewState.Error;
-          //   });
-          // }).then((_) {
-          final provider =
-              Provider.of<CafeteriaProvider>(context, listen: false);
-          if (provider.selectedCafeteria == null) {
-            // companyCode = provider.selectedCafeteria.companyCode.toString();
-            // city = provider.selectedCafeteria.city;
-            // provider.getCompany(companyCode).catchError((err) {
-            //   print('error cafeteria screen - get company' + err.toString());
-            //   return setState(() {
-            //     _viewState = ViewState.Error;
-            //   });
-            // }).then((_) {
+  // @override
+  // void didChangeDependencies() {
+  //   if (_isInit) {
+  //     setState(() {
+  //       _viewState = ViewState.Loading;
+  //     });
+  //     DataConnectionChecker().connectionStatus.catchError((err) {
+  //       print(err.toString());
+  //       setState(() {
+  //         _viewState = ViewState.Error;
+  //         return _viewState;
+  //       });
+  //     }).then((connection) {
+  //       if (connection == DataConnectionStatus.disconnected) {
+  //         return setState(() {
+  //           _viewState = ViewState.ConnectionError;
+  //         });
+  //       } else {
+  //         // final selectedCafeteriaId =
+  //         //     Provider.of<SelectedCafeteria>(context, listen: false).cafeId;
+  //         // Provider.of<CafeteriaProvider>(context, listen: false)
+  //         //     .getSelectedCafe(selectedCafeteriaId)
+  //         //     .catchError((err) {
+  //         //   print('error cafeteria screen - get cities/ selected cafe' +
+  //         //       err.toString());
+  //         //   return setState(() {
+  //         //     _viewState = ViewState.Error;
+  //         //   });
+  //         // }).then((_) {
+  //         final provider =
+  //             Provider.of<CafeteriaProvider>(context, listen: false);
+  //         if (provider.selectedCafeteria == null) {
+  //           // companyCode = provider.selectedCafeteria.companyCode.toString();
+  //           // city = provider.selectedCafeteria.city;
+  //           // provider.getCompany(companyCode).catchError((err) {
+  //           //   print('error cafeteria screen - get company' + err.toString());
+  //           //   return setState(() {
+  //           //     _viewState = ViewState.Error;
+  //           //   });
+  //           // }).then((_) {
 
-            final provider1 =
-                Provider.of<CafeteriaProvider>(context, listen: false);
-            if (provider1.cafes.isEmpty) {
-              provider1.getCafes('Montreal').catchError((err) {
-                print('error cafeteria screen - get company' + err.toString());
-                return setState(() {
-                  _viewState = ViewState.Error;
-                });
-              }).then((_) {
-                setState(() {
-                  _viewState = ViewState.Idle;
-                  _isInit = false;
-                });
-                return;
-              });
-            } else {
-              setState(() {
-                _viewState = ViewState.Idle;
-                _isInit = false;
-              });
-              return;
-            }
-          }
-          // } else {
-          //   setState(() {
-          //     _viewState = ViewState.Idle;
-          //     _isInit = false;
-          //   });
-          //   return;
-          // }
-          // });
-        }
-      });
-    }
-    _isInit = false;
-    super.didChangeDependencies();
-  }
+  //           final provider1 =
+  //               Provider.of<CafeteriaProvider>(context, listen: false);
+  //           if (provider1.cafes.isEmpty) {
+  //             provider1.getCafes('Montreal').catchError((err) {
+  //               print('error cafeteria screen - get company' + err.toString());
+  //               return setState(() {
+  //                 _viewState = ViewState.Error;
+  //               });
+  //             }).then((_) {
+  //               setState(() {
+  //                 _viewState = ViewState.Idle;
+  //                 _isInit = false;
+  //               });
+  //               return;
+  //             });
+  //           } else {
+  //             setState(() {
+  //               _viewState = ViewState.Idle;
+  //               _isInit = false;
+  //             });
+  //             return;
+  //           }
+  //         }
+  //         // } else {
+  //         //   setState(() {
+  //         //     _viewState = ViewState.Idle;
+  //         //     _isInit = false;
+  //         //   });
+  //         //   return;
+  //         // }
+  //         // });
+  //       }
+  //     });
+  //   }
+  //   _isInit = false;
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {

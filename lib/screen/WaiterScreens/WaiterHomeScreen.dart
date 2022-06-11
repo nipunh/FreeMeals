@@ -10,6 +10,7 @@ import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/providers/order_provider.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
+import 'package:freemeals/screen/Order/OrderWaitingScreen.dart';
 import 'package:freemeals/screen/Order/ongoingOrder_screen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/services/order_service.dart';
@@ -125,8 +126,7 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                       return LoadingPage();
                     else {
                       final orderProvider = Provider.of<OrderProvider>(context);
-                      orderProvider
-                          .getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
+                      orderProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
                       List<OrderDoc> orderRequest = orderProvider.orders;
                       return Container(
                           child: Column(children: [
@@ -302,12 +302,13 @@ void _settingModalBottomSheet(context, waiterId) {
                         child: new ElevatedButton(
                           child: const Text('Next'),
                           onPressed: () {
-                            OrderProvider().startNewOrder(
-                                waiterId, orderId, tableNumber, noOfCustomer);
+                            OrderProvider().startNewOrder(waiterId, orderId, tableNumber, noOfCustomer);
                             Navigator.push(
                                 context,
                                 new MaterialPageRoute(
-                                    builder: (context) => OngoingOrder()));
+                                    builder: (context) => OrderWaitingScreen(
+                                      orderCode: orderId,
+                                    )));
                           },
                         )),
                   ],

@@ -10,9 +10,9 @@ class SelectedUser extends ChangeNotifier {
   int _userType;
 
   SelectedUser() {
-    _userId;
-    _userName;
-    _userType;
+    _userId = '';
+    _userName = '';
+    _userType = 1;
     try {
       loadPreferences();
     } catch (err) {
@@ -53,7 +53,7 @@ class SelectedUser extends ChangeNotifier {
       String userId = prefs.getString('cafeId');
       String userName = prefs.getString('cafeName');
       int userType = prefs.getInt('userType');
-      if (userId != null && userName != null)
+      if (userId != null && userName != null && userType != null)
         setUser(userId, userName, userType);
     } catch (err) {
       print('loadPreference Cafe error = $err');
