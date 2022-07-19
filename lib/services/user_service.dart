@@ -51,6 +51,8 @@ class UserService {
     }
   }
 
+
+
   Stream<List<UserData>> getWaiters(String cafeId) {
     Stream<QuerySnapshot<Map<String, dynamic>>> stream = _user
         .where("cafeId", isEqualTo: cafeId)
@@ -173,6 +175,7 @@ class UserService {
       DateTime dateStart = DateTime.now().subtract(Duration(minutes: 30));
       Timestamp timeStart = Timestamp.fromDate(dateStart);
 
+      
       QuerySnapshot<Map<String, dynamic>> userDoc = await _db
           .collection("orders")
           .where("userId", isEqualTo: user.uid)
@@ -196,15 +199,23 @@ class UserService {
 
         orderReqDoc.set({
           'cafeId': "CXdKnqsdwetprt885KVx",
-          'displayName':
-              user.displayName == null ? "Anonymous" : user.displayName,
+          'displayName': user.displayName == null ? "Anonymous" : user.displayName,
           'userId': user.uid == null ? "" : user.uid,
           'orderStatus': 0,
           'waiterRequestTime': DateTime.now(),
           'waiterAcceptedTime': null,
           'numberOfCustomers': 0,
           'tableNumber': 0,
-          'userList': [],
+          'userList': FieldValue.arrayUnion([
+            {
+              "userId":user.uid,
+              "displayName":  user.displayName,
+              "items": [],
+              "itemsTotal": 0.toDouble(),
+              "status" : 1,
+              "lastUpdated" : DateTime.now()
+            }
+          ]),
           'orderId': orderId + 1,
           'waiterId': ""
         });

@@ -75,6 +75,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProvider(create: (ctx) => UserProvider()),
         ChangeNotifierProvider(create: (ctx) => SelectedUser()),
+        ChangeNotifierProvider(create: (ctx) => SelectedWaiter()),
         // ChangeNotifierProvider(create: (ctx) => CartProvider()),
         // ChangeNotifierProvider(create: (ctx) => VegOnly()),
         // ChangeNotifierProvider(create: (ctx) => FavoritePageProvider()),

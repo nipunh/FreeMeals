@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
@@ -117,9 +119,13 @@ class SelectedOrder extends ChangeNotifier {
 }
 
 class OrderProvider extends ChangeNotifier {
-  final CollectionReference _orderCol = FirebaseFirestore.instance.collection('users');
+  final CollectionReference _orderCol =
+      FirebaseFirestore.instance.collection('users');
 
-    final CollectionReference _orderRef = FirebaseFirestore.instance.collection('orders');
+  final CollectionReference _orderRef =
+      FirebaseFirestore.instance.collection('orders');
+
+  StreamController<OrderData> _orderController = StreamController<OrderData>();
 
   OrderDoc currentOrder;
 
@@ -131,77 +137,84 @@ class OrderProvider extends ChangeNotifier {
 
   UserDoc get selectedOrder => _selectedOrder;
 
-
   Future<void> getWaitersOrders(String waiterId) async {
     try {
-      QuerySnapshot<Map<String, dynamic>> waiterDocs = await 
-          _orderCol
-          .where("waiterId", isEqualTo : waiterId)
-          .where("orderStatus", whereIn: [1, 2])
-          .get();
+      QuerySnapshot<Map<String, dynamic>> waiterDocs = await _orderRef
+          .where("waiterId", isEqualTo: waiterId)
+          .where("orderStatus", whereIn: [1, 2]).get();
 
-
-      if(waiterDocs.size > 0){
+      if (waiterDocs.size > 0) {
         List<OrderDoc> orders = waiterDocs.docs.map((doc) {
-        return OrderDoc.fromDoctoOrderInfo(doc);
-      }).toList();
+          return OrderDoc.fromDoctoOrderInfo(doc);
+        }).toList();
 
-      _orders = orders;
-      }else{
+        _orders = orders;
+      } else {
         _orders = [];
-
       }
       notifyListeners();
     } catch (err) {
-      print('error waiter provider - get orders = ' +
-          err.toString());
+      print('error waiter provider - get orders = ' + err.toString());
       throw (err);
     }
   }
 
-  Future<void> startNewOrder(String waiterId, int orderId, int tableNumber, int numberOfCustomers) async {
+  Future<String> startNewOrder(String waiterId, int orderId, int tableNumber,
+      int numberOfCustomers) async {
     try {
-      QuerySnapshot<Map<String, dynamic>> orderDoc = await 
-          _orderRef
-          .where('orderId', isEqualTo: orderId )
+      QuerySnapshot<Map<String, dynamic>> orderDoc = await _orderRef
+          .where('orderId', isEqualTo: orderId)
           .where("orderStatus", whereIn: [0])
           .limit(1)
           .get();
 
-      if(orderDoc.docs.isNotEmpty){
-        OrderDoc orderData =  OrderDoc.fromDoctoOrderInfo(orderDoc.docs.first);
+      if (orderDoc.docs.isNotEmpty) {
+        OrderDoc orderData = OrderDoc.fromDoctoOrderInfo(orderDoc.docs.first);
+        _orderRef.doc(orderData.id).update({
+          "waiterId": waiterId,
+          "orderStatus": 1,
+          "tableNumber": tableNumber,
+          "numberOfCustomers": numberOfCustomers,
+          "waiterAcceptedTime": DateTime.now(),
+        });
 
-        _orderRef.doc(orderData.id).update(
-          {
-            "waiterId" : waiterId,
-            "orderStatus" : 1,
-            "tableNumber" : tableNumber,
-            "numberOfCustomers" :numberOfCustomers,
-            "waiterAcceptedTime" : DateTime.now(),
-            "userList" : {orderData.userId : {}}
-          }
-        );
-
+        return orderData.id;
       }
       notifyListeners();
+      return "";
     } catch (err) {
-      print('error waiter provider - get orders = ' +
-          err.toString());
+      print('error waiter provider - get orders = ' + err.toString());
       throw (err);
     }
   }
 
   Future<OrderDoc> getOrder(String orderDocId) async {
-      DocumentSnapshot<Map<String, dynamic>> orderDoc = await 
-          _orderRef
-          .doc(orderDocId)
-          .get();
+    DocumentSnapshot<Map<String, dynamic>> orderDoc =
+        await _orderRef.doc(orderDocId).get();
 
-      if(orderDoc.exists){
-        OrderDoc orderData =  OrderDoc.fromDoctoOrderInfo(orderDoc);
-        currentOrder = orderData;
+    if (orderDoc.exists) {
+      OrderDoc orderData = OrderDoc.fromDoctoOrderInfo(orderDoc);
+      currentOrder = orderData;
+    }
+    notifyListeners();
+  }
+
+  Stream<OrderData> getOngoingOrder(String orderDocId) {
+    Stream<DocumentSnapshot<Map<String, dynamic>>> stream =
+        _orderRef.doc(orderDocId).snapshots();
+    stream.listen((DocumentSnapshot<Map<String, dynamic>> snapshots) {
+      if (snapshots.exists) {
+        _orderController.add(_snapshotOrders(snapshots));
+      } else {
+        print("Order not found");
       }
-      notifyListeners();
+    });
+    notifyListeners();
+    return _orderController.stream;
+  }
+
+  OrderDoc _snapshotOrders(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+    return OrderDoc.fromDoctoOrderInfo(snapshot);
   }
 
   void setCafesToEmpty() {

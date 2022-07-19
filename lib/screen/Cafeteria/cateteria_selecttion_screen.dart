@@ -6,11 +6,14 @@ import 'package:freemeals/enums/view_state.dart';
 import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/providers/cafeteria_provider.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/screen/story_screen.dart';
+import 'package:freemeals/services/cafeteria_service.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:freemeals/services/device_service.dart';
 import 'package:freemeals/services/user_service.dart';
 import 'package:freemeals/util/bottom_items.dart';
+import 'package:freemeals/widgets/app_wide/app_wide/NavigationBar.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
@@ -61,6 +64,8 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
     city = 'Select City';
     companyCode = '';
     super.initState();
+     Provider.of<SelectedCafeteria>(context, listen: false).setCafeteria("", "", "");
+
   }
 
   // @override
@@ -144,231 +149,333 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool isTab = DeviceService().isTablet(context);
-    User user = FirebaseAuth.instance.currentUser;
-    if (_viewState == ViewState.ConnectionError)
-      return ErrorConnectionPage(routeName: CafeteriaSelectionScreen.routeName);
-    if (_viewState == ViewState.Error)
-      return ErrorPage(routeName: CafeteriaSelectionScreen.routeName);
-    else {
-      return MultiProvider(
-        providers: [
-          StreamProvider(
-              initialData: ConnectivityStatus.Connected,
-              create: (ctx) =>
-                  ConnectivityService().connectionStatusController.stream),
-          StreamProvider(
-            create: (ctx) => UserService().getUserData(user.uid),
-            initialData: const Loading1(),
-            catchError: (_, error) => Error1(error.toString()),
-          )
-        ],
-        child: Consumer<ConnectivityStatus>(
-          builder: (ctx, connectionStatus, ch) => (connectionStatus ==
-                  ConnectivityStatus.None)
-              ? ErrorConnectionPage(
-                  routeName: CafeteriaSelectionScreen.routeName)
-              : Consumer<UserData>(builder: (ctx, data, ch) {
-                  final cafeteriaProvider =
-                      Provider.of<CafeteriaProvider>(context);
-                  // Cafeteria selectedCafeteria = cafeteriaProvider.selectedCafeteria;
-                  List<Cafeteria> cafes = cafeteriaProvider.cafes;
-                  if (data is Loading1) {
-                    return LoadingPage();
-                  } else if (data is Error1) {
-                    print(Error1(data.errorMsg));
-                    return ErrorPage(
-                        routeName: CafeteriaSelectionScreen.routeName);
-                  } else if (data is UserDoc) {
-                    UserDoc userData = data;
-                    var size = MediaQuery.of(context).size;
-                    return SafeArea(
-                      child: Scaffold(
-                        backgroundColor: Colors.white,
-                        body: Column(children: [
-                          Container(
-                            width: size.width,
-                            height: size.height * 0.15,
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: 2,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (index == 0) {
-                                    return SizedBox(
-                                      width: 10.0,
-                                    );
-                                  }
-                                  return Container(
-                                    margin: EdgeInsets.all(5.0),
-                                    width: 70.0,
-                                    height: 70.0,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.black45,
-                                            offset: Offset(0, 2),
-                                            blurRadius: 6.0)
-                                      ],
-                                    ),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => StoryScreen()));
-                                      },
-                                      child: CircleAvatar(
-                                        child: ClipOval(
-                                          child: Image(
-                                              height: 70.0,
-                                              width: 70.0,
-                                              image: NetworkImage(userStory['profileImageUrl']),
-                                              fit: BoxFit.cover),
+    return StreamBuilder(
+        stream: CafeteriasService().getCafeteriasByLocation(),
+        builder: (ctx, cafeSnapshot) {
+          if (cafeSnapshot.connectionState == ConnectionState.waiting) {
+            return LoadingPage();
+          } else {
+            final userData = Provider.of<SelectedUser>(context, listen: false);
+            var size = MediaQuery.of(context).size;
+            if (cafeSnapshot.hasData) {
+              Cafeterias cafeList = cafeSnapshot.data;
+              // print(
+              //     "########################################################*****************");
+              // print(cafeList.cafes.first);
+              return SafeArea(
+                  child: Scaffold(
+                      bottomNavigationBar: NavBar(
+                        context: context,
+                        routeName: "/cafe-selection",
+                      ),
+                      body: Column(mainAxisSize: MainAxisSize.min, children: <
+                          Widget>[
+                        Container(
+                          width: size.width,
+                          height: size.height * 0.15,
+                          child: Expanded(
+                            child: SizedBox(
+                              height: 200,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 2,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    if (index == 0) {
+                                      return SizedBox(
+                                        width: 10.0,
+                                      );
+                                    }
+                                    return Container(
+                                      margin: EdgeInsets.all(5.0),
+                                      width: 70.0,
+                                      height: 70.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Colors.black45,
+                                              offset: Offset(0, 2),
+                                              blurRadius: 6.0)
+                                        ],
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      StoryScreen()));
+                                        },
+                                        child: CircleAvatar(
+                                          child: ClipOval(
+                                            child: Image(
+                                                height: 70.0,
+                                                width: 70.0,
+                                                image: NetworkImage(userStory[
+                                                    'profileImageUrl']),
+                                                fit: BoxFit.cover),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                }),
+                                    );
+                                  }),
+                            ),
                           ),
-                          // Container(
-                          //   margin: EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 4.0),
-                          //   width: MediaQuery.of(context).size.width - 30,
-                          //   height: 120.0,
-                          //   decoration: BoxDecoration(
-                          //       color: Colors.black12,
-                          //       borderRadius:
-                          //           BorderRadius.all(Radius.circular(10.0))),
-                          //   child: Center(
-                          //     child: Text("TBD"),
-                          //   ),
-                          // ),
-                          // Container(
-                          //   margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
-                          //   width: MediaQuery.of(context).size.width - 30,
-                          //   height: 50.0,
-                          //   decoration: BoxDecoration(
-                          //       color: Colors.black12,
-                          //       borderRadius:
-                          //           BorderRadius.all(Radius.circular(10.0))),
-                          //   child: Center(
-                          //     child: Text("Search Bar"),
-                          //   ),
-                          // ),
-                          // Container(
-                          //   margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
-                          //   width: MediaQuery.of(context).size.width - 30,
-                          //   height: 30.0,
-                          //   decoration: BoxDecoration(
-                          //       color: Colors.black12,
-                          //       borderRadius:
-                          //           BorderRadius.all(Radius.circular(10.0))),
-                          //   child: Center(
-                          //     child: Text("Filters"),
-                          //   ),
-                          // ),
-                          Expanded(
-                              child: StaggeredGridView.countBuilder(
+                        ),
+                        Expanded(
+                            child: SizedBox(
+                          height: 400,
+                          child: StaggeredGridView.countBuilder(
                             padding: const EdgeInsets.all(4.0),
                             crossAxisCount: 4,
                             mainAxisSpacing: 2,
                             crossAxisSpacing: 2,
-                            itemCount: cafes.length,
+                            itemCount: cafeList.cafes.length,
                             itemBuilder: (BuildContext context, int index) =>
-                                CafeteraCard(cafes[index], userData),
+                                CafeteraCard(cafeList.cafes[index], userData),
                             staggeredTileBuilder: (int index) =>
                                 StaggeredTile.fit(2),
-                          )),
-                        ]),
-                      ),
-                    );
-                  } else {
-                    print('Cafe selection screen consumer userDoc error');
-                    return Container();
-                  }
+                          ),
+                        )),
+                      ])));
+            }
 
-                  // child: Scaffold(
-                  //   appBar: AppBar(
-                  //     title: Text('Select Cafeteria from'),
-                  //   ),
-                  //   body: Padding(
-                  //     padding: const EdgeInsets.fromLTRB(12, 0, 10, 5),
-                  //     child: ListView(
-                  //     children: [
-                  //       if (selectedCafeteria != null)
-                  //         ListTile(
-                  //           title: Text(
-                  //             'Current Cafeteria',
-                  //             style: Theme.of(context).textTheme.headline6,
-                  //           ),
-                  //           dense: true,
-                  //         ),
-                  //         if (selectedCafeteria != null)
-                  //         CafeteriaDetails(cafe: selectedCafeteria,oldCafe: selectedCafeteria),
-                  //         Divider(),
-                  //         ListTile(
-                  //           title: Text(
-                  //             'Search Cafeteria',
-                  //             style: Theme.of(context).textTheme.headline6,
-                  //           ),
-                  //           dense: true,
-                  //         ),
-                  //         Divider(),
-                  //          Container(
-                  //            margin: EdgeInsets.all(12),
-                  //            child: StaggeredGridView.countBuilder(
-                  //             padding: const EdgeInsets.all(12.0),
-                  //             crossAxisCount: 4,
-                  //             mainAxisSpacing: 24,
-                  //             crossAxisSpacing: 12,
-                  //             itemCount: cafes.length,
-                  //             itemBuilder: (BuildContext context, int index) => CafeteraCard(cafes[index]),
-                  //             staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
-                  //         ))
-                  //       ],
-                  //   ),
+            return Container(
+              child: Center(child: Text("This")),
+            );
+          }
+        });
 
-                  // )
-                  // );
+    //   bool isTab = DeviceService().isTablet(context);
+    //   User user = FirebaseAuth.instance.currentUser;
+    //   if (_viewState == ViewState.ConnectionError)
+    //     return ErrorConnectionPage(routeName: CafeteriaSelectionScreen.routeName);
+    //   if (_viewState == ViewState.Error)
+    //     return ErrorPage(routeName: CafeteriaSelectionScreen.routeName);
+    //   else {
+    //     return MultiProvider(
+    //       providers: [
+    //         StreamProvider(
+    //             initialData: ConnectivityStatus.Connected,
+    //             create: (ctx) =>
+    //                 ConnectivityService().connectionStatusController.stream),
+    //         StreamProvider(
+    //           create: (ctx) => UserService().getUserData(user.uid),
+    //           initialData: const Loading1(),
+    //           catchError: (_, error) => Error1(error.toString()),
+    //         )
+    //       ],
+    //       child: Consumer<ConnectivityStatus>(
+    //         builder: (ctx, connectionStatus, ch) => (connectionStatus ==
+    //                 ConnectivityStatus.None)
+    //             ? ErrorConnectionPage(
+    //                 routeName: CafeteriaSelectionScreen.routeName)
+    //             : Consumer<UserData>(builder: (ctx, data, ch) {
+    //                 final cafeteriaProvider = Provider.of<CafeteriaProvider>(context);
+    //                 // Cafeteria selectedCafeteria = cafeteriaProvider.selectedCafeteria;
+    //                 List<Cafeteria> cafes = cafeteriaProvider.cafes;
+    //                 if (data is Loading1) {
+    //                   return LoadingPage();
+    //                 } else if (data is Error1) {
+    //                   print(Error1(data.errorMsg));
+    //                   return ErrorPage(routeName: CafeteriaSelectionScreen.routeName);
+    //                 } else if (data is UserDoc) {
+    //                   print("*****************************************************************");
+    //                   print(cafes);
+    //                   UserDoc userData = data;
+    //                   var size = MediaQuery.of(context).size;
+    //                   return SafeArea(
+    //                     child: Scaffold(
+    //                       bottomNavigationBar: NavBar(
+    //                         context: context,
+    //                         routeName:  "/cafe-selection",
+    //                       ),
+    //                       backgroundColor: Colors.white,
+    //                       body: Column(children: [
+    //                         Container(
+    //                           width: size.width,
+    //                           height: size.height * 0.15,
+    //                           child: ListView.builder(
+    //                               scrollDirection: Axis.horizontal,
+    //                               itemCount: 2,
+    //                               itemBuilder: (BuildContext context, int index) {
+    //                                 if (index == 0) {
+    //                                   return SizedBox(
+    //                                     width: 10.0,
+    //                                   );
+    //                                 }
+    //                                 return Container(
+    //                                   margin: EdgeInsets.all(5.0),
+    //                                   width: 70.0,
+    //                                   height: 70.0,
+    //                                   decoration: BoxDecoration(
+    //                                     shape: BoxShape.circle,
+    //                                     boxShadow: [
+    //                                       BoxShadow(
+    //                                           color: Colors.black45,
+    //                                           offset: Offset(0, 2),
+    //                                           blurRadius: 6.0)
+    //                                     ],
+    //                                   ),
+    //                                   child: GestureDetector(
+    //                                     onTap: () {
+
+    //                                       Navigator.push(context, MaterialPageRoute(builder: (context) => StoryScreen()));
+    //                                     },
+    //                                     child: CircleAvatar(
+    //                                       child: ClipOval(
+    //                                         child: Image(
+    //                                             height: 70.0,
+    //                                             width: 70.0,
+    //                                             image: NetworkImage(userStory['profileImageUrl']),
+    //                                             fit: BoxFit.cover),
+    //                                       ),
+    //                                     ),
+    //                                   ),
+    //                                 );
+    //                               }),
+    //                         ),
+    //                         // Container(
+    //                         //   margin: EdgeInsets.fromLTRB(4.0, 12.0, 4.0, 4.0),
+    //                         //   width: MediaQuery.of(context).size.width - 30,
+    //                         //   height: 120.0,
+    //                         //   decoration: BoxDecoration(
+    //                         //       color: Colors.black12,
+    //                         //       borderRadius:
+    //                         //           BorderRadius.all(Radius.circular(10.0))),
+    //                         //   child: Center(
+    //                         //     child: Text("TBD"),
+    //                         //   ),
+    //                         // ),
+    //                         // Container(
+    //                         //   margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
+    //                         //   width: MediaQuery.of(context).size.width - 30,
+    //                         //   height: 50.0,
+    //                         //   decoration: BoxDecoration(
+    //                         //       color: Colors.black12,
+    //                         //       borderRadius:
+    //                         //           BorderRadius.all(Radius.circular(10.0))),
+    //                         //   child: Center(
+    //                         //     child: Text("Search Bar"),
+    //                         //   ),
+    //                         // ),
+    //                         // Container(
+    //                         //   margin: EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 4.0),
+    //                         //   width: MediaQuery.of(context).size.width - 30,
+    //                         //   height: 30.0,
+    //                         //   decoration: BoxDecoration(
+    //                         //       color: Colors.black12,
+    //                         //       borderRadius:
+    //                         //           BorderRadius.all(Radius.circular(10.0))),
+    //                         //   child: Center(
+    //                         //     child: Text("Filters"),
+    //                         //   ),
+    //                         // ),
+    //                         Expanded(
+    //                             child: StaggeredGridView.countBuilder(
+    //                           padding: const EdgeInsets.all(4.0),
+    //                           crossAxisCount: 4,
+    //                           mainAxisSpacing: 2,
+    //                           crossAxisSpacing: 2,
+    //                           itemCount: cafes.length,
+    //                           itemBuilder: (BuildContext context, int index) =>
+    //                               CafeteraCard(cafes[index], userData),
+    //                           staggeredTileBuilder: (int index) =>
+    //                               StaggeredTile.fit(2),
+    //                         )),
+    //                       ]),
+    //                     ),
+    //                   );
+    //                 } else {
+    //                   print('Cafe selection screen consumer userDoc error');
+    //                   return Container();
+    //                 }
+
+    //                 // child: Scaffold(
+    //                 //   appBar: AppBar(
+    //                 //     title: Text('Select Cafeteria from'),
+    //                 //   ),
+    //                 //   body: Padding(
+    //                 //     padding: const EdgeInsets.fromLTRB(12, 0, 10, 5),
+    //                 //     child: ListView(
+    //                 //     children: [
+    //                 //       if (selectedCafeteria != null)
+    //                 //         ListTile(
+    //                 //           title: Text(
+    //                 //             'Current Cafeteria',
+    //                 //             style: Theme.of(context).textTheme.headline6,
+    //                 //           ),
+    //                 //           dense: true,
+    //                 //         ),
+    //                 //         if (selectedCafeteria != null)
+    //                 //         CafeteriaDetails(cafe: selectedCafeteria,oldCafe: selectedCafeteria),
+    //                 //         Divider(),
+    //                 //         ListTile(
+    //                 //           title: Text(
+    //                 //             'Search Cafeteria',
+    //                 //             style: Theme.of(context).textTheme.headline6,
+    //                 //           ),
+    //                 //           dense: true,
+    //                 //         ),
+    //                 //         Divider(),
+    //                 //          Container(
+    //                 //            margin: EdgeInsets.all(12),
+    //                 //            child: StaggeredGridView.countBuilder(
+    //                 //             padding: const EdgeInsets.all(12.0),
+    //                 //             crossAxisCount: 4,
+    //                 //             mainAxisSpacing: 24,
+    //                 //             crossAxisSpacing: 12,
+    //                 //             itemCount: cafes.length,
+    //                 //             itemBuilder: (BuildContext context, int index) => CafeteraCard(cafes[index]),
+    //                 //             staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+    //                 //         ))
+    //                 //       ],
+    //                 //   ),
+
+    //                 // )
+    //                 // );
+    //               }),
+    //       ),
+    //     );
+    //   }
+    // }
+
+    Widget getFooter() {
+      var size = MediaQuery.of(context).size;
+      return Container(
+          width: double.infinity,
+          height: 60,
+          decoration: BoxDecoration(color: Colors.white10),
+          child: Padding(
+              padding: const EdgeInsets.only(
+                  left: 20, right: 20, bottom: 5, top: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(iconItems.length, (index) {
+                  return GestureDetector(
+                      onTap: () {
+                        pageIndex = index;
+                        print(RouteNames[index]);
+                        return null;
+                      },
+                      child: Column(children: [
+                        iconItems[index],
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          textItems[index],
+                          style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87),
+                        )
+                      ]));
                 }),
-        ),
-      );
+              )));
     }
   }
-
-  Widget getFooter() {
-    var size = MediaQuery.of(context).size;
-    return Container(
-        width: double.infinity,
-        height: 60,
-        decoration: BoxDecoration(color: Colors.white10),
-        child: Padding(
-            padding:
-                const EdgeInsets.only(left: 20, right: 20, bottom: 5, top: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(iconItems.length, (index) {
-                return GestureDetector(
-                    onTap: () {
-                      pageIndex = index;
-                      print(RouteNames[index]);
-                      return null;
-                    },
-                    child: Column(children: [
-                      iconItems[index],
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        textItems[index],
-                        style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87),
-                      )
-                    ]));
-              }),
-            )));
-  }
-}
 
 // @override
 // Widget build(BuildContext context) {
@@ -611,6 +718,7 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
 //     );
 //   }
 // }
+}
 
 class DemoButton extends StatelessWidget {
   final Cafeteria cafe;

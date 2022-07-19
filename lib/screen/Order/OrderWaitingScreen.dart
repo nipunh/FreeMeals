@@ -1,13 +1,18 @@
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freemeals/constants/order_constants.dart';
 import 'package:freemeals/enums/connectivity_status.dart';
 import 'package:freemeals/enums/view_state.dart';
 import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/models/order_model.dart';
+import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/providers/order_provider.dart';
 import 'package:freemeals/providers/user_provider.dart';
+import 'package:freemeals/screen/Order/cart_screen.dart';
 import 'package:freemeals/screen/Order/ongoingOrder_screen.dart';
 import 'package:freemeals/screen/Order/products_overview_screen.dart';
+import 'package:freemeals/screen/WaiterScreens/waiter_order_screen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:freemeals/services/order_service.dart';
@@ -36,15 +41,15 @@ class _OrderWaitingScreenState extends State<OrderWaitingScreen> {
     ViewState _viewState = ViewState.Idle;
     bool _isInit = true;
     bool _loading = true;
-
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(title: Text("Order")),
-        body: Container(
-          child: Column(children: [
-            Center(
-                child:
-                    Text("Show this code to your server ${widget.orderCode}")),
+      backgroundColor: Colors.white,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(title: Text("Order")),
+      body: SingleChildScrollView(
+        child: Stack(children: <Widget>[
+          Column(children: [
             StreamBuilder(
                 stream: OrderService().getOngoingOrder(widget.orderDocId),
                 builder: (ctx, orderSnapshot) {
@@ -52,45 +57,129 @@ class _OrderWaitingScreenState extends State<OrderWaitingScreen> {
                       ConnectionState.waiting) {
                     return LoadingPage();
                   } else {
-                    final currUsertype = Provider.of<SelectedUser>(context, listen: false).userType;
+                    // print(
+                    //     "########################################################");
+                    // print(orderSnapshot);
+                    final currUsertype =
+                        Provider.of<SelectedUser>(context, listen: false)
+                            .userType;
                     if (orderSnapshot.hasData) {
                       OrderDoc data = orderSnapshot.data;
+                      print("6^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                       print(data);
-                      // If User is waiter/server
                       if (currUsertype == 0) {
-                        // return Container(
-                        //   child: Text("Waiter SCreen"),
-                        // );
-                        if (data.orderStatus == 0 && currUsertype == 0) {
+                        if (data.orderStatus == 0) {
                           // Waiting for the server to join
                           return Container(
-                            child:
-                                Text(data.numberOfCustomers.toString()),
+                              height: 600, child: Text("Dont know what to do"));
+                        }
+                        if (data.orderStatus == 1) {
+                          // Waiting for the server to join
+                          return WaiterOrderScreen(
+                            orderdata: data,
                           );
                         }
                       }
 
                       // If User is customer
                       if (currUsertype == 1) {
-                        // return Container(
-                        //   child: Center(child: Text("Customer SCreen")),
-                        // );
+                        if (data.orderStatus == 0) {
+                          return Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                    height: size.height * 0.35,
+                                    decoration:
+                                        BoxDecoration(color: Colors.white),
+                                    padding: EdgeInsets.only(bottom: 25),
+                                    //ClipRRect for image border radius
+                                    child: ClipRRect(
+                                        child: Image.network(
+                                      "https://firebasestorage.googleapis.com/v0/b/freemeals-3d905.appspot.com/o/cafeterias%2FCXdKnqsdwetprt885KVx%2FofferBanners%2Ffood-offer-banner.jpg?alt=media&token=d966d3aa-d0cc-4dae-bc8f-0b75a8943d47",
+                                      width: MediaQuery.of(context).size.width,
+                                      fit: BoxFit.cover,
+                                    ))),
+                                Container(
+                                    alignment: Alignment.center,
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Show this code to your waiter",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(
+                                          height: 40,
+                                        ),
+                                        SizedBox(
+                                          height: 120.0,
+                                          width: 120.0,
+                                          child: CircularProgressIndicator(
+                                            semanticsLabel: "Loading",
+                                            strokeWidth: 6.0,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 50,
+                                        ),
+                                        Card(
+                                            clipBehavior: Clip.antiAlias,
+                                            margin: EdgeInsets.all(4.0),
+                                            elevation: 18.0,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10.0))),
+                                            child: Container(
+                                              padding: EdgeInsets.all(8.0),
+                                              height: size.height * 0.125,
+                                              width: size.width * 0.85,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              15.0)),
+                                                  color: Colors.white),
+                                              child: Column(children: [
+                                                Text(
+                                                  "Code",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Text(
+                                                  "${data.orderId}",
+                                                  style: TextStyle(
+                                                      fontSize: 28,
+                                                      letterSpacing: 28.0),
+                                                )
+                                              ]),
+                                            )),
+                                      ],
+                                    ))
+                              ]);
+                        }
+
                         if (data.orderStatus == 1) {
-                          // Order in progress
                           return Container(
-                            height: 600,
-                            child: OngoingOrder(),
-                          ); 
+                            height: size.height * 0.90,
+                            child: OngoingOrder(
+                              orderDoc: data,
+                            ),
+                          );
                         } else if (data.orderStatus == 2) {
-                          // Order Completed, table closed
                           return Container();
                         }
                       }
                     }
-                    return Container(child: Text("This mf"));
+                    return Container(child: Text("This mf 3"));
                   }
                 })
           ]),
-        ));
+        ]),
+      ),
+    );
   }
 }

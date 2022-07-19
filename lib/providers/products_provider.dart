@@ -10,6 +10,7 @@ class Products with ChangeNotifier {
       title: 'Filtered Coffee',
       description: 'Latte Machiato glasses of 280ml',
       price: 1.99,
+      category : "Beverage",
       imageUrl:
           'https://images.pexels.com/photos/4547567/pexels-photo-4547567.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     ),
@@ -18,6 +19,7 @@ class Products with ChangeNotifier {
       title: 'Latte Machiato',
       description: 'Latte Machiato glasses of 280ml.',
       price: 4.99,
+      category : "Beverage",
       imageUrl:
           'https://images.pexels.com/photos/4349777/pexels-photo-4349777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     ),
@@ -26,6 +28,7 @@ class Products with ChangeNotifier {
       title: 'Cloud Macchiato',
       description: 'Latte Machiato glasses of 280ml.',
       price: 5.49,
+      category : "Beverage",
       imageUrl:
           'https://images.pexels.com/photos/573916/pexels-photo-573916.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     ),
@@ -34,6 +37,7 @@ class Products with ChangeNotifier {
       title: 'Espresso',
       description: 'Latte Machiato glasses of 280ml.',
       price: 1.49,
+      category : "Beverage",
       imageUrl:
           'https://images.pexels.com/photos/849643/pexels-photo-849643.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
     ),

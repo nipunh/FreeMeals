@@ -11,7 +11,7 @@ class ReelServices {
 
   Future<List<Reel>> getReelsByCafeteriaID(String cafeteriaId) async {
     try {
-      print(cafeteriaId);
+      // print(cafeteriaId);
 
       QuerySnapshot<Object> reelDoc = await _reels
           .where("cafeteriaId", isEqualTo: cafeteriaId)

@@ -2,17 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:freemeals/config/data_json.dart';
 import 'package:freemeals/models/reels_model.dart';
 import 'package:freemeals/models/waiter_Selection.dart';
+import 'package:freemeals/providers/cafeteria_provider.dart';
 import 'package:freemeals/screen/Authentication/auth_screen.dart';
 import 'package:freemeals/screen/BookTable/book_table.dart';
+import 'package:freemeals/screen/Cafeteria/join_table_Screen.dart';
 import 'package:freemeals/screen/Cafeteria/waiter_selection_screen.dart';
 import 'package:freemeals/screen/profile_page.dart';
+import 'package:freemeals/widgets/app_wide/app_wide/NavigationBar.dart';
 import 'package:freemeals/widgets/discover_page/icon_widget.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class DiscoverPage extends StatefulWidget {
   static const routeName = '/discovery-page';
+  final String cafeId;
+  final String cafeName;
+  final String city;
+
+  DiscoverPage({this.cafeId, this.cafeName, this.city});
 
   @override
   _DiscoverPageState createState() => _DiscoverPageState();
@@ -27,6 +35,8 @@ class _DiscoverPageState extends State<DiscoverPage>
   void initState() {
     super.initState();
     _tabController = new TabController(length: items.length, vsync: this);
+
+    if (widget.cafeId != null || widget.cafeId != "") {}
   }
 
   @override
@@ -124,7 +134,14 @@ class _VideoPlayerreelListtate extends State<VideoPlayerItem>
   @override
   Widget build(BuildContext context) {
     User user = FirebaseAuth.instance.currentUser;
+    String cafeId =
+        Provider.of<SelectedCafeteria>(context, listen: false).cafeId;
+    // print("*************************************************************");
+    // print(cafeId);
     return Scaffold(
+      extendBody: true,
+      bottomNavigationBar: NavBar(
+          context: context, routeName: "/discovery-page", cafeId: cafeId),
       body: InkWell(
         onTap: () => setState(() {
           _videoPlayerController.value.isPlaying
@@ -191,6 +208,29 @@ class _VideoPlayerreelListtate extends State<VideoPlayerItem>
                                       ),
                                     ),
                                   ),
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.white),
+                                      shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              side: BorderSide(
+                                                  color: Colors.white70))),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          new MaterialPageRoute(
+                                              builder: (context) =>
+                                                  new JoinTableScreen(
+                                                      cafeId: cafeId)));
+                                    },
+                                    child: Text('Join Table'),
+                                  )
                                 ],
                               ),
                             ]),
@@ -358,6 +398,8 @@ class CenterPannel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String cafeName =
+        Provider.of<SelectedCafeteria>(context, listen: false).cafeName;
     return Container(
       height: size.height,
       width: size.width * 0.8,
@@ -367,7 +409,7 @@ class CenterPannel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Deli PLanet",
+            cafeName,
             style: TextStyle(color: Colors.white, fontSize: 25),
           ),
           SizedBox(height: 10),
@@ -400,6 +442,8 @@ class HeaderHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
+    String cafeName =
+        Provider.of<SelectedCafeteria>(context, listen: false).cafeName;
     return Container(
         height: size.height * 0.06,
         width: size.width * 0.70,
@@ -417,7 +461,7 @@ class HeaderHomePage extends StatelessWidget {
                   fit: BoxFit.cover),
             ),
           ),
-          Text("Deli Planet",
+          Text(cafeName,
               style: TextStyle(
                   color: Colors.white.withOpacity(0.75),
                   fontSize: 16,

@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/models/reels_model.dart';
 import 'package:freemeals/models/user_model.dart';
+import 'package:freemeals/providers/cafeteria_provider.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/services/cafeteria_service.dart';
 import 'package:freemeals/services/reel_services.dart';
+import 'package:provider/provider.dart';
 
 class CafeteraCard extends StatefulWidget {
   final Cafeteria cafe;
-  final UserDoc user;
+  final SelectedUser user;
 
   CafeteraCard(this.cafe, this.user);
 
@@ -22,8 +25,8 @@ class _CafeteraCardState extends State<CafeteraCard> {
   List<Icon> _loyaltyStamps() {
     List<Icon> stars = [];
     for (int i = 0; i < widget.cafe.cafeLoyaltyStamps; i++) {
-      stars.add(
-          Icon(Icons.check_circle_rounded, color: i < 4 ? Colors.amber.shade400 : Colors.white));
+      stars.add(Icon(Icons.check_circle_rounded,
+          color: i < 4 ? Colors.amber.shade400 : Colors.white));
     }
     return stars;
   }
@@ -64,13 +67,14 @@ class _CafeteraCardState extends State<CafeteraCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:() async => {
+      onTap: () async => {
         Navigator.pushNamed(context, DiscoverPage.routeName),
-        ReelServices().getReelsByCafeteriaID(widget.cafe.id).then((List<Reel> reels){
-          setState((){
-              ReelList = reels;
-          });
-        })
+        Provider.of<SelectedCafeteria>(context, listen: false).setCafeteria(widget.cafe.id, widget.cafe.name, widget.cafe.city)
+        // ReelServices().getReelsByCafeteriaID(widget.cafe.id).then((List<Reel> reels){
+        //   setState((){
+        //       ReelList = reels;
+        //   });
+        // })
       },
       child: Container(
           child: Card(
@@ -86,7 +90,8 @@ class _CafeteraCardState extends State<CafeteraCard> {
               color: Colors.transparent,
               borderRadius: BorderRadius.all(Radius.circular(10.0)),
               image: DecorationImage(
-                  image: NetworkImage(widget.cafe.banners[0]), fit: BoxFit.cover),
+                  image: NetworkImage(widget.cafe.banners[0]),
+                  fit: BoxFit.cover),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

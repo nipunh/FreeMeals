@@ -8,6 +8,7 @@ import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/providers/order_provider.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
 import 'package:freemeals/screen/Cafeteria/cateteria_selecttion_screen.dart';
 import 'package:freemeals/screen/Order/OrderWaitingScreen.dart';
@@ -15,6 +16,7 @@ import 'package:freemeals/screen/Order/ongoingOrder_screen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/services/order_service.dart';
 import 'package:freemeals/services/user_service.dart';
+import 'package:freemeals/widgets/app_wide/app_wide/TableRequestTile.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
@@ -111,7 +113,8 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                   children: [
                     ElevatedButton(
                         onPressed: () {
-                          _settingModalBottomSheet(context, "BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
+                          _settingModalBottomSheet(
+                              context, "BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
                         },
                         child: Text("Start Order"))
                   ],
@@ -126,7 +129,10 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                       return LoadingPage();
                     else {
                       final orderProvider = Provider.of<OrderProvider>(context);
-                      orderProvider.getWaitersOrders("BXO9L4PwBrMHTCK3z6yhNjfPHsG3");
+                      final user =
+                          Provider.of<SelectedUser>(context, listen: false);
+
+                      orderProvider.getWaitersOrders(user.userId);
                       List<OrderDoc> orderRequest = orderProvider.orders;
                       return Container(
                           child: Column(children: [
@@ -157,32 +163,64 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Divider(),
-                                ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: orderRequest
-                                        .where((element) =>
-                                            element.orderStatus == 1 ||
-                                            element.orderStatus == 2)
-                                        .toList()
-                                        .length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      List<OrderDoc> pendingRequestList =
-                                          orderRequest
-                                              .where((e) =>
-                                                  e.orderStatus == 1 ||
-                                                  e.orderStatus == 2)
-                                              .toList();
-                                      OrderDoc order =
-                                          pendingRequestList.elementAt(index);
-                                      return pendingRequestList.length > 0
-                                          ? Container(child: Text("Order"))
-                                          : ListTile(
-                                              leading:
-                                                  Text("No pending Request"),
-                                            );
-                                    })
+                                SizedBox(
+                                  height: 200,
+                                  child: ListView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: orderRequest
+                                          .where((element) =>
+                                              element.orderStatus == 1 ||
+                                              element.orderStatus == 2)
+                                          .toList()
+                                          .length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        List<OrderDoc> pendingRequestList =
+                                            orderRequest
+                                                .where((e) =>
+                                                    e.orderStatus == 1 ||
+                                                    e.orderStatus == 2)
+                                                .toList();
+                                        print(pendingRequestList);
+                                        OrderDoc order = pendingRequestList.elementAt(index);
+                                        
+                                        return pendingRequestList.length > 0
+                                            ? GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      new MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              OrderWaitingScreen(
+                                                                orderCode: order
+                                                                    .orderId,
+                                                                orderDocId:
+                                                                    order.id,
+                                                                cafeId: order
+                                                                    .cafeId,
+                                                                user: FirebaseAuth
+                                                                    .instance
+                                                                    .currentUser,
+                                                              )));
+                                                },
+                                                child: TableRequestTile(
+                                                  bookingDate:
+                                                      order.waiterRequestTime,
+                                                  bookingTime:
+                                                      order.waiterAcceptedTime,
+                                                  canDismiss: true,
+                                                  guestNumber:
+                                                      order.numberOfCustomers,
+                                                  id: order.id,
+                                                ),
+                                              )
+                                            : ListTile(
+                                                leading:
+                                                    Text("No ongoing order"),
+                                              );
+                                      }),
+                                )
                               ],
                               //  Padding(
                               //     padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
@@ -302,13 +340,24 @@ void _settingModalBottomSheet(context, waiterId) {
                         child: new ElevatedButton(
                           child: const Text('Next'),
                           onPressed: () {
-                            OrderProvider().startNewOrder(waiterId, orderId, tableNumber, noOfCustomer);
-                            Navigator.push(
-                                context,
-                                new MaterialPageRoute(
-                                    builder: (context) => OrderWaitingScreen(
-                                      orderCode: orderId,
-                                    )));
+                            print("pressed");
+                            OrderProvider()
+                                .startNewOrder(waiterId, orderId, tableNumber,
+                                    noOfCustomer)
+                                .then((String value) {
+                              // print("*******************************");
+                              // print(value);
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (context) => OrderWaitingScreen(
+                                            orderCode: orderId,
+                                            orderDocId: value,
+                                            cafeId: "CXdKnqsdwetprt885KVx",
+                                            user: FirebaseAuth
+                                                .instance.currentUser,
+                                          )));
+                            });
                           },
                         )),
                   ],

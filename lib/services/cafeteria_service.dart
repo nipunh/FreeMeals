@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/services/notification_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 // import 'package:platos_client_app/models/cafeteria_model.dart';
 // import 'package:platos_client_app/models/order_model.dart';
 // import 'package:platos_client_app/models/slot_times_model.dart';
@@ -36,6 +38,42 @@ class CafeteriasService {
     }
   }
 
+
+  Future<String> getOrderDocByOrderCode(String cafeId, String orderDocId, User user) async {
+    try{
+      
+       
+      QuerySnapshot<Map<String, dynamic>> orderDoc = 
+      await _orders.where("cafeId", isEqualTo: cafeId)
+      .where("orderId", isEqualTo: int.parse(orderDocId))
+      .limit(1)
+      .get();
+
+    
+      if(orderDoc.docs.isNotEmpty){
+        await _orders.doc(orderDoc.docs.first.id).update({
+          "userList" : FieldValue.arrayUnion([
+            {
+              "userId":user.uid,
+              "displayName":  user.displayName,
+              "items": [],
+              "itemsTotal": 0,
+              "status" : 0,
+              "lastUpdated" : DateTime.now()
+            }])
+        });
+
+        return orderDoc.docs.first.id; 
+      }
+
+      return null;
+    }catch (err) {
+      print('error Cafe selection screen - pvt fucntion select cafe = ' +
+          err.toString());
+      throw (err);
+    }
+  }
+
   Future<void> selectCafe(String userId, Cafeteria cafe, Cafeteria oldCafe,
       BuildContext context) async {
         print('Selcted Cafe :'+ cafe.id);
@@ -64,6 +102,21 @@ class CafeteriasService {
     // }
   }
 
+    Stream<CafesData> getCafeteriasByLocation() {
+    Stream<QuerySnapshot<Map<String, dynamic>>> stream = _cafeteria
+        .snapshots();
+
+    return stream.map(_snapshotCafes);
+  }
+
+    Cafeterias _snapshotCafes(QuerySnapshot<Map<String, dynamic>> snapshot) {
+    final List<Cafeteria> cafeDoc = snapshot.docs.map((doc) {
+      return Cafeteria.fromDocToCafeteria(doc);
+    }).toList();
+
+    return Cafeterias(cafeDoc);
+  }
+
   Future<Cafeteria> getCafeteriaByCode() async {
     try {
       QuerySnapshot<Map<String, dynamic>> cafeDoc = await _cafeteria
@@ -81,6 +134,9 @@ class CafeteriasService {
     }
   }
 }
+
+
+
 //   Future<List<SlotTime>> getCafeSlotTimes(String cafeId) async {
 //     try {
 //       DocumentSnapshot<Map<String, dynamic>> doc = await _cafeteria

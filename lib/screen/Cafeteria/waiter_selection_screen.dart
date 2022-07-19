@@ -8,6 +8,8 @@ import 'package:freemeals/models/cafe_model.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/models/user_model.dart';
 import 'package:freemeals/models/waiter_Selection.dart';
+import 'package:freemeals/providers/cafeteria_provider.dart';
+import 'package:freemeals/providers/user_provider.dart';
 import 'package:freemeals/providers/waiter_selection_provider.dart';
 import 'package:freemeals/screen/Order/OrderWaitingScreen.dart';
 import 'package:freemeals/screen/Order/ongoingOrder_screen.dart';
@@ -126,9 +128,13 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                             if (_viewState == ViewState.Loading)
                               return LoadingPage();
                             else {
+                              String cafeId = Provider.of<SelectedCafeteria>(
+                                      context,
+                                      listen: false)
+                                  .cafeId;
                               final waiterProvider =
-                              Provider.of<WaiterProvider>(context);
-                              waiterProvider.getWaiters("CXdKnqsdwetprt885KVx");
+                                  Provider.of<WaiterProvider>(context);
+                              waiterProvider.getWaiters(cafeId);
                               return Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
@@ -153,7 +159,7 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                       ),
                                       Container(
                                         height: size.height * 0.125,
-                                        width: size.width * 0.80,
+                                        width: size.width * 0.95,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
                                             border:
@@ -175,17 +181,17 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                                   text:
                                                       "Connect with your server",
                                                   style: TextStyle(
-                                                    fontSize: 18,
+                                                    fontSize: 22,
                                                   )),
                                               TextSpan(text: "\n"),
                                               TextSpan(
                                                   text: "and begin your order ",
                                                   style:
-                                                      TextStyle(fontSize: 18)),
+                                                      TextStyle(fontSize: 22)),
                                               TextSpan(
                                                   text: "Live!",
                                                   style: TextStyle(
-                                                      fontSize: 18,
+                                                      fontSize: 22,
                                                       fontWeight:
                                                           FontWeight.bold))
                                             ],
@@ -197,59 +203,108 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                              padding:
-                                                  EdgeInsets.only(right: 10),
-                                              margin: EdgeInsets.all(0),
-                                              alignment: Alignment.topLeft,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.check_circle,
-                                                    size: 30,
-                                                    color: Colors.white,
-                                                  ),
-                                                  Text("7th Meal Free",
-                                                      style: TextStyle(
-                                                          color: Colors.white))
-                                                ],
+                                    child: Container(
+                                        padding: EdgeInsets.only(right: 7.5),
+                                        margin: EdgeInsets.all(0),
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          // ignore: deprecated_member_use
+                                          overflow: Overflow.visible,
+                                          children: <Widget>[
+                                            new Positioned(
+                                              left: -5,
+                                              top: -7.5,
+                                              child: Icon(
+                                                Icons.check_circle_rounded,
+                                                size: 45,
+                                                color: Colors.grey[200],
                                               ),
-                                              height: 30,
-                                              width: 140,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(20)),
-                                                border: Border.all(
-                                                  width: 2,
-                                                  color: Colors.white54,
-                                                ),
-                                                color: Color.fromRGBO(
-                                                    132, 82, 161, 1),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.5),
-                                                    spreadRadius: 2,
-                                                    blurRadius: 5,
-                                                    offset: Offset(0,
-                                                        3), // changes position of shadow
-                                                  ),
-                                                ],
-                                              )),
-                                        ]),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 38.0),
+                                              child: Text("7th Meal Free",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  )),
+                                            )
+                                          ],
+                                        ),
+                                        height: 35,
+                                        width: 160,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20)),
+                                          border: Border.all(
+                                            width: 2,
+                                            color: Colors.white,
+                                          ),
+                                          color: Color.fromRGBO(132, 82, 161, 1),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 2,
+                                              blurRadius: 5,
+                                              offset: Offset(0,
+                                                  3), // changes position of shadow
+                                            ),
+                                          ],
+                                        )),
                                   ),
-                                  Divider(),
+                                  // Padding(
+                                  //   padding: const EdgeInsets.all(8.0),
+                                  //   child: Row(
+                                  //       mainAxisAlignment:
+                                  //           MainAxisAlignment.center,
+                                  //       crossAxisAlignment:
+                                  //           CrossAxisAlignment.center,
+                                  //       children: [
+                                  //         Container(
+                                  //             padding:
+                                  //                 EdgeInsets.only(right: 10),
+                                  //             margin: EdgeInsets.all(0),
+                                  //             alignment: Alignment.topLeft,
+                                  //             child: Row(
+                                  //               mainAxisAlignment:
+                                  //                   MainAxisAlignment
+                                  //                       .spaceBetween,
+                                  //               crossAxisAlignment:
+                                  //                   CrossAxisAlignment.center,
+                                  //               children: [
+                                  //                 Icon(
+                                  //                   Icons.check_circle,
+                                  //                   size: 30,
+                                  //                   color: Colors.white,
+                                  //                 ),
+                                  //                 Text("7th Meal Free",
+                                  //                     style: TextStyle(
+                                  //                         color: Colors.white))
+                                  //               ],
+                                  //             ),
+                                  //             height: 30,
+                                  //             width: 140,
+                                  //             decoration: BoxDecoration(
+                                  //               borderRadius: BorderRadius.all(
+                                  //                   Radius.circular(20)),
+                                  //               border: Border.all(
+                                  //                 width: 2,
+                                  //                 color: Colors.white54,
+                                  //               ),
+                                  //               color: Color.fromRGBO(
+                                  //                   132, 82, 161, 1),
+                                  //               boxShadow: [
+                                  //                 BoxShadow(
+                                  //                   color: Colors.grey
+                                  //                       .withOpacity(0.5),
+                                  //                   spreadRadius: 2,
+                                  //                   blurRadius: 5,
+                                  //                   offset: Offset(0,
+                                  //                       3), // changes position of shadow
+                                  //                 ),
+                                  //               ],
+                                  //             )),
+                                  //       ]),
+                                  // ),
                                   Expanded(
                                       // decoration: BoxDecoration(color: Colors.blue),
                                       child: StaggeredGridView.countBuilder(
@@ -280,7 +335,9 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                                         onTap: () {
                                                           UserService()
                                                               .createOrder(user)
-                                                              .then((OrderDoc value) {
+                                                              .then((OrderDoc
+                                                                  value) {
+                                                            // print("******/
                                                             Navigator.push(
                                                                 context,
                                                                 new MaterialPageRoute(
@@ -289,7 +346,7 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                                                             new OrderWaitingScreen(
                                                                               user: user,
                                                                               orderCode: value.orderId,
-                                                                              orderDocId : value.id,
+                                                                              orderDocId: value.id,
                                                                               cafeId: value.cafeId,
                                                                             )));
                                                           });

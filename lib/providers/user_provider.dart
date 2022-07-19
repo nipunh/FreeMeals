@@ -8,11 +8,13 @@ class SelectedUser extends ChangeNotifier {
   String _userId;
   String _userName;
   int _userType;
+  String _profileImg;
 
   SelectedUser() {
     _userId = '';
     _userName = '';
     _userType = 1;
+    _profileImg = "";
     try {
       loadPreferences();
     } catch (err) {
@@ -47,25 +49,39 @@ class SelectedUser extends ChangeNotifier {
     }
   }
 
+  String get profileImg {
+    if (_profileImg != null)
+      return _profileImg;
+    else {
+      loadPreferences();
+      return _profileImg;
+    }
+  }
+
   Future<void> loadPreferences() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String userId = prefs.getString('cafeId');
       String userName = prefs.getString('cafeName');
       int userType = prefs.getInt('userType');
-      if (userId != null && userName != null && userType != null)
-        setUser(userId, userName, userType);
+      String profileImg = prefs.getString('profileImg');
+      if (userId != null &&
+          userName != null &&
+          userType != null &&
+          profileImg != null) setUser(userId, userName, userType, profileImg);
     } catch (err) {
       print('loadPreference Cafe error = $err');
       throw Exception(err);
     }
   }
 
-  Future<void> setUser(String userId, String userName, int userType) async {
+  Future<void> setUser(
+      String userId, String userName, int userType, String profileImg) async {
     try {
       _userId = userId;
       _userName = userName;
       _userType = userType;
+      _profileImg = profileImg;
       notifyListeners();
       return await savePreferences();
     } catch (err) {
@@ -79,6 +95,91 @@ class SelectedUser extends ChangeNotifier {
       prefs.setString('userId', _userId);
       prefs.setString('userName', _userName);
       prefs.setInt("userType", _userType);
+      prefs.setString("profileImg", _profileImg);
+      return;
+    } catch (err) {
+      print('savePreference Cafe error = $err');
+      throw Exception(err);
+    }
+  }
+}
+
+class SelectedWaiter extends ChangeNotifier {
+  String _waiterId;
+  String _waiterName;
+  String _waiterProfileImg;
+
+  SelectedWaiter() {
+    _waiterId = '';
+    _waiterName = '';
+    _waiterProfileImg = "";
+    try {
+      loadPreferences();
+    } catch (err) {
+      throw Exception(err);
+    }
+  }
+
+  String get waiterId {
+    if (_waiterId != null)
+      return _waiterId;
+    else {
+      loadPreferences();
+      return _waiterId;
+    }
+  }
+
+  String get waiterName {
+    if (_waiterName != null)
+      return _waiterName;
+    else {
+      loadPreferences();
+      return _waiterName;
+    }
+  }
+
+  String get waiterProfileImg {
+    if (_waiterProfileImg != null)
+      return _waiterProfileImg;
+    else {
+      loadPreferences();
+      return _waiterProfileImg;
+    }
+  }
+
+  Future<void> loadPreferences() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String waiterId = prefs.getString('waiterId');
+      String waiterName = prefs.getString('waiterName');
+      String waiterProfileImg = prefs.getString('waiterProfileImg');
+      if (waiterId != null && waiterName != null && waiterProfileImg != null)
+        setWaiter(waiterId, waiterName, waiterProfileImg);
+    } catch (err) {
+      print('loadPreference Cafe error = $err');
+      throw Exception(err);
+    }
+  }
+
+  Future<void> setWaiter(
+      String waiterId, String waiterName, String waiterProfileImg) async {
+    try {
+      _waiterId = waiterId;
+      _waiterName = waiterName;
+      _waiterProfileImg = waiterProfileImg;
+      notifyListeners();
+      return await savePreferences();
+    } catch (err) {
+      throw Exception(err);
+    }
+  }
+
+  Future<void> savePreferences() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('waiterId', _waiterId);
+      prefs.setString('waiterName', _waiterName);
+      prefs.setString("waiterProfileImg", _waiterProfileImg);
       return;
     } catch (err) {
       print('savePreference Cafe error = $err');
@@ -97,7 +198,11 @@ class UserProvider extends ChangeNotifier {
 
   UserDoc _selectedUser;
 
-  UserDoc get selectedUser => _selectedUser;  
+  UserDoc _selectedWaiter;
+
+  UserDoc get selectedUser => _selectedUser;
+
+  UserDoc get selectedWaiter => _selectedWaiter;
 
   Future<void> getUser(String userId) async {
     try {
@@ -106,6 +211,25 @@ class UserProvider extends ChangeNotifier {
       if (userDoc.exists) {
         UserDoc selectedUser = UserDoc.fromDoctoUserInfo(userDoc);
         _selectedUser = selectedUser;
+      }
+
+      notifyListeners();
+    } catch (err) {
+      print(
+          'error cafeteria provider - get selected cafes and add to provider = ' +
+              err.toString());
+      throw (err);
+    }
+  }
+
+  Future<void> getWaiter(String userId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await _userRef.doc(userId).get();
+
+      if (userDoc.exists) {
+        UserDoc selectedUser = UserDoc.fromDoctoUserInfo(userDoc);
+        _selectedWaiter = selectedUser;
       }
 
       notifyListeners();
