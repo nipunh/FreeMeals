@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:freemeals/constants/order_constants.dart';
 import 'package:freemeals/models/cart_model.dart';
 import 'package:freemeals/models/order_model.dart';
 import 'package:freemeals/providers/products_provider.dart';
@@ -7,6 +8,7 @@ import 'package:freemeals/screen/Order/cart_screen.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/badge.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/product_item.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 enum FilterOptions { Favourites, All }
 
@@ -38,6 +40,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     ];
     final user = Provider.of<SelectedUser>(context, listen: false);
     final cart = Provider.of<Cart>(context);
+
+    final stats = ['orderId', 'tableNumber', 'noOfCustomers', 'itemsTotal'];
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       // appBar: null,
@@ -84,31 +89,101 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       body: SingleChildScrollView(
         child: Container(
           child: Column(children: [
-            Container(
-                height: size.height * 0.25,
-                decoration: BoxDecoration(color: Colors.white),
-                padding: EdgeInsets.only(bottom: 25),
-                //ClipRRect for image border radius
-                child: ClipRRect(
-                    child: Image.network(
-                  user.profileImg,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                ))),
+            Padding(
+              padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+              child: Container(
+                  height: size.height * 0.25,
+                  decoration: BoxDecoration(color: Colors.white),
+                  padding: EdgeInsets.only(bottom: 25),
+                  //ClipRRect for image border radius
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: size.height,
+                          width: size.width * 0.45,
+                          child: ClipRRect(
+                              child: Image.network(
+                            user.profileImg,
+                            width: MediaQuery.of(context).size.width,
+                            fit: BoxFit.cover,
+                          )),
+                        ),
+                        Container(
+                            height: size.height,
+                            width: size.width * 0.45,
+                            child: GridView.count(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 4,
+                                crossAxisSpacing: 4,
+                                childAspectRatio: 1,
+                                children: List.generate(4, (index) {
+                                  return Card(
+                                      clipBehavior: Clip.antiAlias,
+                                      margin: EdgeInsets.all(4.0),
+                                      elevation: 4.0,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0))),
+                                      child: Container(
+                                          padding: EdgeInsets.all(4.0),
+                                          alignment: Alignment.centerLeft,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10.0)),
+                                          ),
+                                          child: RichText(
+                                            text: TextSpan(children: [
+                                              TextSpan(
+                                                  text:
+                                                      '${stats[index].split(RegExp(r"(?=[A-Z])")).map((element) => toBeginningOfSentenceCase(element)).join(" ")}\n'),
+                                              TextSpan(
+                                                  text: stats[index] ==
+                                                          'orderId'
+                                                      ? '${widget.orderDoc.getOrderId()}'
+                                                      : stats[index] ==
+                                                              'tableNumber'
+                                                          ? '${widget.orderDoc.getNumberOfCustomers()}'
+                                                          : stats[index] ==
+                                                                  'noOfCustomers'
+                                                              ? '${widget.orderDoc.getTableNumber()}'
+                                                              : stats[index] ==
+                                                                      'totalCost'
+                                                                  ? '${widget.orderDoc.getTotalCost(user.userId)}'
+                                                                  : ""),
+                                            ]),
+                                          )));
+                                })))
+                      ],
+                    ),
+                  )),
+            ),
             Container(
               height: 600,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     SizedBox(height: 5.0),
-                    Container(
-                      decoration: BoxDecoration(),
-                      child: Text('Status',
-                        
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.0)),
+                            border: Border.all(color: Colors.black),
+                            color: Colors.white),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              'Status : ${OrderDecrypt.orderStaus[widget.orderDoc.orderStatus]}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
                     ),
-                    
                     DefaultTabController(
                         length: categories.length, // length of tabs
                         initialIndex: 0,
