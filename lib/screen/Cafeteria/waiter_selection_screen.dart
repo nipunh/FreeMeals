@@ -209,7 +209,7 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                         child: Stack(
                                           alignment: Alignment.center,
                                           // ignore: deprecated_member_use
-                                          overflow: Overflow.visible,
+                                          // overflow: Overflow.visible,
                                           children: <Widget>[
                                             new Positioned(
                                               left: -5,
@@ -239,10 +239,12 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                             width: 2,
                                             color: Colors.white,
                                           ),
-                                          color: Color.fromRGBO(132, 82, 161, 1),
+                                          color:
+                                              Color.fromRGBO(132, 82, 161, 1),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.grey.withOpacity(0.5),
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
                                               spreadRadius: 2,
                                               blurRadius: 5,
                                               offset: Offset(0,
