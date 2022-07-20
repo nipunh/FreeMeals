@@ -192,7 +192,7 @@ class _BookTableState extends State<BookTable> {
                       child: Stack(
                         alignment: Alignment.center,
                         // ignore: deprecated_member_use
-                        overflow: Overflow.visible,
+                        // overflow: Overflow.visible,
                         children: <Widget>[
                           new Positioned(
                             left: -5,
