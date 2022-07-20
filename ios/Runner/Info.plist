@@ -45,5 +45,23 @@
 	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsLocalNetworking</key>
+    <true/>
+</dict>
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleIdentifier</key>
+        <string></string>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>app-1-513881296017-ios-8cba1d2958ca859a6c0330</string>
+        </array>
+    </dict>
+</array>
 </dict>
 </plist>
