@@ -14,35 +14,40 @@ class UserDoc implements UserData {
   Map<String, dynamic> cafeLoyaltyStamps;
   String caption;
   int status;
+  double rating;
 
-  UserDoc({
-    @required this.id,
-    @required this.phone,
-    @required this.emailAddress,
-    @required this.displayName,
-    @required this.userType,
-    @required this.profileImageUrl,
-    @required this.cafeLoyaltyStamps,
-    this.caption,
-    this.status
-  });
+  UserDoc(
+      {@required this.id,
+      @required this.phone,
+      @required this.emailAddress,
+      @required this.displayName,
+      @required this.userType,
+      @required this.profileImageUrl,
+      @required this.cafeLoyaltyStamps,
+      this.caption,
+      this.status,
+      this.rating});
 
   static UserDoc fromDoctoUserInfo(
-    
-    DocumentSnapshot<Map<String, dynamic>> snapshot) {
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data();
 
     return UserDoc(
-      id: snapshot.id,
-      phone: data['phone'] ?? '',
-      emailAddress: data['emailAddress'] ?? '',
-      displayName: data['displayName'] ?? '',
-      userType: data['userType'] != null ? data['userType'] : 1,
-      profileImageUrl : data['profileImageUrl'] ?? '' ,
-      cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null) ? {} : data["cafeLoyaltyStamps"].map((entry) => ({[entry] : data["cafeLoyaltyStamps"][entry]  })),
-      caption : (data['caption'] == null) ? "At your service" : data["caption"],
-      status : data['status'] ?? 0,
-        );
+        id: snapshot.id,
+        phone: data['phone'] ?? '',
+        emailAddress: data['emailAddress'] ?? '',
+        displayName: data['displayName'] ?? '',
+        userType: data['userType'] != null ? data['userType'] : 1,
+        profileImageUrl: data['profileImageUrl'] ?? '',
+        cafeLoyaltyStamps: (data['cafeLoyaltyStamps'] == null)
+            ? {}
+            : data["cafeLoyaltyStamps"].map((entry) => ({
+                  [entry]: data["cafeLoyaltyStamps"][entry]
+                })),
+        caption:
+            (data['caption'] == null) ? "At your service" : data["caption"],
+        status: data['status'] ?? 0,
+        rating: data['rating'] ?? 0);
   }
 }
 

@@ -105,9 +105,12 @@ class OrderService {
                   "id": e.id,
                   "price": e.price,
                   "quantity": e.quantity,
-                  "title": e.title
+                  "title": e.title,
+                  "status": 0
                 })
             .toList();
+
+        print(itemsList.first);
 
         UserOrderDetail userToUpdate =
             userList.firstWhere((element) => element.userId == userId);
@@ -149,6 +152,128 @@ class OrderService {
         } else {
           // print("User null");
           return Future.value(false);
+        }
+      }
+    } catch (err) {
+      print(
+          'error cart provider - get cart from localdb and add to provider = ' +
+              err.toString());
+      throw (err);
+    }
+  }
+
+  // Future<void> acceptRejectUserToOrder(
+  //     String userId, String orderId, int status) async {
+  //   try {
+  //     DocumentSnapshot<Map<String, dynamic>> orderDoc =
+  //         await _orderRef.doc(orderId).get();
+
+  //     if (orderDoc.exists) {
+  //       OrderDoc orderData = OrderDoc.fromDoctoOrderInfo(orderDoc);
+
+  //       List<UserOrderDetail> userList = orderData.userList;
+
+  //       UserOrderDetail userToUpdate =
+  //           userList.firstWhere((element) => element.userId == userId);
+
+  //       await _orderRef.doc(orderId).update({
+  //         "userList": FieldValue.arrayRemove([
+  //           {
+  //             "userId": userToUpdate.userId,
+  //             "displayName": userToUpdate.displayName,
+  //             "items": userToUpdate.items,
+  //             "itemsTotal": userToUpdate.itemsTotal,
+  //             "status": userToUpdate.status,
+  //             "lastUpdated": userToUpdate.lastUpdated
+  //           }
+  //         ]),
+  //       });
+
+  //       await _orderRef.doc(orderId).update({
+  //         "userList": FieldValue.arrayUnion([
+  //           {
+  //             "userId": userToUpdate.userId,
+  //             "displayName": userToUpdate.displayName,
+  //             "items": userToUpdate.items,
+  //             "itemsTotal": userToUpdate.itemsTotal,
+  //             "status": status,
+  //             "lastUpdated": DateTime.now()
+  //           }
+  //         ]),
+  //       });
+  //     }
+  //   } catch (err) {
+  //     print(err);
+  //   }
+  // }
+
+  Future<void> orderItemStatusUpdate(
+      String orderDocId, String userId, String productId, String status) async {
+    try {
+      var batch = _db.batch();
+      DocumentSnapshot<Map<String, dynamic>> orderDoc =
+          await _orderRef.doc(orderDocId).get();
+      if (orderDoc.exists) {
+        OrderDoc orderdetails = OrderDoc.fromDoctoOrderInfo(orderDoc);
+        List<UserOrderDetail> userList = orderdetails.userList;
+
+        UserOrderDetail userToUpdate =
+            userList.firstWhere((element) => element.userId == userId);
+
+        if (userToUpdate != null) {
+          batch.update(
+              FirebaseFirestore.instance.collection('orders').doc(orderDocId), {
+            "userList": FieldValue.arrayRemove([
+              {
+                "userId": userToUpdate.userId,
+                "displayName": userToUpdate.displayName,
+                "items": userToUpdate.items,
+                "itemsTotal": userToUpdate.itemsTotal.toDouble(),
+                "status": userToUpdate.status,
+                "lastUpdated": userToUpdate.lastUpdated
+              }
+            ]),
+          });
+
+          int productIndex = userToUpdate.items
+              .indexWhere((element) => element["id"] == productId);
+
+          if (status == "next") {
+            if (userToUpdate.items[productIndex]["status"] >= 0 ||
+                userToUpdate.items[productIndex]["status"] < 3) {
+              userToUpdate.items[productIndex]["status"] += 1;
+            }
+          }
+
+          if (status == "prev") {
+            if (status == "next") {
+              if (userToUpdate.items[productIndex]["status"] == 0) {
+                userToUpdate.items[productIndex]["status"] -= 1;
+              }
+            }
+          }
+
+          print(userToUpdate.items[productIndex]["status"]);
+
+          batch.update(
+            FirebaseFirestore.instance.collection('orders').doc(orderDocId),
+            {
+              "userList": FieldValue.arrayUnion([
+                {
+                  "userId": userToUpdate.userId,
+                  "displayName": userToUpdate.displayName,
+                  "items": userToUpdate.items,
+                  "itemsTotal": userToUpdate.itemsTotal.toDouble(),
+                  "status": userToUpdate.status,
+                  "lastUpdated": DateTime.now()
+                }
+              ]),
+            },
+          );
+
+          await batch.commit();
+        } else {
+          print("User null");
         }
       }
     } catch (err) {

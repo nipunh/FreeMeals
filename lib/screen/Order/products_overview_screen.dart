@@ -9,6 +9,7 @@ import 'package:freemeals/widgets/app_wide/app_wide/badge.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/product_item.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
+import 'dart:ui';
 
 enum FilterOptions { Favourites, All }
 
@@ -40,6 +41,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
     ];
     final user = Provider.of<SelectedUser>(context, listen: false);
     final cart = Provider.of<Cart>(context);
+    final waiterId = Provider.of<SelectedWaiter>(context).waiterId;
+    final waiterName = Provider.of<SelectedWaiter>(context).waiterName;
+    final waiterProfileImg =
+        Provider.of<SelectedWaiter>(context).waiterProfileImg;
+    final waiterRating = Provider.of<SelectedWaiter>(context).rating;
 
     final stats = ['orderId', 'tableNumber', 'noOfCustomers', 'itemsTotal'];
 
@@ -90,7 +96,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         child: Container(
           child: Column(children: [
             Padding(
-              padding: const EdgeInsets.only(left: 14.0, right: 14.0),
+              padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 0),
               child: Container(
                   height: size.height * 0.25,
                   decoration: BoxDecoration(color: Colors.white),
@@ -103,14 +109,39 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                         Container(
                           height: size.height,
                           width: size.width * 0.45,
-                          child: ClipRRect(
-                              child: Image.network(
-                            user.profileImg,
-                            width: MediaQuery.of(context).size.width,
-                            fit: BoxFit.cover,
-                          )),
+                          child: Stack(
+                            children: [
+                              Image.network(waiterProfileImg,
+                                  // "https://firebasestorage.googleapis.com/v0/b/freemeals-3d905.appspot.com/o/cafeterias%2FCXdKnqsdwetprt885KVx%2FwaiterImages%2Fwithout-bg-02.png?alt=media&token=c52c7b13-cdf0-4b7d-b1b0-998529a85896",
+                                  width: double.infinity,
+                                  height: size.height,
+                                  fit: BoxFit.cover),
+                              Positioned(
+                                // The Positioned widget is used to position the text inside the Stack widget
+                                bottom: 0,
+                                right: 10,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    border: Border.all(color: Colors.black),
+                                    color: Colors.black54,
+                                  ),
+                                  width: size.width * 0.40,
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    '$waiterName | $waiterRating',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
+
                         Container(
+                            padding: EdgeInsets.only(top: 15),
                             height: size.height,
                             width: size.width * 0.45,
                             child: GridView.count(
@@ -121,41 +152,90 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                                 children: List.generate(4, (index) {
                                   return Card(
                                       clipBehavior: Clip.antiAlias,
-                                      margin: EdgeInsets.all(4.0),
                                       elevation: 4.0,
                                       shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(10.0))),
-                                      child: Container(
-                                          padding: EdgeInsets.all(4.0),
-                                          alignment: Alignment.centerLeft,
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10.0)),
+                                      child: new ClipRect(
+                                        child: new BackdropFilter(
+                                          filter: new ImageFilter.blur(
+                                              sigmaX: 10.0, sigmaY: 10.0),
+                                          child: new Container(
+                                            width: 220.0,
+                                            height: 220.0,
+                                            decoration: new BoxDecoration(
+                                                color: Colors.blueAccent
+                                                    .withOpacity(0.5)),
+                                            child: new Center(
+                                                child: RichText(
+                                              text: TextSpan(children: [
+                                                TextSpan(
+                                                    text: stats[index] ==
+                                                            'orderId'
+                                                        ? 'Order\n'
+                                                        : stats[index] ==
+                                                                'tableNumber'
+                                                            ? 'Table\n'
+                                                            : stats[index] ==
+                                                                    'noOfCustomers'
+                                                                ? 'Guests\n'
+                                                                : stats[index] ==
+                                                                        'itemsTotal'
+                                                                    ? 'Total'
+                                                                    : ""),
+                                                // '${stats[index].split(RegExp(r"(?=[A-Z])")).map((element) => toBeginningOfSentenceCase(element)).join(" ")}\n'),
+                                                TextSpan(
+                                                    text: stats[index] ==
+                                                            'orderId'
+                                                        ? '${widget.orderDoc.getOrderId()}'
+                                                        : stats[index] ==
+                                                                'tableNumber'
+                                                            ? '${widget.orderDoc.getNumberOfCustomers()}'
+                                                            : stats[index] ==
+                                                                    'noOfCustomers'
+                                                                ? '${widget.orderDoc.getTableNumber()}'
+                                                                : stats[index] ==
+                                                                        'totalCost'
+                                                                    ? '${widget.orderDoc.getTotalCost(user.userId)}'
+                                                                    : ""),
+                                              ]),
+                                            )),
                                           ),
-                                          child: RichText(
-                                            text: TextSpan(children: [
-                                              TextSpan(
-                                                  text:
-                                                      '${stats[index].split(RegExp(r"(?=[A-Z])")).map((element) => toBeginningOfSentenceCase(element)).join(" ")}\n'),
-                                              TextSpan(
-                                                  text: stats[index] ==
-                                                          'orderId'
-                                                      ? '${widget.orderDoc.getOrderId()}'
-                                                      : stats[index] ==
-                                                              'tableNumber'
-                                                          ? '${widget.orderDoc.getNumberOfCustomers()}'
-                                                          : stats[index] ==
-                                                                  'noOfCustomers'
-                                                              ? '${widget.orderDoc.getTableNumber()}'
-                                                              : stats[index] ==
-                                                                      'totalCost'
-                                                                  ? '${widget.orderDoc.getTotalCost(user.userId)}'
-                                                                  : ""),
-                                            ]),
-                                          )));
-                                })))
+                                        ),
+                                      ));
+                                }))),
+
+                        //       Container(
+                        //           padding: EdgeInsets.all(4.0),
+                        //           alignment: Alignment.centerLeft,
+                        //           decoration: BoxDecoration(
+                        //             color: Colors.red,
+                        //             borderRadius: BorderRadius.all(
+                        //                 Radius.circular(10.0)),
+                        //           ),
+                        //           child: RichText(
+                        //             text: TextSpan(children: [
+                        //               TextSpan(
+                        //                   text:
+                        //                       '${stats[index].split(RegExp(r"(?=[A-Z])")).map((element) => toBeginningOfSentenceCase(element)).join(" ")}\n'),
+                        //               TextSpan(
+                        //                   text: stats[index] ==
+                        //                           'orderId'
+                        //                       ? '${widget.orderDoc.getOrderId()}'
+                        //                       : stats[index] ==
+                        //                               'tableNumber'
+                        //                           ? '${widget.orderDoc.getNumberOfCustomers()}'
+                        //                           : stats[index] ==
+                        //                                   'noOfCustomers'
+                        //                               ? '${widget.orderDoc.getTableNumber()}'
+                        //                               : stats[index] ==
+                        //                                       'totalCost'
+                        //                                   ? '${widget.orderDoc.getTotalCost(user.userId)}'
+                        //                                   : ""),
+                        //             ]),
+                        //           )));
+                        // }))
+                        // )
                       ],
                     ),
                   )),

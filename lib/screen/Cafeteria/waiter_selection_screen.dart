@@ -309,11 +309,14 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                   // ),
                                   Expanded(
                                       // decoration: BoxDecoration(color: Colors.blue),
-                                      child: StaggeredGridView.countBuilder(
+                                      child: GridView.builder(
                                     padding: const EdgeInsets.all(4.0),
-                                    crossAxisCount: 4,
-                                    mainAxisSpacing: 4,
-                                    crossAxisSpacing: 4,
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 5.0,
+                                      mainAxisSpacing: 5.0,
+                                    ),
                                     itemCount: waiterProvider.waiters.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
@@ -453,8 +456,6 @@ class _WaiterSelectionScreenState extends State<WaiterSelectionScreen> {
                                         ],
                                       );
                                     },
-                                    staggeredTileBuilder: (int index) =>
-                                        StaggeredTile.fit(2),
                                   ))
                                 ],
                               );

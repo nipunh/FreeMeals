@@ -3,7 +3,6 @@ import 'package:freemeals/models/cart_model.dart';
 import 'package:freemeals/models/product.dart';
 import 'package:provider/provider.dart';
 
-
 class ProductItem extends StatelessWidget {
   // final String id;
   // final String title;
@@ -35,7 +34,6 @@ class ProductItem extends StatelessWidget {
             ),
           ]),
       child: ListTile(
-        
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
@@ -72,7 +70,8 @@ class ProductItem extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => cart.addItem(product.id, product.title, product.price),
+              onTap: () =>
+                  cart.addItem(product.id, product.title, product.price, 0),
               child: Icon(
                 Icons.add_circle_outlined,
                 color: Colors.black87,

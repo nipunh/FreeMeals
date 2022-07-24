@@ -32,23 +32,25 @@ class OrderDoc implements OrderData {
       @required this.cafeId,
       this.waiterId});
 
+  int getTableNumber() {
+    return this.tableNumber;
+  }
 
-    int getTableNumber(){
-      return this.tableNumber;
-    } 
+  int getOrderId() {
+    return this.orderId;
+  }
 
-    int getOrderId(){
-      return this.orderId;
-    } 
+  int getNumberOfCustomers() {
+    return this.numberOfCustomers;
+  }
 
-    int getNumberOfCustomers(){
-      return this.numberOfCustomers;
-    } 
-
-    double getTotalCost(String userId){
-      return userList.where((element) => element.userId == userId).first.itemsTotal ?? 0.0;
-    }
-
+  double getTotalCost(String userId) {
+    return userList
+            .where((element) => element.userId == userId)
+            .first
+            .itemsTotal ??
+        0.0;
+  }
 
   static OrderDoc fromDoctoOrderInfo(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
@@ -67,7 +69,7 @@ class OrderDoc implements OrderData {
           : null,
       userList:
           (data['userList'] == null || data['userList'].toList().length == 0)
-              ? List<dynamic>.empty()
+              ? List<UserOrderDetail>.empty()
               : List<UserOrderDetail>.from(
                   data['userList'].map((item) {
                     return UserOrderDetail(

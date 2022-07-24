@@ -108,11 +108,13 @@ class SelectedWaiter extends ChangeNotifier {
   String _waiterId;
   String _waiterName;
   String _waiterProfileImg;
+  double _rating;
 
   SelectedWaiter() {
     _waiterId = '';
     _waiterName = '';
     _waiterProfileImg = "";
+    _rating = null;
     try {
       loadPreferences();
     } catch (err) {
@@ -147,26 +149,40 @@ class SelectedWaiter extends ChangeNotifier {
     }
   }
 
+  double get rating {
+    if (_rating != null)
+      return _rating;
+    else {
+      loadPreferences();
+      return _rating;
+    }
+  }
+
   Future<void> loadPreferences() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String waiterId = prefs.getString('waiterId');
       String waiterName = prefs.getString('waiterName');
       String waiterProfileImg = prefs.getString('waiterProfileImg');
-      if (waiterId != null && waiterName != null && waiterProfileImg != null)
-        setWaiter(waiterId, waiterName, waiterProfileImg);
+      double rating = prefs.getDouble('rating');
+      if (waiterId != null &&
+          waiterName != null &&
+          waiterProfileImg != null &&
+          rating != null)
+        setWaiter(waiterId, waiterName, waiterProfileImg, rating);
     } catch (err) {
       print('loadPreference Cafe error = $err');
       throw Exception(err);
     }
   }
 
-  Future<void> setWaiter(
-      String waiterId, String waiterName, String waiterProfileImg) async {
+  Future<void> setWaiter(String waiterId, String waiterName,
+      String waiterProfileImg, double rating) async {
     try {
       _waiterId = waiterId;
       _waiterName = waiterName;
       _waiterProfileImg = waiterProfileImg;
+      _rating = rating;
       notifyListeners();
       return await savePreferences();
     } catch (err) {
@@ -180,6 +196,7 @@ class SelectedWaiter extends ChangeNotifier {
       prefs.setString('waiterId', _waiterId);
       prefs.setString('waiterName', _waiterName);
       prefs.setString("waiterProfileImg", _waiterProfileImg);
+      prefs.setDouble("rating", _rating);
       return;
     } catch (err) {
       print('savePreference Cafe error = $err');

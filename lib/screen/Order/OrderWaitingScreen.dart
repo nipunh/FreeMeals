@@ -16,6 +16,7 @@ import 'package:freemeals/screen/WaiterScreens/waiter_order_screen.dart';
 import 'package:freemeals/screen/discover_page.dart';
 import 'package:freemeals/services/connectivity_service.dart';
 import 'package:freemeals/services/order_service.dart';
+import 'package:freemeals/services/user_service.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_connection_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/error_page.dart';
 import 'package:freemeals/widgets/app_wide/app_wide/loading_page.dart';
@@ -57,16 +58,17 @@ class _OrderWaitingScreenState extends State<OrderWaitingScreen> {
                       ConnectionState.waiting) {
                     return LoadingPage();
                   } else {
-                    // print(
-                    //     "########################################################");
-                    // print(orderSnapshot);
                     final currUsertype =
                         Provider.of<SelectedUser>(context, listen: false)
                             .userType;
                     if (orderSnapshot.hasData) {
                       OrderDoc data = orderSnapshot.data;
-                      print("6^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-                      print(data);
+                      UserService().getUserDoc(data.waiterId).then((waiter) => {
+                            Provider.of<SelectedWaiter>(context, listen: false)
+                                .setWaiter(waiter.id, waiter.displayName,
+                                    waiter.profileImageUrl, waiter.rating)
+                          });
+
                       if (currUsertype == 0) {
                         if (data.orderStatus == 0) {
                           // Waiting for the server to join

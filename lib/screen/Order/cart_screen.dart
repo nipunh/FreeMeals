@@ -13,55 +13,60 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context, listen: true);
-    return Scaffold(
-        appBar: AppBar(title: Text('Your Cart')),
-        body: Column(children: <Widget>[
-          Card(
-            margin: EdgeInsets.all(15),
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    "Total",
-                    style: TextStyle(fontSize: 20),
+    return Consumer<Cart>(
+        builder: (context, cart, child) => ChangeNotifierProvider.value(
+            value: cart,
+            builder: ((context, child) => Scaffold(
+                appBar: AppBar(title: Text('Your Cart')),
+                body: Column(children: <Widget>[
+                  Card(
+                    margin: EdgeInsets.all(15),
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            "Total",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Spacer(),
+                          Chip(
+                            label: Text('\$${cart.totalAmount.ceilToDouble()}'),
+                            backgroundColor: Colors.white38,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                OrderService()
+                                    .orderItemRequest(
+                                        orderDoc.id, cart, orderDoc.userId)
+                                    .then((value) {
+                                  if (value == true) {
+                                    print("no issues");
+                                    cart.clearCart();
+                                  } else {
+                                    print("Issue faced");
+                                  }
+                                });
+                              },
+                              child: Text("ORDER NOW"))
+                        ],
+                      ),
+                    ),
                   ),
-                  Spacer(),
-                  Chip(
-                    label: Text('\$${cart.totalAmount.ceilToDouble()}'),
-                    backgroundColor: Colors.white38,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        OrderService().orderItemRequest(orderDoc.id, cart, orderDoc.userId).then((value){
-                          if(value == true){
-                            print("no issues");
-                            cart.clearCart();
-                          }else{
-                            print("Issue faced");
-                          }
-                        });
-                        
-                      },
-                      child: Text("ORDER NOW"))
-                ],
-              ),
-            ),
-          ),
-          ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: cart.itemCount,
-              itemBuilder: (ctx, i) {
-                return ci.CartItem(
-                    id: cart.items.values.toList()[i].id,
-                    productId: cart.items.keys.toList()[i],
-                    price: cart.items.values.toList()[i].price,
-                    quantity: cart.items.values.toList()[i].quantity,
-                    title: cart.items.values.toList()[i].title);
-              }),
-        ]));
+                  ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: cart.itemCount,
+                      itemBuilder: (ctx, i) {
+                        return ci.CartItem(
+                            id: cart.items.values.toList()[i].id,
+                            productId: cart.items.keys.toList()[i],
+                            price: cart.items.values.toList()[i].price,
+                            quantity: cart.items.values.toList()[i].quantity,
+                            title: cart.items.values.toList()[i].title,
+                            status: cart.items.values.toList()[i].status);
+                      }),
+                ])))));
   }
 }

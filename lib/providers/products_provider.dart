@@ -6,41 +6,41 @@ import '../models/product.dart';
 class Products with ChangeNotifier {
   List<Product> _items = [
     Product(
-      id: 'p1',
-      title: 'Filtered Coffee',
-      description: 'Latte Machiato glasses of 280ml',
-      price: 1.99,
-      category : "Beverage",
-      imageUrl:
-          'https://images.pexels.com/photos/4547567/pexels-photo-4547567.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    ),
+        id: 'p1',
+        title: 'Filtered Coffee',
+        description: 'Latte Machiato glasses of 280ml',
+        price: 1.99,
+        category: "Beverage",
+        imageUrl:
+            'https://images.pexels.com/photos/4547567/pexels-photo-4547567.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+        status: null),
     Product(
-      id: 'p2',
-      title: 'Latte Machiato',
-      description: 'Latte Machiato glasses of 280ml.',
-      price: 4.99,
-      category : "Beverage",
-      imageUrl:
-          'https://images.pexels.com/photos/4349777/pexels-photo-4349777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    ),
+        id: 'p2',
+        title: 'Latte Machiato',
+        description: 'Latte Machiato glasses of 280ml.',
+        price: 4.99,
+        category: "Beverage",
+        imageUrl:
+            'https://images.pexels.com/photos/4349777/pexels-photo-4349777.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+        status: null),
     Product(
-      id: 'p3',
-      title: 'Cloud Macchiato',
-      description: 'Latte Machiato glasses of 280ml.',
-      price: 5.49,
-      category : "Beverage",
-      imageUrl:
-          'https://images.pexels.com/photos/573916/pexels-photo-573916.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    ),
+        id: 'p3',
+        title: 'Cloud Macchiato',
+        description: 'Latte Machiato glasses of 280ml.',
+        price: 5.49,
+        category: "Beverage",
+        imageUrl:
+            'https://images.pexels.com/photos/573916/pexels-photo-573916.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+        status: null),
     Product(
-      id: 'p4',
-      title: 'Espresso',
-      description: 'Latte Machiato glasses of 280ml.',
-      price: 1.49,
-      category : "Beverage",
-      imageUrl:
-          'https://images.pexels.com/photos/849643/pexels-photo-849643.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    ),
+        id: 'p4',
+        title: 'Espresso',
+        description: 'Latte Machiato glasses of 280ml.',
+        price: 1.49,
+        category: "Beverage",
+        imageUrl:
+            'https://images.pexels.com/photos/849643/pexels-photo-849643.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+        status: null),
   ];
 
   var _showFavOnly = false;
@@ -58,8 +58,7 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-
-  List<Product> get faouriteItems{
+  List<Product> get faouriteItems {
     return _items.where((prod) => prod.isFavourite == true).toList();
   }
 

@@ -134,9 +134,12 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
 
                       orderProvider.getWaitersOrders(user.userId);
                       List<OrderDoc> orderRequest = orderProvider.orders;
+                      // print("########******************###################");
+                      // print(orderRequest);
                       return Container(
                           child: Column(children: [
                         Container(
+                            height: 400,
                             margin: EdgeInsets.all(10.0),
                             padding: EdgeInsets.all(14.0),
                             decoration: BoxDecoration(
@@ -182,9 +185,10 @@ class _WaiterHomeScreenState extends State<WaiterHomeScreen> {
                                                     e.orderStatus == 1 ||
                                                     e.orderStatus == 2)
                                                 .toList();
-                                        print(pendingRequestList);
-                                        OrderDoc order = pendingRequestList.elementAt(index);
-                                        
+                                        // print(pendingRequestList);
+                                        OrderDoc order =
+                                            pendingRequestList.elementAt(index);
+
                                         return pendingRequestList.length > 0
                                             ? GestureDetector(
                                                 onTap: () {

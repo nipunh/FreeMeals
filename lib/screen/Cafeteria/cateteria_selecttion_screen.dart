@@ -64,8 +64,8 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
     city = 'Select City';
     companyCode = '';
     super.initState();
-     Provider.of<SelectedCafeteria>(context, listen: false).setCafeteria("", "", "");
-
+    Provider.of<SelectedCafeteria>(context, listen: false)
+        .setCafeteria("", "", "");
   }
 
   // @override
@@ -226,16 +226,21 @@ class _CafeteriaSelectionScreenState extends State<CafeteriaSelectionScreen> {
                         Expanded(
                             child: SizedBox(
                           height: 400,
-                          child: StaggeredGridView.countBuilder(
+                          child: GridView.builder(
                             padding: const EdgeInsets.all(4.0),
-                            crossAxisCount: 4,
-                            mainAxisSpacing: 2,
-                            crossAxisSpacing: 2,
+
                             itemCount: cafeList.cafes.length,
                             itemBuilder: (BuildContext context, int index) =>
                                 CafeteraCard(cafeList.cafes[index], userData),
-                            staggeredTileBuilder: (int index) =>
-                                StaggeredTile.fit(2),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 5.0,
+                              mainAxisSpacing: 5.0,
+                            ),
+                            //   staggeredTileBuilder: (int index) =>
+                            //       StaggeredTile.fit(2),
+                            //
                           ),
                         )),
                       ])));

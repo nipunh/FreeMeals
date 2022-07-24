@@ -18,10 +18,12 @@ import 'package:provider/provider.dart';
 
 class CafeteriasService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  
-  final CollectionReference _cafeteria = FirebaseFirestore.instance.collection('cafeterias');
-  
-  final CollectionReference _orders = FirebaseFirestore.instance.collection('orders');
+
+  final CollectionReference _cafeteria =
+      FirebaseFirestore.instance.collection('cafeterias');
+
+  final CollectionReference _orders =
+      FirebaseFirestore.instance.collection('orders');
 
   Future<Cafeteria> getCafeteriaByID(String cafeteriaId) async {
     try {
@@ -38,36 +40,34 @@ class CafeteriasService {
     }
   }
 
+  Future<String> getOrderDocByOrderCode(
+      String cafeId, String orderDocId, User user) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> orderDoc = await _orders
+          .where("cafeId", isEqualTo: cafeId)
+          .where("orderId", isEqualTo: int.parse(orderDocId))
+          .limit(1)
+          .get();
 
-  Future<String> getOrderDocByOrderCode(String cafeId, String orderDocId, User user) async {
-    try{
-      
-       
-      QuerySnapshot<Map<String, dynamic>> orderDoc = 
-      await _orders.where("cafeId", isEqualTo: cafeId)
-      .where("orderId", isEqualTo: int.parse(orderDocId))
-      .limit(1)
-      .get();
-
-    
-      if(orderDoc.docs.isNotEmpty){
+      if (orderDoc.docs.isNotEmpty) {
         await _orders.doc(orderDoc.docs.first.id).update({
-          "userList" : FieldValue.arrayUnion([
+          "userList": FieldValue.arrayUnion([
             {
-              "userId":user.uid,
-              "displayName":  user.displayName,
+              "userId": user.uid,
+              "displayName": user.displayName,
               "items": [],
-              "itemsTotal": 0,
-              "status" : 0,
-              "lastUpdated" : DateTime.now()
-            }])
+              "itemsTotal": 0.toDouble(),
+              "status": 0,
+              "lastUpdated": DateTime.now()
+            }
+          ])
         });
 
-        return orderDoc.docs.first.id; 
+        return orderDoc.docs.first.id;
       }
 
       return null;
-    }catch (err) {
+    } catch (err) {
       print('error Cafe selection screen - pvt fucntion select cafe = ' +
           err.toString());
       throw (err);
@@ -76,7 +76,7 @@ class CafeteriasService {
 
   Future<void> selectCafe(String userId, Cafeteria cafe, Cafeteria oldCafe,
       BuildContext context) async {
-        print('Selcted Cafe :'+ cafe.id);
+    print('Selcted Cafe :' + cafe.id);
     // try {
     //   if ((oldCafe == null) || (cafe.id != oldCafe.id)) {
     //     await DatabaseHelper().clearLocalCart();
@@ -102,14 +102,13 @@ class CafeteriasService {
     // }
   }
 
-    Stream<CafesData> getCafeteriasByLocation() {
-    Stream<QuerySnapshot<Map<String, dynamic>>> stream = _cafeteria
-        .snapshots();
+  Stream<CafesData> getCafeteriasByLocation() {
+    Stream<QuerySnapshot<Map<String, dynamic>>> stream = _cafeteria.snapshots();
 
     return stream.map(_snapshotCafes);
   }
 
-    Cafeterias _snapshotCafes(QuerySnapshot<Map<String, dynamic>> snapshot) {
+  Cafeterias _snapshotCafes(QuerySnapshot<Map<String, dynamic>> snapshot) {
     final List<Cafeteria> cafeDoc = snapshot.docs.map((doc) {
       return Cafeteria.fromDocToCafeteria(doc);
     }).toList();

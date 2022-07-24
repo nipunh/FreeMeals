@@ -74,4 +74,11 @@ class OrderDecrypt {
     'AC04': '',
     'AC10': '',
   };
+
+  static Map<int, String> cookingStatus = {
+    0: 'Requested',
+    1: 'Cooking',
+    2: 'Served',
+    3: 'Rejected'
+  };
 }

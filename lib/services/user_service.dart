@@ -51,7 +51,19 @@ class UserService {
     }
   }
 
+  Future<UserDoc> getUserDoc(String userId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await _user.doc(userId).get();
 
+      if (userDoc.exists) {
+        return UserDoc.fromDoctoUserInfo(userDoc);
+      } else {
+        print("returning null");
+        return null;
+      }
+    } catch (err) {}
+  }
 
   Stream<List<UserData>> getWaiters(String cafeId) {
     Stream<QuerySnapshot<Map<String, dynamic>>> stream = _user
@@ -175,7 +187,6 @@ class UserService {
       DateTime dateStart = DateTime.now().subtract(Duration(minutes: 30));
       Timestamp timeStart = Timestamp.fromDate(dateStart);
 
-      
       QuerySnapshot<Map<String, dynamic>> userDoc = await _db
           .collection("orders")
           .where("userId", isEqualTo: user.uid)
@@ -199,7 +210,8 @@ class UserService {
 
         orderReqDoc.set({
           'cafeId': "CXdKnqsdwetprt885KVx",
-          'displayName': user.displayName == null ? "Anonymous" : user.displayName,
+          'displayName':
+              user.displayName == null ? "Anonymous" : user.displayName,
           'userId': user.uid == null ? "" : user.uid,
           'orderStatus': 0,
           'waiterRequestTime': DateTime.now(),
@@ -208,12 +220,12 @@ class UserService {
           'tableNumber': 0,
           'userList': FieldValue.arrayUnion([
             {
-              "userId":user.uid,
-              "displayName":  user.displayName,
+              "userId": user.uid,
+              "displayName": user.displayName,
               "items": [],
               "itemsTotal": 0.toDouble(),
-              "status" : 1,
-              "lastUpdated" : DateTime.now()
+              "status": 1,
+              "lastUpdated": DateTime.now()
             }
           ]),
           'orderId': orderId + 1,

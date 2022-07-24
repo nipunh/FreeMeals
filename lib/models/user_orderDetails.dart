@@ -10,14 +10,13 @@ class UserOrderDetail {
   String userId;
   int status;
 
-  UserOrderDetail({
-    @required this.displayName,
-    @required this.items,
-    @required this.lastUpdated,
-    @required this.itemsTotal,
-    @required this.userId,
-    @required this.status
-  });
+  UserOrderDetail(
+      {@required this.displayName,
+      @required this.items,
+      @required this.lastUpdated,
+      @required this.itemsTotal,
+      @required this.userId,
+      @required this.status});
 }
 
 class UserOrderDetails {
@@ -37,7 +36,7 @@ class UserOrderDetails {
             lastUpdated: element['lastUpdated'],
             itemsTotal: element['itemsTotal'],
             userId: element['userId'],
-            status : element['status']));
+            status: element['status']));
       });
 
     return UserOrderDetails(totalMealOptions: listMealDeatils);
